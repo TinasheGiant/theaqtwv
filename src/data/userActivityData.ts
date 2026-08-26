@@ -12,7 +12,7 @@ import {
 export const DEMO_PROFILES: UserProfile[] = [
   {
     id: "usr-apex-01",
-    name: "Tinashe Mugadza",
+    name: "Tinashe R Tinarwo",
     email: "tinashe@apexretail.co.zw",
     phone: "+263 77 234 5678",
     company: "Apex Retailers Zimbabwe Ltd",
@@ -170,7 +170,7 @@ export const INITIAL_USER_RECEIPTS: UserReceipt[] = [
     date: "Aug 10, 2026 · 14:32 CAT",
     status: "Verified",
     receiptHash: "0x8fa3d9b1c76e2890d45a918f037bced4912fa680b59b13cf764109aa",
-    payerName: "Tinashe Mugadza",
+    payerName: "Unknown",
     purpose: "OmniERP Suite Phase 1 Deposit",
   },
   {
@@ -316,7 +316,7 @@ export const INITIAL_USER_MESSAGES: UserMessage[] = [
   {
     id: "msg-2",
     sender: "client",
-    senderName: "Tinashe Mugadza",
+    senderName: "Unknown",
     text: "Awesome work team! Just tested the EcoCash test webhook and the instant SMS alert fired immediately. Ready for tomorrow's staging review session at 10 AM.",
     time: "Yesterday at 17:10",
   },

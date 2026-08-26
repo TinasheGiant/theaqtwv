@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useApp } from "../context/AppContext";
-import { PORTFOLIO_ITEMS } from "../data/portfolioData";
 import { PortfolioItem } from "../types";
 import {
   Briefcase,
@@ -16,7 +15,7 @@ import {
 } from "lucide-react";
 
 export const PortfolioSection: React.FC = () => {
-  const { playSfx, openBookingWithService } = useApp();
+  const { portfolioList, playSfx, openBookingWithService } = useApp();
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [activeCaseStudy, setActiveCaseStudy] = useState<PortfolioItem | null>(null);
   const [deviceView, setDeviceView] = useState<"desktop" | "tablet" | "mobile">("desktop");
@@ -30,7 +29,7 @@ export const PortfolioSection: React.FC = () => {
     { id: "marketing", label: "MARKETING & ADS" },
   ];
 
-  const filteredItems = PORTFOLIO_ITEMS.filter(
+  const filteredItems = (portfolioList || []).filter(
     (item) => activeCategory === "all" || item.categoryKey === activeCategory
   );
 

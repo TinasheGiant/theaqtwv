@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext";
-import { SERVICES_LIST } from "../data/servicesData";
 import {
   Calendar,
   CheckCircle2,
@@ -15,9 +14,10 @@ import {
   ArrowRight
 } from "lucide-react";
 import confetti from "canvas-confetti";
+import { COLLECTIONS, syncDocToFirestore } from "../lib/firestoreSync";
 
 export const BookingSection: React.FC = () => {
-  const { preselectedServiceId, formatPrice, playSfx, showToast } = useApp();
+  const { servicesList, preselectedServiceId, formatPrice, playSfx, showToast, addUserBooking } = useApp();
 
   const [selectedId, setSelectedId] = useState<string>(preselectedServiceId || "standard-web");
   const [fullName, setFullName] = useState<string>("");
@@ -36,7 +36,18 @@ export const BookingSection: React.FC = () => {
     }
   }, [preselectedServiceId]);
 
-  const currentService = SERVICES_LIST.find((s) => s.id === selectedId) || SERVICES_LIST[0];
+  const currentService: ServiceItem = (servicesList || []).find((s) => s.id === selectedId) || (servicesList && servicesList[0]) || {
+    id: "standard-web",
+    title: "Standard Business Website",
+    category: "web" as const,
+    iconKey: "web" as const,
+    price: 80,
+    turnaroundTime: "3 - 5 Working Days",
+    description: "Multi-page dynamic corporate portal with mobile optimization and contact forms.",
+    features: ["5-7 Custom Pages", "Mobile Responsive", "Contact Form & WhatsApp Integration", "Free .co.zw or .com Setup"],
+    badge: "Popular",
+    highlighted: true,
+  };
 
   const bookingAddOns = [
     { id: "rush_delivery", label: "Express Priority Turnaround (-40% Time)", price: 40 },
@@ -79,7 +90,20 @@ export const BookingSection: React.FC = () => {
       paymentPreference,
       notes: notes || "Standard package requirements",
       addOns: selectedAddOns,
+      status: "Confirmed",
+      createdAt: new Date().toISOString(),
     };
+
+    const bookingDocId = `bk-${Date.now()}`;
+    syncDocToFirestore(COLLECTIONS.BOOKINGS, bookingDocId, payload);
+    addUserBooking({
+      serviceName: currentService.title,
+      date: startDate || "ASAP",
+      time: "10:00 AM CAT",
+      specialist: "Senior Solutions Architect",
+      type: "Google Meet",
+      notes: notes || "Standard package requirements",
+    });
 
     try {
       await fetch("/api/booking", {
@@ -191,7 +215,7 @@ Please confirm receipt and dispatch the project kickoff invoice.`;
               <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-amber-500/15 space-y-1.5 text-xs text-gray-300">
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>Estimated Delivery: {currentService.turnaroundTime}</span>
+                  <span>Estimated Delivery: {currentService.turnaroundTime || (currentService as any).turnaround || "3 - 5 Working Days"}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -246,7 +270,7 @@ Please confirm receipt and dispatch the project kickoff invoice.`;
                       }}
                       className="w-full bg-black/50 border border-amber-500/30 rounded-xl px-4 py-3 text-sm text-amber-300 focus:outline-none focus:border-amber-400 cursor-pointer"
                     >
-                      {SERVICES_LIST.map((svc) => (
+                      {(servicesList || []).map((svc) => (
                         <option key={svc.id} value={svc.id} className="bg-neutral-900 text-white">
                           {svc.title} — {formatPrice(svc.price)}
                         </option>

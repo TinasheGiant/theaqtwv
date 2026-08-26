@@ -180,6 +180,17 @@ export const Footer: React.FC = () => {
               <li>
                 <button
                   onClick={() => {
+                    playSfx("sparkle");
+                    setActivePage("admin");
+                  }}
+                  className="hover:text-amber-300 transition-colors text-left cursor-pointer text-amber-300 flex items-center gap-1 font-['Cinzel'] font-bold"
+                >
+                  <span>🔒 Admin Backend Terminal</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
                     playSfx("click");
                     setActivePage("membership");
                   }}

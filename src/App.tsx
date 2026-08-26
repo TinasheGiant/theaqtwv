@@ -21,6 +21,7 @@ import { PrivacyPage } from "./components/PrivacyPage";
 import { TermsPage } from "./components/TermsPage";
 import { RefundPage } from "./components/RefundPage";
 import { ClientPortalPage } from "./components/ClientPortalPage";
+import { AdminDashboard } from "./components/admin/AdminDashboard";
 import { AuthModal } from "./components/AuthModal";
 import { ServiceDetailModal } from "./components/ServiceDetailModal";
 import { ShareModal } from "./components/ShareModal";
@@ -46,6 +47,21 @@ const MainAppContent: React.FC = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [activePage]);
+
+  // If activePage is admin, render the full dedicated Admin Dashboard
+  if (activePage === "admin") {
+    return (
+      <div className="min-h-screen bg-[#06070a] text-gray-100 selection:bg-amber-400 selection:text-black">
+        <AdminDashboard />
+        {toastMessage && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl bg-[#0e0f14] border border-amber-400/60 shadow-[0_10px_40px_rgba(0,0,0,0.9),0_0_20px_rgba(212,175,55,0.3)] text-amber-300 text-xs font-['Cinzel'] font-bold flex items-center gap-2.5 animate-in slide-in-from-bottom-5 duration-200">
+            <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>{toastMessage}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen text-gray-100 flex flex-col justify-between selection:bg-amber-400 selection:text-black">

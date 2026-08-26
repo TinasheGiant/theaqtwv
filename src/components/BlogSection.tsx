@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useApp } from "../context/AppContext";
-import { BLOG_POSTS } from "../data/blogData";
 import { BlogPost } from "../types";
 import {
   BookOpen,
@@ -14,7 +13,7 @@ import {
 } from "lucide-react";
 
 export const BlogSection: React.FC = () => {
-  const { playSfx, openBookingWithService, showToast } = useApp();
+  const { blogsList, playSfx, openBookingWithService, showToast } = useApp();
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
 
   const handleShareArticle = (post: BlogPost, e: React.MouseEvent) => {
@@ -45,7 +44,7 @@ export const BlogSection: React.FC = () => {
 
         {/* Blog Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {BLOG_POSTS.map((post) => (
+          {(blogsList || []).map((post) => (
             <article
               key={post.id}
               onClick={() => {

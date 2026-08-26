@@ -76,6 +76,7 @@ export const Navbar: React.FC = () => {
   ];
 
   const moreLinks: { label: string; page: NavPage; desc: string; icon: React.ReactNode }[] = [
+    { label: "Admin Backend (RBAC)", page: "admin", desc: "CEO, Manager & Editor management terminal", icon: <Lock className="w-4 h-4 text-amber-400" /> },
     { label: "Client Workspace Hub", page: "portal", desc: "Live project telemetry, invoices & tech desk", icon: <Crown className="w-4 h-4 text-amber-400" /> },
     { label: "Online Payment Gateway", page: "checkout", desc: "EcoCash, Bank Nostro, InnBucks & Card", icon: <CreditCard className="w-4 h-4 text-amber-400" /> },
     { label: "Verify Payment Receipt", page: "payment-verify", desc: "Audit cryptographic ledger & tax certificate", icon: <ShieldCheck className="w-4 h-4 text-amber-400" /> },
@@ -293,91 +294,111 @@ export const Navbar: React.FC = () => {
             </button>
 
             {/* ========================================================================= */}
-            {/* THE RICH USER ICON WITH RICH DASH (AUTH & ACTIVITIES HUB) */}
+            {/* THE RICH USER ICON WITH AUTH (SIGN IN / SIGN OUT & ACTIVITIES HUB) */}
             {/* ========================================================================= */}
             <div className="relative">
               {user ? (
-                <button
-                  onClick={() => {
-                    playSfx("pop");
-                    setUserDropdownOpen(!userDropdownOpen);
-                    setMoreDropdownOpen(false);
-                  }}
-                  className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-2xl bg-gradient-to-r from-amber-400/10 to-amber-500/20 border border-amber-400/50 hover:border-amber-300 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all cursor-pointer group"
-                  title="Client Identity & Dashboard"
-                  aria-label="Client Dashboard"
-                >
-                  <div className="relative">
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      referrerPolicy="no-referrer"
-                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl object-cover border border-amber-300 group-hover:scale-105 transition-transform"
-                    />
-                    <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-black" />
-                  </div>
-
-                  <div className="text-left hidden xl:block">
-                    <div className="text-xs font-['Cinzel'] font-bold text-white group-hover:text-amber-300 flex items-center gap-1">
-                      <span>{user.name.split(" ")[0]}</span>
-                      <Crown className="w-3 h-3 text-amber-400" />
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => {
+                      playSfx("pop");
+                      setUserDropdownOpen(!userDropdownOpen);
+                      setMoreDropdownOpen(false);
+                    }}
+                    className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-2xl bg-gradient-to-r from-amber-400/15 to-amber-500/25 border border-amber-400/50 hover:border-amber-300 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all cursor-pointer group"
+                    title="User Profile & Workspace Menu"
+                    aria-label="User Profile"
+                  >
+                    <div className="relative">
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        referrerPolicy="no-referrer"
+                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl object-cover border border-amber-300 group-hover:scale-105 transition-transform"
+                      />
+                      <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-black" />
                     </div>
-                    <div className="text-[9px] text-gray-400 font-mono -mt-0.5 truncate max-w-[90px]">
-                      {user.tier}
+
+                    <div className="text-left hidden md:block">
+                      <div className="text-xs font-['Cinzel'] font-bold text-white group-hover:text-amber-300 flex items-center gap-1">
+                        <span>{user.name.split(" ")[0]}</span>
+                        <Crown className="w-3 h-3 text-amber-400" />
+                      </div>
+                      <div className="text-[9px] text-gray-400 font-mono -mt-0.5 truncate max-w-[90px]">
+                        {user.tier}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Notification Dot if unread or pending */}
-                  {(pendingInvoicesCount > 0 || unreadMsgCount > 0) && (
-                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping hidden sm:inline-block" />
-                  )}
+                    {/* Notification Dot if unread or pending */}
+                    {(pendingInvoicesCount > 0 || unreadMsgCount > 0) && (
+                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping hidden sm:inline-block" />
+                    )}
 
-                  <ChevronDown className={`w-3.5 h-3.5 text-amber-400 transition-transform ${userDropdownOpen ? "rotate-180" : ""}`} />
-                </button>
+                    <ChevronDown className={`w-3.5 h-3.5 text-amber-400 transition-transform ${userDropdownOpen ? "rotate-180" : ""}`} />
+                  </button>
+                </div>
               ) : (
                 <button
                   onClick={() => {
                     playSfx("sparkle");
                     setIsAuthModalOpen(true);
                   }}
-                  className="btn-gold-luxury px-3 py-1.5 rounded-xl text-xs font-['Cinzel'] font-bold flex items-center gap-1.5 shadow-md cursor-pointer"
+                  className="btn-gold-luxury px-3.5 py-1.5 rounded-xl text-xs font-['Cinzel'] font-bold flex items-center gap-2 shadow-lg cursor-pointer hover:scale-105 transition-transform"
+                  title="User Sign In / Sign Up"
+                  aria-label="Sign In"
                 >
-                  <Lock className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Sign In</span>
+                  <div className="w-5 h-5 rounded-full bg-black/40 border border-amber-400/50 flex items-center justify-center">
+                    <User className="w-3 h-3 text-amber-300" />
+                  </div>
+                  <span>Sign In</span>
                 </button>
               )}
 
               {/* RICH USER DASHBOARD DROPDOWN */}
               {userDropdownOpen && user && (
                 <div
-                  className="absolute top-full right-0 mt-2.5 w-80 p-3 rounded-3xl bg-[#0a0a0e]/95 backdrop-blur-2xl border border-amber-500/40 shadow-[0_25px_60px_rgba(0,0,0,0.9),0_0_35px_rgba(212,175,55,0.2)] animate-in fade-in slide-in-from-top-2 duration-200 z-50 space-y-3"
+                  className="absolute top-full right-0 mt-2.5 w-84 max-w-[92vw] max-h-[min(82vh,580px)] overflow-y-auto overscroll-contain p-3.5 rounded-3xl bg-[#0a0a0e]/95 backdrop-blur-2xl border border-amber-500/40 shadow-[0_25px_60px_rgba(0,0,0,0.9),0_0_35px_rgba(212,175,55,0.2)] animate-in fade-in slide-in-from-top-2 duration-200 z-50 space-y-3"
                   onMouseLeave={() => setUserDropdownOpen(false)}
                 >
-                  {/* User Profile Mini Header */}
-                  <div className="p-3 rounded-2xl bg-gradient-to-br from-amber-400/15 via-amber-500/5 to-transparent border border-amber-400/30 flex items-center gap-3">
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      referrerPolicy="no-referrer"
-                      className="w-12 h-12 rounded-xl object-cover border border-amber-400 shadow-md shrink-0"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-['Cinzel'] font-bold text-xs text-white truncate">
-                          {user.name}
-                        </h4>
-                        <span className="text-[8px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40">
-                          {user.tier}
-                        </span>
-                      </div>
-                      <div className="text-[10px] text-gray-400 truncate mt-0.5">
-                        {user.company}
-                      </div>
-                      <div className="text-[9px] text-emerald-400 font-mono mt-0.5 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                        <span>Client Verified</span>
+                  {/* User Profile Mini Header with Sign Out Button */}
+                  <div className="p-3 rounded-2xl bg-gradient-to-br from-amber-400/15 via-amber-500/5 to-transparent border border-amber-400/30 flex items-center justify-between gap-3 sticky top-0 bg-[#0a0a0e]/90 backdrop-blur-md z-10">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        referrerPolicy="no-referrer"
+                        className="w-12 h-12 rounded-xl object-cover border border-amber-400 shadow-md shrink-0"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="font-['Cinzel'] font-bold text-xs text-white truncate">
+                            {user.name}
+                          </h4>
+                          <span className="text-[8px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 shrink-0">
+                            {user.tier}
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-gray-400 truncate mt-0.5">
+                          {user.email || user.company}
+                        </div>
+                        <div className="text-[9px] text-emerald-400 font-mono mt-0.5 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                          <span>Signed In</span>
+                        </div>
                       </div>
                     </div>
+
+                    <button
+                      onClick={() => {
+                        logoutUser();
+                        setUserDropdownOpen(false);
+                      }}
+                      className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 hover:text-red-300 transition-colors cursor-pointer shrink-0"
+                      title="Sign Out"
+                      aria-label="Sign Out"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </button>
                   </div>
 
                   {/* Quick Activity Telemetry Counters */}
@@ -453,17 +474,18 @@ export const Navbar: React.FC = () => {
                     ))}
                   </div>
 
-                  {/* Switch Demo / Sign Out Footer */}
-                  <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px]">
+                  {/* Switch Demo / Admin / Sign Out Sticky Footer */}
+                  <div className="pt-2.5 pb-1 border-t border-white/10 flex items-center justify-between text-[11px] sticky bottom-0 bg-[#0a0a0e]/95 backdrop-blur-md z-10 px-1">
                     <button
                       onClick={() => {
-                        setIsAuthModalOpen(true);
+                        playSfx("sparkle");
+                        setActivePage("admin");
                         setUserDropdownOpen(false);
                       }}
-                      className="text-amber-400 hover:underline font-['Cinzel'] flex items-center gap-1 cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 hover:bg-amber-400/20 font-['Cinzel'] font-bold flex items-center gap-1.5 cursor-pointer transition-colors"
                     >
-                      <Zap className="w-3 h-3" />
-                      <span>Switch Demo</span>
+                      <Lock className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Admin Desk</span>
                     </button>
 
                     <button
@@ -471,9 +493,9 @@ export const Navbar: React.FC = () => {
                         logoutUser();
                         setUserDropdownOpen(false);
                       }}
-                      className="text-red-400 hover:underline font-['Cinzel'] flex items-center gap-1 cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 font-['Cinzel'] flex items-center gap-1.5 cursor-pointer transition-colors"
                     >
-                      <LogOut className="w-3 h-3" />
+                      <LogOut className="w-3.5 h-3.5" />
                       <span>Sign Out</span>
                     </button>
                   </div>
@@ -547,30 +569,44 @@ export const Navbar: React.FC = () => {
 
               {/* Mobile User Profile Card */}
               {user ? (
-                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-400/15 to-transparent border border-amber-400/30 flex items-center gap-3">
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    referrerPolicy="no-referrer"
-                    className="w-10 h-10 rounded-xl object-cover border border-amber-400 shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-['Cinzel'] font-bold text-xs text-white truncate">
-                      {user.name}
-                    </div>
-                    <div className="text-[10px] text-amber-300 font-mono truncate">
-                      {user.tier} · {user.company}
+                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-400/15 to-transparent border border-amber-400/30 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <img
+                      src={user.avatar}
+                      alt={user.name}
+                      referrerPolicy="no-referrer"
+                      className="w-10 h-10 rounded-xl object-cover border border-amber-400 shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-['Cinzel'] font-bold text-xs text-white truncate">
+                        {user.name}
+                      </div>
+                      <div className="text-[10px] text-amber-300 font-mono truncate">
+                        {user.tier} · {user.company}
+                      </div>
                     </div>
                   </div>
-                  <button
-                    onClick={() => {
-                      setActivePage("portal");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="px-2.5 py-1 rounded-lg bg-amber-400 text-black text-[10px] font-['Cinzel'] font-bold"
-                  >
-                    Dash
-                  </button>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      onClick={() => {
+                        setActivePage("portal");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="px-2.5 py-1.5 rounded-lg bg-amber-400 text-black text-[10px] font-['Cinzel'] font-bold cursor-pointer"
+                    >
+                      Dash
+                    </button>
+                    <button
+                      onClick={() => {
+                        logoutUser();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="p-1.5 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 text-[10px] font-['Cinzel'] font-bold cursor-pointer hover:bg-red-500/25"
+                      title="Sign Out"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <button
@@ -578,9 +614,9 @@ export const Navbar: React.FC = () => {
                     setIsAuthModalOpen(true);
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full btn-gold-luxury py-2.5 rounded-xl text-xs font-['Cinzel'] font-bold flex items-center justify-center gap-2"
+                  className="w-full btn-gold-luxury py-2.5 rounded-xl text-xs font-['Cinzel'] font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
                 >
-                  <Lock className="w-3.5 h-3.5" />
+                  <User className="w-3.5 h-3.5" />
                   <span>CLIENT PORTAL SIGN IN</span>
                 </button>
               )}
@@ -623,6 +659,7 @@ export const Navbar: React.FC = () => {
                   { label: "Blog & Insights", page: "blog", icon: <BookOpen className="w-4 h-4" /> },
                   { label: "Contact Us", page: "contact", icon: <Phone className="w-4 h-4" /> },
                   { label: "FAQs", page: "faqs", icon: <HelpCircle className="w-4 h-4" /> },
+                  { label: "🔒 Admin Backend (RBAC)", page: "admin", icon: <Lock className="w-4 h-4 text-amber-400" /> },
                 ].map((item) => (
                   <button
                     key={item.page}

@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
 import { useApp } from "../context/AppContext";
-import { PRODUCTS_LIST } from "../data/productsData";
 import { ProductItem } from "../types";
 import {
   ShoppingBag,
@@ -18,7 +17,7 @@ import {
 import confetti from "canvas-confetti";
 
 export const ShopSection: React.FC = () => {
-  const { addToCart, formatPrice, playSfx, showToast } = useApp();
+  const { productsList, addToCart, formatPrice, playSfx, showToast } = useApp();
 
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -34,7 +33,7 @@ export const ShopSection: React.FC = () => {
   ];
 
   const filteredProducts = useMemo(() => {
-    return PRODUCTS_LIST.filter((prod) => {
+    return (productsList || []).filter((prod) => {
       const matchesCat = activeCategory === "all" || prod.categoryKey === activeCategory;
       const matchesSearch =
         prod.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -46,7 +45,7 @@ export const ShopSection: React.FC = () => {
       if (sortBy === "rating") return b.rating - a.rating;
       return (b.badge ? 1 : 0) - (a.badge ? 1 : 0);
     });
-  }, [activeCategory, searchQuery, sortBy]);
+  }, [productsList, activeCategory, searchQuery, sortBy]);
 
   const handleAddToCart = (product: ProductItem, e?: React.MouseEvent) => {
     e?.stopPropagation();

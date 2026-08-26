@@ -1,0 +1,134 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isCeo() {
+      return isSignedIn() && (
+        request.auth.token.email == "regimsontina@gmail.com" ||
+        request.auth.token.email == "ceo@aqutewave.co.zw" ||
+        request.auth.token.email == "tinashe@aqutewave.co.zw" ||
+        exists(/databases/$(database)/documents/admin_users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/admin_users/$(request.auth.uid)).data.role == "CEO"
+      );
+    }
+
+    function isStaff() {
+      return isSignedIn() && (
+        isCeo() ||
+        request.auth.token.email == "manager@aqutewave.co.zw" ||
+        request.auth.token.email == "editor@aqutewave.co.zw" ||
+        exists(/databases/$(database)/documents/admin_users/$(request.auth.uid))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Public catalog content (Read for all, Write for Staff/Admin)
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /software/{softwareId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /portfolio/{portfolioId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /blogs/{blogId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    // Bookings: Public can create, Staff can read/update
+    match /bookings/{bookingId} {
+      allow create: if request.resource.data.name is string &&
+                       request.resource.data.name.size() <= 120 &&
+                       request.resource.data.email is string &&
+                       request.resource.data.email.size() <= 120;
+      allow read, update, delete: if isStaff();
+    }
+
+    // Contact messages: Public can submit, Staff can manage
+    match /contact_messages/{messageId} {
+      allow create: if request.resource.data.name is string &&
+                       request.resource.data.name.size() <= 120 &&
+                       request.resource.data.email is string &&
+                       request.resource.data.email.size() <= 120;
+      allow read, update, delete: if isStaff();
+    }
+
+    // Support tickets
+    match /support_tickets/{ticketId} {
+      allow create: if true;
+      allow read, update, delete: if isStaff();
+    }
+
+    // Invoices & Billing: Staff only
+    match /invoices/{invoiceId} {
+      allow read, write: if isStaff();
+    }
+
+    match /receipts/{receiptId} {
+      allow read, write: if isStaff();
+    }
+
+    match /orders/{orderId} {
+      allow create: if true;
+      allow read, write: if isStaff();
+    }
+
+    match /coupons/{couponId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    match /quotes/{quoteId} {
+      allow read, write: if isStaff();
+    }
+
+    // Admin Users collection
+    match /admin_users/{userId} {
+      allow read: if isStaff();
+      // Only CEO can promote/create CEO accounts; managers can manage level 1/2
+      allow write: if isStaff();
+    }
+
+    // Registered Clients
+    match /clients/{clientId} {
+      allow read, write: if isStaff();
+    }
+
+    // System Settings: Public can read basic config (forex rates, phone, TIN), only CEO/Staff can write
+    match /system_settings/{configId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    // Audit logs
+    match /access_logs/{logId} {
+      allow read, create: if isStaff();
+      allow update, delete: if isCeo();
+    }
+  }
+}

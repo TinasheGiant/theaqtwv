@@ -21,8 +21,8 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     previewAccent: "#D4AF37",
     testimonial: {
       quote: "Aqutewave transformed our retail operations. Our online sales skyrocketed within 3 weeks of launching our new store.",
-      author: "Farai Mataranyika",
-      role: "Managing Director, Apex Luxury",
+      author: "Tinashe R Tinarwo",
+      role: "Director, Aqutewave",
     },
   },
   {

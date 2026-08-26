@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useApp } from "../context/AppContext";
 import { ServiceCategory, ServiceItem } from "../types";
-import { SERVICES_LIST } from "../data/servicesData";
 import {
   Sparkles,
   Search,
@@ -18,6 +17,7 @@ import {
 
 export const ServicesSection: React.FC = () => {
   const {
+    servicesList,
     formatPrice,
     openBookingWithService,
     setSelectedServiceDetail,
@@ -39,7 +39,7 @@ export const ServicesSection: React.FC = () => {
   ];
 
   const filteredServices = useMemo(() => {
-    return SERVICES_LIST.filter((item) => {
+    return (servicesList || []).filter((item) => {
       const matchesCat = activeCategory === "all" || item.category === activeCategory;
       const matchesSearch =
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -52,7 +52,7 @@ export const ServicesSection: React.FC = () => {
       // Featured: highlighted first
       return (b.highlighted ? 1 : 0) - (a.highlighted ? 1 : 0);
     });
-  }, [activeCategory, searchQuery, sortBy]);
+  }, [servicesList, activeCategory, searchQuery, sortBy]);
 
   return (
     <section className="py-20 px-4 sm:px-6 diamond-mesh relative" aria-label="Services and Pricelist">

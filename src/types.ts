@@ -16,8 +16,124 @@ export type NavPage =
   | "refund"
   | "checkout"
   | "payment"
+  | "payment-gateway"
   | "payment-verify"
-  | "portal";
+  | "portal"
+  | "admin";
+
+export type AdminRole = "CEO" | "MANAGER" | "EDITOR";
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  role: AdminRole;
+  avatar: string;
+  title: string;
+  department: string;
+  phone?: string;
+  lastLogin: string;
+  status: "active" | "suspended" | "pending";
+  level: 1 | 2 | 3; // 3: CEO (Super Super Admin), 2: Manager (Admin), 1: Editor
+}
+
+export type AdminModuleId =
+  | "dashboard"
+  | "services"
+  | "shop"
+  | "blogs"
+  | "portfolio"
+  | "software-erp"
+  | "bookings"
+  | "orders"
+  | "coupons"
+  | "memberships"
+  | "billing"
+  | "invoices"
+  | "receipts"
+  | "quotations"
+  | "users"
+  | "role-management"
+  | "support"
+  | "contacts"
+  | "settings"
+  | "logs";
+
+export interface AdminCoupon {
+  id: string;
+  code: string;
+  discountPercentage: number;
+  maxUses: number;
+  usedCount: number;
+  expiryDate: string;
+  status: "active" | "expired" | "disabled";
+  minOrderUSD?: number;
+}
+
+export interface AdminSupportTicket {
+  id: string;
+  ticketNumber: string;
+  clientName: string;
+  clientEmail: string;
+  subject: string;
+  message: string;
+  category: "Billing" | "Technical Bug" | "Service Inquiry" | "Hosting & Domain" | "Emergency";
+  priority: "Critical" | "High" | "Medium" | "Low";
+  status: "Open" | "In Progress" | "Resolved" | "Closed";
+  assignedTo?: string;
+  createdAt: string;
+  updatedAt: string;
+  responses?: Array<{
+    id: string;
+    sender: "client" | "staff";
+    senderName: string;
+    text: string;
+    timestamp: string;
+  }>;
+}
+
+export interface AdminContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+  projectBudget?: string;
+  status: "unread" | "read" | "replied" | "archived";
+  date: string;
+}
+
+export interface AdminAccessLog {
+  id: string;
+  adminId: string;
+  adminName: string;
+  adminRole: AdminRole;
+  action: string;
+  details: string;
+  targetModule: string;
+  ipAddress: string;
+  status: "allowed" | "denied" | "warning";
+  timestamp: string;
+}
+
+export interface AdminSystemSettings {
+  siteName: string;
+  contactEmail: string;
+  supportPhone: string;
+  officeAddress: string;
+  zimraTinNumber: string;
+  taxRatePercent: number;
+  maintenanceMode: boolean;
+  allowPublicRegistrations: boolean;
+  currencyUSDToZWL: number;
+  currencyUSDToZAR: number;
+  ecoCashMerchantNumber: string;
+  innBucksAccountCode: string;
+  bankAccountDetails: string;
+  emailNotificationsEnabled: boolean;
+  lastBackupDate: string;
+}
 
 export type PaymentMethodType = "ecocash" | "bank" | "innbucks" | "card";
 
@@ -112,7 +228,8 @@ export interface UserMessage {
   senderRole?: string;
   senderAvatar?: string;
   text: string;
-  time: string;
+  time?: string;
+  timestamp?: string;
   attachmentName?: string;
 }
 
@@ -192,7 +309,8 @@ export interface ProductItem {
   name: string;
   price: number;
   originalPrice?: number;
-  icon: string;
+  icon?: string;
+  image?: string;
   rating?: number;
   reviewsCount?: number;
   inStock?: boolean;
@@ -204,6 +322,7 @@ export interface ProductItem {
   basePrice?: number; // original 100% price
   adjustedPrice?: number; // payable amount after optional fee adjustment (min 25%)
   feePercentage?: number; // percentage of original fee (e.g. 100, 50, 25)
+  appliedFeePercentage?: number;
   turnaroundTime?: string;
   billingCycle?: "monthly" | "annual" | "one-time";
   customNotes?: string;

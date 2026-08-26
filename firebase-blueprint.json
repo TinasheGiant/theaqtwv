@@ -1,0 +1,256 @@
+{
+  "entities": {
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Administrative user credentials and RBAC tier",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 120 },
+        "email": { "type": "string", "maxLength": 120 },
+        "passwordHash": { "type": "string", "maxLength": 200 },
+        "role": { "type": "string", "enum": ["CEO", "MANAGER", "EDITOR"] },
+        "title": { "type": "string", "maxLength": 150 },
+        "department": { "type": "string", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 50 },
+        "avatar": { "type": "string", "maxLength": 500 },
+        "lastLogin": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["active", "suspended"] },
+        "level": { "type": "number" }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "Service": {
+      "title": "Service",
+      "description": "Digital service and pricing catalog item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "priceUSD": { "type": "number" },
+        "priceZWL": { "type": "number" },
+        "features": { "type": "array" },
+        "deliverables": { "type": "array" },
+        "deliveryTime": { "type": "string", "maxLength": 100 },
+        "popular": { "type": "boolean" },
+        "icon": { "type": "string", "maxLength": 100 }
+      },
+      "required": ["id", "title", "priceUSD", "category"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Shop product or digital merchandise",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string", "maxLength": 100 },
+        "price": { "type": "number" },
+        "description": { "type": "string", "maxLength": 1000 },
+        "inStock": { "type": "boolean" },
+        "rating": { "type": "number" },
+        "image": { "type": "string", "maxLength": 500 },
+        "features": { "type": "array" }
+      },
+      "required": ["id", "name", "price"]
+    },
+    "SoftwareItem": {
+      "title": "SoftwareItem",
+      "description": "Ready-to-deploy software product or ERP solution",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string", "maxLength": 100 },
+        "priceUSD": { "type": "number" },
+        "priceZWL": { "type": "number" },
+        "description": { "type": "string", "maxLength": 1000 },
+        "features": { "type": "array" },
+        "demoUrl": { "type": "string", "maxLength": 300 },
+        "metrics": { "type": "string", "maxLength": 200 }
+      },
+      "required": ["id", "name", "priceUSD"]
+    },
+    "PortfolioItem": {
+      "title": "PortfolioItem",
+      "description": "Case study and completed client project",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "client": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string", "maxLength": 100 },
+        "categoryKey": { "type": "string", "maxLength": 50 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "results": { "type": "string", "maxLength": 500 },
+        "technologies": { "type": "array" },
+        "year": { "type": "string", "maxLength": 20 }
+      },
+      "required": ["id", "title", "client"]
+    },
+    "BlogPost": {
+      "title": "BlogPost",
+      "description": "Published article and tech insight",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 250 },
+        "slug": { "type": "string", "maxLength": 250 },
+        "category": { "type": "string", "maxLength": 100 },
+        "date": { "type": "string", "maxLength": 50 },
+        "readTime": { "type": "string", "maxLength": 50 },
+        "excerpt": { "type": "string", "maxLength": 1000 },
+        "author": { "type": "string", "maxLength": 120 },
+        "tags": { "type": "array" },
+        "content": { "type": "array" }
+      },
+      "required": ["id", "title", "excerpt"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "Client discovery session or consultation appointment",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 120 },
+        "email": { "type": "string", "maxLength": 120 },
+        "phone": { "type": "string", "maxLength": 50 },
+        "serviceId": { "type": "string", "maxLength": 100 },
+        "serviceName": { "type": "string", "maxLength": 200 },
+        "date": { "type": "string", "maxLength": 50 },
+        "timeSlot": { "type": "string", "maxLength": 50 },
+        "projectDescription": { "type": "string", "maxLength": 2000 },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "completed", "cancelled"] },
+        "notes": { "type": "string", "maxLength": 1000 }
+      },
+      "required": ["id", "name", "email", "date"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "Fiscal invoice with ZIMRA compliance details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "invoiceNumber": { "type": "string", "maxLength": 80 },
+        "clientName": { "type": "string", "maxLength": 150 },
+        "clientEmail": { "type": "string", "maxLength": 120 },
+        "description": { "type": "string", "maxLength": 500 },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["Paid", "Pending", "Overdue", "Draft"] },
+        "issueDate": { "type": "string", "maxLength": 50 },
+        "dueDate": { "type": "string", "maxLength": 50 },
+        "zimraQr": { "type": "string", "maxLength": 500 },
+        "vatAmount": { "type": "number" }
+      },
+      "required": ["id", "invoiceNumber", "amount", "status"]
+    },
+    "SupportTicket": {
+      "title": "SupportTicket",
+      "description": "Client support helpdesk ticket",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "ticketNumber": { "type": "string", "maxLength": 50 },
+        "clientName": { "type": "string", "maxLength": 150 },
+        "clientEmail": { "type": "string", "maxLength": 120 },
+        "subject": { "type": "string", "maxLength": 250 },
+        "message": { "type": "string", "maxLength": 3000 },
+        "category": { "type": "string", "maxLength": 100 },
+        "priority": { "type": "string", "enum": ["Low", "Medium", "High", "Critical"] },
+        "status": { "type": "string", "enum": ["Open", "In Progress", "Resolved", "Closed"] },
+        "assignedTo": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": "string", "maxLength": 80 },
+        "responses": { "type": "array" }
+      },
+      "required": ["id", "ticketNumber", "subject", "status"]
+    },
+    "ContactMessage": {
+      "title": "ContactMessage",
+      "description": "Lead and inquiry from contact forms",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 120 },
+        "email": { "type": "string", "maxLength": 120 },
+        "phone": { "type": "string", "maxLength": 50 },
+        "subject": { "type": "string", "maxLength": 200 },
+        "message": { "type": "string", "maxLength": 3000 },
+        "projectBudget": { "type": "string", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["unread", "read", "replied"] },
+        "date": { "type": "string", "maxLength": 80 }
+      },
+      "required": ["id", "name", "email", "message"]
+    },
+    "SystemSettings": {
+      "title": "SystemSettings",
+      "description": "Global operational settings, fiscal rates, and payment parameters",
+      "type": "object",
+      "properties": {
+        "siteName": { "type": "string", "maxLength": 150 },
+        "contactEmail": { "type": "string", "maxLength": 120 },
+        "supportPhone": { "type": "string", "maxLength": 50 },
+        "officeAddress": { "type": "string", "maxLength": 300 },
+        "zimraTinNumber": { "type": "string", "maxLength": 80 },
+        "taxRatePercent": { "type": "number" },
+        "maintenanceMode": { "type": "boolean" },
+        "allowPublicRegistrations": { "type": "boolean" },
+        "currencyUSDToZWL": { "type": "number" },
+        "currencyUSDToZAR": { "type": "number" },
+        "ecoCashMerchantNumber": { "type": "string", "maxLength": 80 },
+        "innBucksAccountCode": { "type": "string", "maxLength": 80 },
+        "bankAccountDetails": { "type": "string", "maxLength": 300 },
+        "emailNotificationsEnabled": { "type": "boolean" },
+        "lastBackupDate": { "type": "string", "maxLength": 80 }
+      },
+      "required": ["siteName", "contactEmail", "currencyUSDToZWL"]
+    }
+  },
+  "firestore": {
+    "/admin_users/{userId}": {
+      "schema": "AdminUser",
+      "description": "Administrative user credentials, roles and levels"
+    },
+    "/services/{serviceId}": {
+      "schema": "Service",
+      "description": "Public and admin digital services catalog"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Public and admin e-commerce shop merchandise"
+    },
+    "/software/{softwareId}": {
+      "schema": "SoftwareItem",
+      "description": "Software products, SaaS, and ERP solutions"
+    },
+    "/portfolio/{portfolioId}": {
+      "schema": "PortfolioItem",
+      "description": "Portfolio case studies and impact metrics"
+    },
+    "/blogs/{blogId}": {
+      "schema": "BlogPost",
+      "description": "Insights, engineering blogs, and articles"
+    },
+    "/bookings/{bookingId}": {
+      "schema": "Booking",
+      "description": "Client discovery meetings and project consultations"
+    },
+    "/invoices/{invoiceId}": {
+      "schema": "Invoice",
+      "description": "Client fiscal invoices and billing records"
+    },
+    "/support_tickets/{ticketId}": {
+      "schema": "SupportTicket",
+      "description": "Helpdesk support tickets and responses"
+    },
+    "/contact_messages/{messageId}": {
+      "schema": "ContactMessage",
+      "description": "Incoming client contact inquiries and quotes"
+    },
+    "/system_settings/{configId}": {
+      "schema": "SystemSettings",
+      "description": "Platform settings, ZIMRA TIN, and exchange rates"
+    }
+  }
+}

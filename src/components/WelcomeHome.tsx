@@ -124,18 +124,18 @@ export const WelcomeHome: React.FC = () => {
   const clientHighlights = [
     {
       quote: "Aqutewave delivered our enterprise e-commerce platform in 5 days. Their Zimbabwe payment integration and 1-year free support are unmatched.",
-      author: "Farai Mataranyika",
-      role: "Director, Apex Retail Zimbabwe",
+      author: "Tinashe R Tinarwo",
+      role: "Director, Aqutewave Zimbabwe",
     },
     {
       quote: "The custom offline-first ERP software transformed our 3 warehouse branches in Harare. Inventory tracking and invoice receipts run flawlessly.",
-      author: "Nyasha Chiweshe",
-      role: "Operations Head, ZimTrade Logistics",
+      author: "Unknown",
+      role: "Operations Head Logistics",
     },
     {
       quote: "Their branding kit and 3D architectural mockups gave our commercial property development the luxury edge we needed for investors.",
-      author: "David Thorne",
-      role: "Managing Partner, Highland Crest",
+      author: "Unknown",
+      role: "Managing Partner, ITMwave",
     },
   ];
 
