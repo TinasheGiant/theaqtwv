@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext";
+import { ServiceItem } from "../types";
 import {
   Calendar,
   CheckCircle2,

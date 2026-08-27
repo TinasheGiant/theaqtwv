@@ -27,13 +27,26 @@ import {
 } from "firebase/firestore";
 import firebaseConfig from "../../firebase-applet-config.json";
 
+// Resolved config supporting both built-in config and custom environment overrides for external hostings
+const env = typeof import.meta !== "undefined" ? (import.meta as any).env || {} : {};
+
+const resolvedFirebaseConfig = {
+  projectId: env.VITE_FIREBASE_PROJECT_ID || (firebaseConfig as any).projectId || "aqutewave",
+  appId: env.VITE_FIREBASE_APP_ID || (firebaseConfig as any).appId,
+  apiKey: env.VITE_FIREBASE_API_KEY || (firebaseConfig as any).apiKey,
+  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN || (firebaseConfig as any).authDomain || "aqutewave.firebaseapp.com",
+  firestoreDatabaseId: env.VITE_FIREBASE_DATABASE_ID || (firebaseConfig as any).firestoreDatabaseId || "ai-studio-aqutewavedigital-b9874126-d788-4c2e-b69d-f1b303b0befc",
+  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET || (firebaseConfig as any).storageBucket,
+  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID || (firebaseConfig as any).messagingSenderId,
+};
+
 // Initialize Firebase App
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const app = !getApps().length ? initializeApp(resolvedFirebaseConfig) : getApp();
 
 // Initialize Firestore with specific database ID
 export const db = getFirestore(
   app,
-  (firebaseConfig as any).firestoreDatabaseId || "(default)"
+  resolvedFirebaseConfig.firestoreDatabaseId || "(default)"
 );
 
 // Initialize Firebase Authentication
