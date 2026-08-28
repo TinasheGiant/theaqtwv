@@ -32,7 +32,7 @@ export const AdminContentServicesModule: React.FC = () => {
   // Form State
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState<number>(100);
-  const [category, setCategory] = useState<"web" | "branding" | "software" | "marketing">("web");
+  const [category, setCategory] = useState<"web" | "design" | "software" | "marketing">("web");
   const [description, setDescription] = useState("");
   const [featuresStr, setFeaturesStr] = useState("");
   const [turnaroundTime, setTurnaroundTime] = useState("3–5 business days");

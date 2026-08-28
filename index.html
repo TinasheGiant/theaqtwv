@@ -55,8 +55,27 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   </head>
-  <body class="bg-[#050505] text-gray-100 antialiased overflow-x-hidden min-h-screen selection:bg-amber-500/30 selection:text-amber-300">
-    <div id="root"></div>
+  <body style="margin: 0; padding: 0; background-color: #050608; color: #ffffff;" class="bg-[#050505] text-gray-100 antialiased overflow-x-hidden min-h-screen selection:bg-amber-500/30 selection:text-amber-300">
+    <div id="root">
+      <!-- Instant pre-loader preventing blank white screen before React JS bundle hydrates -->
+      <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #050608; color: #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; text-align: center; padding: 20px;">
+        <div style="width: 56px; height: 56px; border-radius: 16px; border: 1px solid rgba(212, 175, 55, 0.4); display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(0,0,0,0.8) 100%); margin-bottom: 24px; box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);">
+          <div style="width: 24px; height: 24px; border: 2px solid #d4af37; border-top-color: transparent; border-radius: 50%; animation: aqutewave-spin 0.8s linear infinite;"></div>
+        </div>
+        <div style="font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: #d4af37; font-weight: 700; margin-bottom: 6px;">AQUTEWAVE TECHNOLOGIES</div>
+        <div style="font-size: 13px; color: #9ca3af; max-width: 320px;">Loading digital portal & systems...</div>
+        <noscript>
+          <div style="margin-top: 20px; padding: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; font-size: 12px; color: #f87171;">
+            JavaScript is required to run Aqutewave Portal. Please enable JavaScript in your browser or call +263 78 544 5162.
+          </div>
+        </noscript>
+      </div>
+      <style>
+        @keyframes aqutewave-spin {
+          to { transform: rotate(360deg); }
+        }
+      </style>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

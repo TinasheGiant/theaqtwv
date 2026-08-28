@@ -52,7 +52,7 @@ export const AdminContentShopModule: React.FC = () => {
     setEditingProduct(p);
     setName(p.name);
     setCategory(p.category);
-    setCategoryKey(p.categoryKey);
+    setCategoryKey((p.categoryKey as any) || "merch");
     setPrice(p.price);
     setOriginalPrice(p.originalPrice || p.price + 5);
     setIcon(p.icon || "📦");

@@ -942,7 +942,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
     }
 
-    const newLevel = newRole === "CEO" ? 3 : newRole === "MANAGER" ? 2 : 1;
+    const newLevel: 1 | 2 | 3 = newRole === "CEO" ? 3 : newRole === "MANAGER" ? 2 : 1;
     const updated = {
       ...target,
       role: newRole,

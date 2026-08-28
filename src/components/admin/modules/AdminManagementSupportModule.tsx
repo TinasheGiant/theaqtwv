@@ -171,11 +171,19 @@ export const AdminManagementSupportModule: React.FC = () => {
 
                 {/* Messages Thread */}
                 <div className="py-4 space-y-3 max-h-[350px] overflow-y-auto scrollbar-thin">
-                  {selectedTicket.messages.map((m) => (
+                  {(selectedTicket.responses || [
+                    {
+                      id: "init",
+                      sender: "client",
+                      senderName: selectedTicket.clientName,
+                      text: selectedTicket.message,
+                      timestamp: selectedTicket.createdAt,
+                    },
+                  ]).map((m) => (
                     <div
                       key={m.id}
                       className={`p-3.5 rounded-2xl max-w-xl text-xs ${
-                        m.senderRole === "client"
+                        m.sender === "client"
                           ? "bg-white/[0.04] border border-white/10 text-gray-200 mr-auto"
                           : "bg-amber-400/15 border border-amber-400/30 text-amber-100 ml-auto"
                       }`}
@@ -184,7 +192,7 @@ export const AdminManagementSupportModule: React.FC = () => {
                         <span className="font-bold text-white">{m.senderName}</span>
                         <span>{m.timestamp}</span>
                       </div>
-                      <div className="leading-relaxed whitespace-pre-wrap">{m.message}</div>
+                      <div className="leading-relaxed whitespace-pre-wrap">{m.text}</div>
                     </div>
                   ))}
                 </div>
