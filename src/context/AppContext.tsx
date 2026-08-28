@@ -561,140 +561,181 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     const initializeFirestoreSync = async () => {
       try {
-        // Initial check and auto-seed if needed
-        await seedFirestoreDatabase(false);
+        // Initial background check and auto-seed if needed
+        seedFirestoreDatabase(false).catch(() => {});
         setIsFirestoreSynced(true);
 
+        if (!db) return;
+
         // 1. Services
-        const unsubServices = onSnapshot(
-          collection(db, COLLECTIONS.SERVICES),
-          (snapshot) => {
-            if (!snapshot.empty) {
-              const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as ServiceItem));
-              setServicesList(items);
-            }
-          },
-          (err) => handleFirestoreError(err, OperationType.LIST, "services")
-        );
-        unsubs.push(unsubServices);
+        try {
+          const unsubServices = onSnapshot(
+            collection(db, COLLECTIONS.SERVICES),
+            (snapshot) => {
+              if (!snapshot.empty) {
+                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as ServiceItem));
+                setServicesList(items);
+              }
+            },
+            (err) => handleFirestoreError(err, OperationType.LIST, "services")
+          );
+          unsubs.push(unsubServices);
+        } catch (e) {
+          console.warn("Notice subscribing to services:", e);
+        }
 
         // 2. Products
-        const unsubProducts = onSnapshot(
-          collection(db, COLLECTIONS.PRODUCTS),
-          (snapshot) => {
-            if (!snapshot.empty) {
-              const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as unknown as ProductItem));
-              setProductsList(items);
-            }
-          },
-          (err) => handleFirestoreError(err, OperationType.LIST, "products")
-        );
-        unsubs.push(unsubProducts);
+        try {
+          const unsubProducts = onSnapshot(
+            collection(db, COLLECTIONS.PRODUCTS),
+            (snapshot) => {
+              if (!snapshot.empty) {
+                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as unknown as ProductItem));
+                setProductsList(items);
+              }
+            },
+            (err) => handleFirestoreError(err, OperationType.LIST, "products")
+          );
+          unsubs.push(unsubProducts);
+        } catch (e) {
+          console.warn("Notice subscribing to products:", e);
+        }
 
         // 3. Blogs
-        const unsubBlogs = onSnapshot(
-          collection(db, COLLECTIONS.BLOGS),
-          (snapshot) => {
-            if (!snapshot.empty) {
-              const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as BlogPost));
-              setBlogsList(items);
-            }
-          },
-          (err) => handleFirestoreError(err, OperationType.LIST, "blogs")
-        );
-        unsubs.push(unsubBlogs);
+        try {
+          const unsubBlogs = onSnapshot(
+            collection(db, COLLECTIONS.BLOGS),
+            (snapshot) => {
+              if (!snapshot.empty) {
+                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as BlogPost));
+                setBlogsList(items);
+              }
+            },
+            (err) => handleFirestoreError(err, OperationType.LIST, "blogs")
+          );
+          unsubs.push(unsubBlogs);
+        } catch (e) {
+          console.warn("Notice subscribing to blogs:", e);
+        }
 
         // 4. Portfolio
-        const unsubPortfolio = onSnapshot(
-          collection(db, COLLECTIONS.PORTFOLIO),
-          (snapshot) => {
-            if (!snapshot.empty) {
-              const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as PortfolioItem));
-              setPortfolioList(items);
-            }
-          },
-          (err) => handleFirestoreError(err, OperationType.LIST, "portfolio")
-        );
-        unsubs.push(unsubPortfolio);
+        try {
+          const unsubPortfolio = onSnapshot(
+            collection(db, COLLECTIONS.PORTFOLIO),
+            (snapshot) => {
+              if (!snapshot.empty) {
+                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as PortfolioItem));
+                setPortfolioList(items);
+              }
+            },
+            (err) => handleFirestoreError(err, OperationType.LIST, "portfolio")
+          );
+          unsubs.push(unsubPortfolio);
+        } catch (e) {
+          console.warn("Notice subscribing to portfolio:", e);
+        }
 
         // 5. Admin Users & Roles
-        const unsubAdminUsers = onSnapshot(
-          collection(db, COLLECTIONS.ADMIN_USERS),
-          (snapshot) => {
-            if (!snapshot.empty) {
-              const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as AdminUser & { passwordHash: string }));
-              // Filter out duplicate email keys if any
-              const unique = Array.from(new Map(items.map((u) => [u.email.toLowerCase(), u])).values());
-              setAdminUsersList(unique);
-            }
-          },
-          (err) => handleFirestoreError(err, OperationType.LIST, "admin_users")
-        );
-        unsubs.push(unsubAdminUsers);
+        try {
+          const unsubAdminUsers = onSnapshot(
+            collection(db, COLLECTIONS.ADMIN_USERS),
+            (snapshot) => {
+              if (!snapshot.empty) {
+                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as AdminUser & { passwordHash: string }));
+                const unique = Array.from(new Map(items.map((u) => [u.email.toLowerCase(), u])).values());
+                setAdminUsersList(unique);
+              }
+            },
+            (err) => handleFirestoreError(err, OperationType.LIST, "admin_users")
+          );
+          unsubs.push(unsubAdminUsers);
+        } catch (e) {
+          console.warn("Notice subscribing to admin_users:", e);
+        }
 
         // 6. Support Tickets
-        const unsubTickets = onSnapshot(
-          collection(db, COLLECTIONS.SUPPORT_TICKETS),
-          (snapshot) => {
-            if (!snapshot.empty) {
-              const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as AdminSupportTicket));
-              setSupportTickets(items);
-            }
-          },
-          (err) => handleFirestoreError(err, OperationType.LIST, "support_tickets")
-        );
-        unsubs.push(unsubTickets);
+        try {
+          const unsubTickets = onSnapshot(
+            collection(db, COLLECTIONS.SUPPORT_TICKETS),
+            (snapshot) => {
+              if (!snapshot.empty) {
+                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as AdminSupportTicket));
+                setSupportTickets(items);
+              }
+            },
+            (err) => handleFirestoreError(err, OperationType.LIST, "support_tickets")
+          );
+          unsubs.push(unsubTickets);
+        } catch (e) {
+          console.warn("Notice subscribing to support_tickets:", e);
+        }
 
         // 7. Contact Messages
-        const unsubMessages = onSnapshot(
-          collection(db, COLLECTIONS.CONTACT_MESSAGES),
-          (snapshot) => {
-            if (!snapshot.empty) {
-              const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as AdminContactMessage));
-              setContactMessages(items);
-            }
-          },
-          (err) => handleFirestoreError(err, OperationType.LIST, "contact_messages")
-        );
-        unsubs.push(unsubMessages);
+        try {
+          const unsubMessages = onSnapshot(
+            collection(db, COLLECTIONS.CONTACT_MESSAGES),
+            (snapshot) => {
+              if (!snapshot.empty) {
+                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as AdminContactMessage));
+                setContactMessages(items);
+              }
+            },
+            (err) => handleFirestoreError(err, OperationType.LIST, "contact_messages")
+          );
+          unsubs.push(unsubMessages);
+        } catch (e) {
+          console.warn("Notice subscribing to contact_messages:", e);
+        }
 
         // 8. System Settings
-        const unsubSettings = onSnapshot(
-          doc(db, COLLECTIONS.SYSTEM_SETTINGS, "config"),
-          (docSnap) => {
-            if (docSnap.exists()) {
-              setSystemSettings(docSnap.data() as AdminSystemSettings);
-            }
-          },
-          (err) => handleFirestoreError(err, OperationType.GET, "system_settings/config")
-        );
-        unsubs.push(unsubSettings);
+        try {
+          const unsubSettings = onSnapshot(
+            doc(db, COLLECTIONS.SYSTEM_SETTINGS, "config"),
+            (docSnap) => {
+              if (docSnap.exists()) {
+                setSystemSettings(docSnap.data() as AdminSystemSettings);
+              }
+            },
+            (err) => handleFirestoreError(err, OperationType.GET, "system_settings/config")
+          );
+          unsubs.push(unsubSettings);
+        } catch (e) {
+          console.warn("Notice subscribing to system_settings:", e);
+        }
 
         // 9. Coupons
-        const unsubCoupons = onSnapshot(
-          collection(db, COLLECTIONS.COUPONS),
-          (snapshot) => {
-            if (!snapshot.empty) {
-              const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as AdminCoupon));
-              setCouponsList(items);
-            }
-          },
-          (err) => handleFirestoreError(err, OperationType.LIST, "coupons")
-        );
-        unsubs.push(unsubCoupons);
+        try {
+          const unsubCoupons = onSnapshot(
+            collection(db, COLLECTIONS.COUPONS),
+            (snapshot) => {
+              if (!snapshot.empty) {
+                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as AdminCoupon));
+                setCouponsList(items);
+              }
+            },
+            (err) => handleFirestoreError(err, OperationType.LIST, "coupons")
+          );
+          unsubs.push(unsubCoupons);
+        } catch (e) {
+          console.warn("Notice subscribing to coupons:", e);
+        }
 
         // 10. Clients
-        const unsubClients = onSnapshot(
-          collection(db, COLLECTIONS.CLIENTS),
-          (snapshot) => {
-            if (!snapshot.empty) {
-              const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as UserProfile));
-              setRegisteredClientsList(items);
-            }
-          },
-          (err) => handleFirestoreError(err, OperationType.LIST, "clients")
-        );
-        unsubs.push(unsubClients);
+        try {
+          const unsubClients = onSnapshot(
+            collection(db, COLLECTIONS.CLIENTS),
+            (snapshot) => {
+              if (!snapshot.empty) {
+                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as UserProfile));
+                setRegisteredClientsList(items);
+              }
+            },
+            (err) => handleFirestoreError(err, OperationType.LIST, "clients")
+          );
+          unsubs.push(unsubClients);
+        } catch (e) {
+          console.warn("Notice subscribing to clients:", e);
+        }
       } catch (err) {
         console.warn("Firestore listener initialization notice:", err);
       }
