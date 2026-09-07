@@ -144,15 +144,6 @@ export const ClientPortalPage: React.FC = () => {
               <span>SIGN IN / ENTER ACCESS PIN</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-
-            <button
-              onClick={() => {
-                loginAsDemo(DEMO_PROFILES[0].id);
-              }}
-              className="w-full btn-outline-luxury py-2.5 rounded-xl text-xs text-amber-300 hover:bg-amber-400/10 cursor-pointer"
-            >
-              Load Verified Demo Account (Apex Retailers Ltd)
-            </button>
           </div>
         </div>
       </div>
@@ -1100,7 +1091,7 @@ export const ClientPortalPage: React.FC = () => {
                 Client Profile & Entity Credentials
               </h2>
               <p className="text-xs text-gray-400 mt-1">
-                Manage company registration details, Harare headquarters contacts, and switch between client test identities.
+                Manage company registration details, Harare headquarters contacts, and active portal security credentials.
               </p>
             </div>
 
@@ -1174,56 +1165,22 @@ export const ClientPortalPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Demo Switcher & Account Tier */}
-              <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-amber-500/20 space-y-6">
+              {/* Account Session Actions */}
+              <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-amber-500/20 space-y-4">
                 <div>
                   <h3 className="font-['Cinzel'] font-bold text-base text-white">
-                    Switch Client Perspective
+                    Account Security & Session
                   </h3>
                   <p className="text-xs text-gray-400 mt-1">
-                    Select a different client persona to inspect different retainer packages and milestone states:
+                    Manage active portal session and compliance credentials.
                   </p>
                 </div>
 
-                <div className="space-y-3">
-                  {DEMO_PROFILES.map((profile) => (
-                    <button
-                      key={profile.id}
-                      onClick={() => loginAsDemo(profile.id)}
-                      className={`w-full p-3.5 rounded-2xl border transition-all text-left flex items-center gap-3.5 cursor-pointer ${
-                        user.id === profile.id
-                          ? "bg-amber-400/15 border-amber-400"
-                          : "bg-white/[0.02] border-white/10 hover:border-amber-400/40"
-                      }`}
-                    >
-                      <img
-                        src={profile.avatar}
-                        alt={profile.name}
-                        referrerPolicy="no-referrer"
-                        className="w-10 h-10 rounded-xl object-cover border border-amber-400/40"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <span className="font-['Cinzel'] font-bold text-xs text-white">
-                            {profile.name}
-                          </span>
-                          <span className="text-[9px] font-mono text-amber-300 font-bold px-2 py-0.5 rounded-full bg-amber-400/10">
-                            {profile.tier}
-                          </span>
-                        </div>
-                        <div className="text-[11px] text-gray-400 truncate mt-0.5 font-mono">
-                          {profile.company}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-
-                <div className="pt-4 border-t border-white/10 flex justify-between items-center text-xs">
-                  <span className="text-gray-400">Want to end this session?</span>
+                <div className="pt-2 flex justify-between items-center text-xs">
+                  <span className="text-gray-400">Authenticated as: <strong className="text-white font-mono">{user.email || user.name}</strong></span>
                   <button
                     onClick={logoutUser}
-                    className="text-red-400 hover:underline font-['Cinzel'] font-bold cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 hover:bg-red-500/25 font-['Cinzel'] font-bold cursor-pointer transition-colors"
                   >
                     Sign Out
                   </button>

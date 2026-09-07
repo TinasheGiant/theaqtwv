@@ -14,6 +14,7 @@ import {
   Globe,
   Sliders,
 } from "lucide-react";
+import { BrandAssetsFaviconCrud } from "./BrandAssetsFaviconCrud";
 
 export const AdminManagementSettingsModule: React.FC = () => {
   const { systemSettings, updateSystemSettings, showToast, playSfx } = useApp();
@@ -69,10 +70,13 @@ export const AdminManagementSettingsModule: React.FC = () => {
             System & Enterprise Configuration
           </h2>
           <p className="text-xs text-gray-400 font-light">
-            Configure multi-currency forex exchange rates, ZIMRA VAT %, payment gateway merchant credentials, and global maintenance switches.
+            Manage your brand logo, favicon CRUD, multi-currency forex exchange rates, ZIMRA VAT %, and payment gateway merchant credentials.
           </p>
         </div>
       </div>
+
+      {/* BRAND ASSETS & FAVICON CRUD STUDIO */}
+      <BrandAssetsFaviconCrud />
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Company Identity & Contact */}

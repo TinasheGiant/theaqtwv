@@ -36,7 +36,7 @@ export const AuthModal: React.FC = () => {
     showToast,
   } = useApp();
 
-  const [activeTab, setActiveTab] = useState<"signin" | "register" | "pin" | "demo">("signin");
+  const [activeTab, setActiveTab] = useState<"signin" | "register" | "pin">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -111,7 +111,7 @@ export const AuthModal: React.FC = () => {
     e.preventDefault();
     setAuthError(null);
     if (!pinCode) {
-      showToast("Please enter your project access PIN (Try DEMO-2026).");
+      showToast("Please enter your project access PIN.");
       return;
     }
     if (pinCode.toUpperCase().includes("DEMO") || pinCode.toUpperCase().includes("AQW")) {
@@ -200,21 +200,6 @@ export const AuthModal: React.FC = () => {
               }`}
             >
               PIN Ref
-            </button>
-            <button
-              onClick={() => {
-                playSfx("click");
-                setActiveTab("demo");
-                setAuthError(null);
-              }}
-              className={`flex-1 py-1.5 rounded-xl text-xs font-['Cinzel'] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                activeTab === "demo"
-                  ? "bg-amber-400 text-black shadow-sm"
-                  : "text-amber-300 hover:text-white bg-amber-400/10"
-              }`}
-            >
-              <Zap className="w-3 h-3 text-amber-400" />
-              <span>Demo</span>
             </button>
           </div>
         </div>
@@ -309,17 +294,6 @@ export const AuthModal: React.FC = () => {
                   <input type="checkbox" defaultChecked className="rounded accent-amber-400" />
                   <span>Remember on this device</span>
                 </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail("tinashe@apexretail.co.zw");
-                    setPassword("apex@demo2026");
-                    showToast("Pre-filled demo credentials!");
-                  }}
-                  className="text-amber-400 hover:underline"
-                >
-                  Fill demo email
-                </button>
               </div>
 
               <button
@@ -576,7 +550,7 @@ export const AuthModal: React.FC = () => {
               <div>
                 <input
                   type="text"
-                  placeholder="e.g. DEMO-2026 or AQW-8492"
+                  placeholder="e.g. AQW-8492 or PIN-4910"
                   value={pinCode}
                   onChange={(e) => setPinCode(e.target.value)}
                   className="w-full bg-black/60 border border-amber-500/40 focus:border-amber-400 rounded-2xl px-4 py-3.5 text-center text-sm font-mono tracking-widest text-amber-300 placeholder-gray-600 focus:outline-none uppercase"
@@ -590,60 +564,7 @@ export const AuthModal: React.FC = () => {
                 <span>UNLOCK PROJECT WORKSPACE</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setPinCode("DEMO-2026");
-                  loginAsDemo(DEMO_PROFILES[0].id);
-                }}
-                className="text-xs font-['Cinzel'] text-amber-400 hover:underline cursor-pointer"
-              >
-                Or instant load verified live demo: <span className="font-mono font-bold">DEMO-2026</span>
-              </button>
             </form>
-          )}
-
-          {/* TAB 4: ONE-CLICK DEMO PROFILES */}
-          {activeTab === "demo" && (
-            <div className="space-y-3">
-              <p className="text-xs text-gray-400">
-                Select a verified live client profile to explore full dashboard telemetry, milestone invoices, contracts, and tech desk messaging:
-              </p>
-
-              <div className="space-y-2.5">
-                {DEMO_PROFILES.map((profile) => (
-                  <button
-                    key={profile.id}
-                    onClick={() => loginAsDemo(profile.id)}
-                    className="w-full p-3.5 rounded-2xl bg-white/[0.03] hover:bg-amber-400/10 border border-amber-500/20 hover:border-amber-400/50 transition-all text-left flex items-center gap-3.5 group cursor-pointer"
-                  >
-                    <img
-                      src={profile.avatar}
-                      alt={profile.name}
-                      referrerPolicy="no-referrer"
-                      className="w-11 h-11 rounded-xl object-cover border border-amber-400/40 group-hover:scale-105 transition-transform"
-                    />
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-['Cinzel'] font-bold text-xs text-white group-hover:text-amber-300 truncate">
-                          {profile.name}
-                        </h4>
-                        <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/30">
-                          {profile.tier}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-gray-400 truncate mt-0.5">
-                        {profile.company} · {profile.role}
-                      </div>
-                    </div>
-
-                    <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-                  </button>
-                ))}
-              </div>
-            </div>
           )}
 
           {/* Security & Compliance Footer */}

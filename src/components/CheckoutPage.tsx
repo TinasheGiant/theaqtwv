@@ -138,22 +138,6 @@ export const CheckoutPage: React.FC = () => {
     setActivePage("payment");
   };
 
-  const handleAutoFillDemo = () => {
-    setCheckoutBilling({
-      fullName: "Tatenda Moyo",
-      phone: "+263 78 544 5162",
-      email: "tatenda.moyo@gmail.com",
-      address: "Suite 402, Batanai Gardens, Jason Moyo Ave",
-      city: "Harare",
-      companyName: "Moyo Digital Ventures Ltd",
-      orderNotes: "Urgent deployment for upcoming product launch.",
-      invoiceOrRef: "AQW-INV-84920",
-      purpose: customCheckoutPurpose || "Semi Standard Web Dev Project",
-    });
-    playSfx("sparkle");
-    showToast("Filled demo billing details!");
-  };
-
   return (
     <div className="py-16 px-4 sm:px-6 diamond-mesh relative min-h-screen">
       <div className="max-w-7xl mx-auto space-y-10">
@@ -202,14 +186,6 @@ export const CheckoutPage: React.FC = () => {
                     </p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={handleAutoFillDemo}
-                  className="text-[11px] font-mono text-amber-400 hover:underline cursor-pointer"
-                >
-                  ⚡ Auto-fill Demo
-                </button>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4 text-xs">

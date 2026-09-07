@@ -56,10 +56,10 @@ export const AdminDashboard: React.FC = () => {
     setActivePage,
     playSfx,
     showToast,
+    systemSettings,
   } = useApp();
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [roleSwitcherOpen, setRoleSwitcherOpen] = useState(false);
   const [isSyncingDb, setIsSyncingDb] = useState(false);
 
   const handleSyncFirestore = async () => {
@@ -146,9 +146,18 @@ export const AdminDashboard: React.FC = () => {
 
           {/* Brand & Badge */}
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/40 flex items-center justify-center font-['Cinzel_Decorative'] font-bold text-amber-300">
-              A
-            </div>
+            {systemSettings?.logoUrl ? (
+              <img
+                src={systemSettings.logoUrl}
+                alt="Aqutewave Admin Logo"
+                referrerPolicy="no-referrer"
+                className="w-8 h-8 rounded-xl object-cover border border-amber-400/40 shadow-sm bg-black/60"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/40 flex items-center justify-center font-['Cinzel_Decorative'] font-bold text-amber-300">
+                A
+              </div>
+            )}
             <div className="hidden sm:block">
               <div className="text-xs font-['Cinzel'] font-bold text-white tracking-wider flex items-center gap-1.5">
                 <span>AQUTE<span className="text-amber-400">WAVE</span></span>
@@ -163,59 +172,24 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Header Controls (Role Switcher Sandbox, User Info, Exit Site) */}
+        {/* Right Header Controls (Role Badge, User Info, Exit Site) */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Interactive Role Switcher Sandbox (Instant Multi-Role Evaluation) */}
-          <div className="relative">
-            <button
-              onClick={() => {
-                playSfx("pop");
-                setRoleSwitcherOpen(!roleSwitcherOpen);
-              }}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/40 text-xs font-['Cinzel'] font-bold text-amber-300 cursor-pointer transition-all shadow-sm"
-              title="Test Different RBAC Roles"
-            >
-              {adminRole === "CEO" ? (
-                <Crown className="w-3.5 h-3.5 text-amber-400" />
-              ) : adminRole === "MANAGER" ? (
-                <Briefcase className="w-3.5 h-3.5 text-sky-400" />
-              ) : (
-                <Edit3 className="w-3.5 h-3.5 text-emerald-400" />
-              )}
-              <span>Role: {adminRole}</span>
-              <span className="text-[10px] text-amber-400/70 font-mono">▾</span>
-            </button>
-
-            {roleSwitcherOpen && (
-              <div
-                className="absolute top-full right-0 mt-2 w-56 p-2 rounded-2xl bg-[#0e0f14] border border-amber-500/30 shadow-2xl z-50 space-y-1 animate-in fade-in"
-                onMouseLeave={() => setRoleSwitcherOpen(false)}
-              >
-                <div className="text-[9px] font-['Cinzel'] text-amber-400 font-bold uppercase tracking-wider px-2 py-1">
-                  Switch RBAC Test Sandbox
-                </div>
-                {(["CEO", "MANAGER", "EDITOR"] as AdminRole[]).map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => {
-                      playSfx("sparkle");
-                      switchAdminRole(r);
-                      setRoleSwitcherOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-['Cinzel'] transition-colors cursor-pointer ${
-                      adminRole === r
-                        ? "bg-amber-400 text-black font-bold"
-                        : "text-gray-300 hover:bg-white/10 hover:text-white"
-                    }`}
-                  >
-                    <span>{r} Level</span>
-                    <span className="text-[10px] font-mono">
-                      {r === "CEO" ? "Level 3" : r === "MANAGER" ? "Level 2" : "Level 1"}
-                    </span>
-                  </button>
-                ))}
-              </div>
+          {/* Active Admin Role Badge */}
+          <div
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-400/10 border border-amber-400/30 text-xs font-['Cinzel'] font-bold text-amber-300 shadow-sm select-none"
+            title={`Authenticated as ${adminRole}`}
+          >
+            {adminRole === "CEO" ? (
+              <Crown className="w-3.5 h-3.5 text-amber-400" />
+            ) : adminRole === "MANAGER" ? (
+              <Briefcase className="w-3.5 h-3.5 text-sky-400" />
+            ) : (
+              <Edit3 className="w-3.5 h-3.5 text-emerald-400" />
             )}
+            <span>Role: {adminRole}</span>
+            <span className="text-[10px] font-mono text-amber-400/70">
+              {adminRole === "CEO" ? "Level 3" : adminRole === "MANAGER" ? "Level 2" : "Level 1"}
+            </span>
           </div>
 
           {/* Firestore Sync Cloud Button */}

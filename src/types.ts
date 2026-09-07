@@ -133,6 +133,14 @@ export interface AdminSystemSettings {
   bankAccountDetails: string;
   emailNotificationsEnabled: boolean;
   lastBackupDate: string;
+  // Brand Assets & Favicon CRUD
+  logoUrl?: string;
+  logoAlt?: string;
+  faviconUrl?: string;
+  faviconShape?: "square" | "rounded" | "circle";
+  faviconFit?: "contain" | "cover";
+  faviconBadge?: string;
+  brandTagline?: string;
 }
 
 export type PaymentMethodType = "ecocash" | "bank" | "innbucks" | "card";

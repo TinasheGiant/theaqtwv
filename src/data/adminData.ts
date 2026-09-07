@@ -330,4 +330,10 @@ export const DEFAULT_SYSTEM_SETTINGS: AdminSystemSettings = {
   bankAccountDetails: "Stanbic Bank Zimbabwe · Branch: Nelson Mandela · Acc: 9140003492817",
   emailNotificationsEnabled: true,
   lastBackupDate: "Aug 26, 2026 · 02:00 CAT",
+  logoUrl: "/aqutewave-logo.jpg",
+  logoAlt: "Aqutewave Technologies Zimbabwe",
+  faviconUrl: "/favicon.png",
+  faviconShape: "rounded",
+  faviconFit: "contain",
+  brandTagline: "Innovate · Build · Excel",
 };

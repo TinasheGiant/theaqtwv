@@ -194,7 +194,7 @@ export const MembershipPage: React.FC = () => {
   const handlePortalLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!clientCode) {
-      showToast("Please enter your project or access code (Try DEMO-2026).");
+      showToast("Please enter your project or access code.");
       return;
     }
     playSfx("sparkle");
@@ -534,7 +534,7 @@ export const MembershipPage: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. DEMO-2026 or AQW-8492"
+                      placeholder="e.g. AQW-8492 or RET-9041"
                       value={clientCode}
                       onChange={(e) => setClientCode(e.target.value)}
                       className="w-full bg-black/60 border border-amber-500/30 rounded-xl px-4 py-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-400 font-mono"
@@ -548,21 +548,6 @@ export const MembershipPage: React.FC = () => {
                     <span>ACCESS PROJECT DASHBOARD</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
-
-                  <div className="text-center pt-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setClientCode("DEMO-2026");
-                        setIsAuthenticated(true);
-                        playSfx("sparkle");
-                        showToast("Loaded Demo VIP Member Dashboard!");
-                      }}
-                      className="text-xs font-['Cinzel'] text-amber-400 hover:underline cursor-pointer"
-                    >
-                      Click here to load Live Demo Account (DEMO-2026)
-                    </button>
-                  </div>
                 </form>
               </div>
             ) : (

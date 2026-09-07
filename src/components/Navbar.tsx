@@ -50,14 +50,29 @@ export const Navbar: React.FC = () => {
     setIsSearchOpen,
     playSfx,
     user,
+    adminUser,
     setIsAuthModalOpen,
     openPortalTab,
     userInvoices,
     userMessages,
     userProjects,
     logoutUser,
-    loginAsDemo,
+    systemSettings,
   } = useApp();
+
+  const ADMIN_EMAILS = [
+    "ceo@aqutewave.co.zw",
+    "manager@aqutewave.co.zw",
+    "editor@aqutewave.co.zw",
+    "tinashe@aqutewave.co.zw",
+    "admin@aqutewave.co.zw",
+  ];
+
+  const hasAdminAccess = Boolean(
+    adminUser ||
+    (user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase())) ||
+    user?.role === "admin"
+  );
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
@@ -76,7 +91,16 @@ export const Navbar: React.FC = () => {
   ];
 
   const moreLinks: { label: string; page: NavPage; desc: string; icon: React.ReactNode }[] = [
-    { label: "Admin Backend (RBAC)", page: "admin", desc: "CEO, Manager & Editor management terminal", icon: <Lock className="w-4 h-4 text-amber-400" /> },
+    ...(hasAdminAccess
+      ? [
+          {
+            label: "Admin Backend (RBAC)",
+            page: "admin" as NavPage,
+            desc: "CEO, Manager & Editor management terminal",
+            icon: <Lock className="w-4 h-4 text-amber-400" />,
+          },
+        ]
+      : []),
     { label: "Client Workspace Hub", page: "portal", desc: "Live project telemetry, invoices & tech desk", icon: <Crown className="w-4 h-4 text-amber-400" /> },
     { label: "Online Payment Gateway", page: "checkout", desc: "EcoCash, Bank Nostro, InnBucks & Card", icon: <CreditCard className="w-4 h-4 text-amber-400" /> },
     { label: "Verify Payment Receipt", page: "payment-verify", desc: "Audit cryptographic ledger & tax certificate", icon: <ShieldCheck className="w-4 h-4 text-amber-400" /> },
@@ -104,9 +128,18 @@ export const Navbar: React.FC = () => {
             className="flex items-center gap-2.5 shrink-0 group text-left cursor-pointer focus:outline-none"
             aria-label="Aqutewave Home"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400/20 via-amber-500/10 to-amber-700/30 border border-amber-400/40 flex items-center justify-center font-['Cinzel_Decorative'] font-black text-lg text-amber-300 shadow-[0_0_15px_rgba(212,175,55,0.3)] group-hover:scale-105 group-hover:border-amber-300 transition-all">
-              A
-            </div>
+            {systemSettings?.logoUrl ? (
+              <img
+                src={systemSettings.logoUrl}
+                alt={systemSettings.logoAlt || "Aqutewave Technologies"}
+                referrerPolicy="no-referrer"
+                className="w-10 h-10 rounded-xl object-cover border border-amber-400/40 shadow-[0_0_15px_rgba(212,175,55,0.35)] group-hover:scale-105 group-hover:border-amber-300 transition-all bg-black/60"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400/20 via-amber-500/10 to-amber-700/30 border border-amber-400/40 flex items-center justify-center font-['Cinzel_Decorative'] font-black text-lg text-amber-300 shadow-[0_0_15px_rgba(212,175,55,0.3)] group-hover:scale-105 group-hover:border-amber-300 transition-all">
+                A
+              </div>
+            )}
             <div className="hidden sm:block">
               <div className="font-['Cinzel'] font-bold text-sm md:text-base tracking-[0.08em] leading-tight">
                 <span className="text-white">AQUTE</span>
@@ -474,26 +507,30 @@ export const Navbar: React.FC = () => {
                     ))}
                   </div>
 
-                  {/* Switch Demo / Admin / Sign Out Sticky Footer */}
+                  {/* Admin / Sign Out Sticky Footer */}
                   <div className="pt-2.5 pb-1 border-t border-white/10 flex items-center justify-between text-[11px] sticky bottom-0 bg-[#0a0a0e]/95 backdrop-blur-md z-10 px-1">
-                    <button
-                      onClick={() => {
-                        playSfx("sparkle");
-                        setActivePage("admin");
-                        setUserDropdownOpen(false);
-                      }}
-                      className="px-3 py-1.5 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 hover:bg-amber-400/20 font-['Cinzel'] font-bold flex items-center gap-1.5 cursor-pointer transition-colors"
-                    >
-                      <Lock className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Admin Desk</span>
-                    </button>
+                    {hasAdminAccess && (
+                      <button
+                        onClick={() => {
+                          playSfx("sparkle");
+                          setActivePage("admin");
+                          setUserDropdownOpen(false);
+                        }}
+                        className="px-3 py-1.5 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 hover:bg-amber-400/20 font-['Cinzel'] font-bold flex items-center gap-1.5 cursor-pointer transition-colors"
+                      >
+                        <Lock className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Admin Desk</span>
+                      </button>
+                    )}
 
                     <button
                       onClick={() => {
                         logoutUser();
                         setUserDropdownOpen(false);
                       }}
-                      className="px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 font-['Cinzel'] flex items-center gap-1.5 cursor-pointer transition-colors"
+                      className={`px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 font-['Cinzel'] flex items-center gap-1.5 cursor-pointer transition-colors ${
+                        !hasAdminAccess ? "w-full justify-center" : ""
+                      }`}
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       <span>Sign Out</span>
@@ -551,9 +588,18 @@ export const Navbar: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-4 border-b border-amber-500/20">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-amber-400/20 border border-amber-400/40 flex items-center justify-center font-['Cinzel_Decorative'] font-bold text-amber-300">
-                    A
-                  </div>
+                  {systemSettings?.logoUrl ? (
+                    <img
+                      src={systemSettings.logoUrl}
+                      alt={systemSettings.logoAlt || "Aqutewave Logo"}
+                      referrerPolicy="no-referrer"
+                      className="w-8 h-8 rounded-lg object-cover border border-amber-400/40 shadow-sm bg-black/60"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-lg bg-amber-400/20 border border-amber-400/40 flex items-center justify-center font-['Cinzel_Decorative'] font-bold text-amber-300">
+                      A
+                    </div>
+                  )}
                   <span className="font-['Cinzel'] font-bold text-sm tracking-wider text-white">
                     AQUTE<span className="text-amber-400">WAVE</span>
                   </span>
@@ -659,7 +705,15 @@ export const Navbar: React.FC = () => {
                   { label: "Blog & Insights", page: "blog", icon: <BookOpen className="w-4 h-4" /> },
                   { label: "Contact Us", page: "contact", icon: <Phone className="w-4 h-4" /> },
                   { label: "FAQs", page: "faqs", icon: <HelpCircle className="w-4 h-4" /> },
-                  { label: "🔒 Admin Backend (RBAC)", page: "admin", icon: <Lock className="w-4 h-4 text-amber-400" /> },
+                  ...(hasAdminAccess
+                    ? [
+                        {
+                          label: "🔒 Admin Backend (RBAC)",
+                          page: "admin",
+                          icon: <Lock className="w-4 h-4 text-amber-400" />,
+                        },
+                      ]
+                    : []),
                 ].map((item) => (
                   <button
                     key={item.page}

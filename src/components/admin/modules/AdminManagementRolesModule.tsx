@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 export const AdminManagementRolesModule: React.FC = () => {
-  const { adminRole, switchAdminRole, playSfx } = useApp();
+  const { adminRole } = useApp();
 
   const allModules: { id: AdminModuleId; label: string; group: string }[] = [
     { id: "dashboard", label: "Dashboard Overview", group: "Core" },
@@ -83,27 +83,6 @@ export const AdminManagementRolesModule: React.FC = () => {
           <p className="text-xs text-gray-400 font-light">
             Audit granular permission capabilities across CEO, MANAGER, and EDITOR privilege tiers.
           </p>
-        </div>
-
-        {/* Instant Sandbox Role Switcher */}
-        <div className="flex items-center gap-2 bg-black/40 p-2 rounded-2xl border border-white/10">
-          <span className="text-[10px] font-['Cinzel'] text-amber-400 font-bold uppercase pl-2">Test As:</span>
-          {(["CEO", "MANAGER", "EDITOR"] as AdminRole[]).map((r) => (
-            <button
-              key={r}
-              onClick={() => {
-                playSfx("sparkle");
-                switchAdminRole(r);
-              }}
-              className={`px-3 py-1.5 rounded-xl text-[10px] font-['Cinzel'] font-bold transition-all cursor-pointer ${
-                adminRole === r
-                  ? "bg-amber-400 text-black shadow-md font-extrabold"
-                  : "bg-white/5 text-gray-300 hover:text-white"
-              }`}
-            >
-              {r}
-            </button>
-          ))}
         </div>
       </div>
 

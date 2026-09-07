@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 export const Footer: React.FC = () => {
-  const { setActivePage, playSfx, setIsAiDrawerOpen } = useApp();
+  const { setActivePage, playSfx, setIsAiDrawerOpen, systemSettings } = useApp();
 
   const scrollToTop = () => {
     playSfx("pop");
@@ -31,19 +31,30 @@ export const Footer: React.FC = () => {
           {/* Col 1: Brand Info */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 p-0.5 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
-                <div className="w-full h-full rounded-[14px] bg-[#09090d] flex items-center justify-center">
-                  <span className="font-['Cinzel_Decorative'] text-xl font-black gold-gradient-text">
-                    A
-                  </span>
+              {systemSettings?.logoUrl ? (
+                <div className="w-11 h-11 rounded-2xl p-0.5 bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                  <img
+                    src={systemSettings.logoUrl}
+                    alt={systemSettings.logoAlt || "Aqutewave Logo"}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full rounded-[14px] object-cover bg-[#09090d]"
+                  />
                 </div>
-              </div>
+              ) : (
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 p-0.5 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                  <div className="w-full h-full rounded-[14px] bg-[#09090d] flex items-center justify-center">
+                    <span className="font-['Cinzel_Decorative'] text-xl font-black gold-gradient-text">
+                      A
+                    </span>
+                  </div>
+                </div>
+              )}
               <div>
                 <span className="font-['Cinzel_Decorative'] font-bold text-xl tracking-wider gold-logo-shine">
                   AQUTEWAVE
                 </span>
                 <div className="font-['Orbitron'] text-[9px] text-amber-400 tracking-[0.25em]">
-                  INNOVATE · BUILD · EXCEL
+                  {systemSettings?.brandTagline || "INNOVATE · BUILD · EXCEL"}
                 </div>
               </div>
             </div>

@@ -33,7 +33,7 @@ export const PaymentVerificationPage: React.FC = () => {
   } = useApp();
 
   const [searchRef, setSearchRef] = useState<string>(
-    lastTransaction?.reference || "DEMO-2026"
+    lastTransaction?.reference || ""
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [verifiedRecord, setVerifiedRecord] = useState<PaymentTransactionRecord | null>(
@@ -42,13 +42,6 @@ export const PaymentVerificationPage: React.FC = () => {
   const [certificateData, setCertificateData] = useState<any>(null);
   const [searchError, setSearchError] = useState<string>("");
   const [copiedHash, setCopiedHash] = useState<boolean>(false);
-
-  // Predefined quick sample chips
-  const sampleRefs = [
-    { label: "VIP Retainer", ref: "DEMO-2026" },
-    { label: "EcoCash Web Dev", ref: "ECO-782910" },
-    { label: "Stanbic Bank Nostro", ref: "AQW-BNK-9382" },
-  ];
 
   const verifyTransaction = async (referenceToVerify: string) => {
     if (!referenceToVerify.trim()) return;
@@ -82,8 +75,6 @@ export const PaymentVerificationPage: React.FC = () => {
     if (lastTransaction?.reference) {
       setSearchRef(lastTransaction.reference);
       verifyTransaction(lastTransaction.reference);
-    } else {
-      verifyTransaction("DEMO-2026");
     }
   }, []);
 
@@ -141,7 +132,7 @@ export const PaymentVerificationPage: React.FC = () => {
                 type="text"
                 value={searchRef}
                 onChange={(e) => setSearchRef(e.target.value)}
-                placeholder="Enter Reference (e.g. DEMO-2026, ECO-782910, AQW-BNK-9382)..."
+                placeholder="Enter Transaction Reference (e.g. ECO-782910, AQW-BNK-9382)..."
                 className="w-full bg-black/60 border border-amber-500/30 rounded-2xl pl-11 pr-4 py-3.5 text-xs text-white font-mono placeholder-gray-500 uppercase focus:outline-none focus:border-amber-400"
               />
             </div>
@@ -159,24 +150,6 @@ export const PaymentVerificationPage: React.FC = () => {
               <span>VERIFY RECORD</span>
             </button>
           </form>
-
-          {/* Sample Chips */}
-          <div className="flex items-center gap-2 flex-wrap text-xs">
-            <span className="text-gray-400 text-[11px] font-['Cinzel']">Test references:</span>
-            {sampleRefs.map((chip) => (
-              <button
-                key={chip.ref}
-                type="button"
-                onClick={() => {
-                  setSearchRef(chip.ref);
-                  verifyTransaction(chip.ref);
-                }}
-                className="px-3 py-1 rounded-xl bg-white/5 border border-white/10 hover:border-amber-400/40 text-amber-300 text-[11px] font-mono transition-all cursor-pointer"
-              >
-                {chip.label} ({chip.ref})
-              </button>
-            ))}
-          </div>
 
           {searchError && (
             <div className="p-3.5 rounded-2xl bg-red-950/30 border border-red-500/30 text-xs text-red-300 flex items-center gap-2">

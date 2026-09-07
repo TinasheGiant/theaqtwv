@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useApp } from "../../context/AppContext";
-import { AdminRole } from "../../types";
 import {
   ShieldCheck,
   Lock,
@@ -8,17 +7,12 @@ import {
   KeyRound,
   Eye,
   EyeOff,
-  Sparkles,
   ArrowRight,
-  UserCheck,
   AlertCircle,
-  Crown,
-  Briefcase,
-  Edit3,
 } from "lucide-react";
 
 export const AdminLogin: React.FC = () => {
-  const { adminLogin, adminQuickLogin, setActivePage, playSfx } = useApp();
+  const { adminLogin, setActivePage, playSfx } = useApp();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -38,11 +32,6 @@ export const AdminLogin: React.FC = () => {
         playSfx("pop");
       }
     }, 400);
-  };
-
-  const handleDemoQuickAuth = (role: AdminRole) => {
-    setErrorMsg(null);
-    adminQuickLogin(role);
   };
 
   return (
@@ -135,102 +124,6 @@ export const AdminLogin: React.FC = () => {
               )}
             </button>
           </form>
-
-          {/* Quick Instant Test Role Authentication (Convenient for Evaluation) */}
-          <div className="mt-8 pt-6 border-t border-amber-500/20">
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-[11px] font-['Cinzel'] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Instant 1-Click Role Sandbox Login</span>
-              </div>
-              <span className="text-[10px] text-gray-500 font-mono">3-Tier RBAC Testing</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {/* CEO Card */}
-              <button
-                type="button"
-                onClick={() => handleDemoQuickAuth("CEO")}
-                className="p-3.5 rounded-2xl bg-gradient-to-b from-amber-400/15 to-black/60 border border-amber-400/40 hover:border-amber-300 hover:scale-[1.02] transition-all text-left group cursor-pointer"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-7 h-7 rounded-lg bg-amber-400/20 flex items-center justify-center border border-amber-400/30">
-                    <Crown className="w-4 h-4 text-amber-400" />
-                  </div>
-                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-400 text-black">
-                    LEVEL 3
-                  </span>
-                </div>
-                <div className="text-xs font-['Cinzel'] font-bold text-white group-hover:text-amber-300">
-                  CEO / Executive
-                </div>
-                <div className="text-[10px] text-gray-400 mt-0.5 font-light">
-                  Unrestricted access to all modules, role promotions & settings.
-                </div>
-              </button>
-
-              {/* MANAGER Card */}
-              <button
-                type="button"
-                onClick={() => handleDemoQuickAuth("MANAGER")}
-                className="p-3.5 rounded-2xl bg-gradient-to-b from-sky-400/15 to-black/60 border border-sky-400/40 hover:border-sky-300 hover:scale-[1.02] transition-all text-left group cursor-pointer"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-7 h-7 rounded-lg bg-sky-400/20 flex items-center justify-center border border-sky-400/30">
-                    <Briefcase className="w-4 h-4 text-sky-400" />
-                  </div>
-                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-sky-400 text-black">
-                    LEVEL 2
-                  </span>
-                </div>
-                <div className="text-xs font-['Cinzel'] font-bold text-white group-hover:text-sky-300">
-                  Manager
-                </div>
-                <div className="text-[10px] text-gray-400 mt-0.5 font-light">
-                  Operations, sales, client management (cannot edit CEO).
-                </div>
-              </button>
-
-              {/* EDITOR Card */}
-              <button
-                type="button"
-                onClick={() => handleDemoQuickAuth("EDITOR")}
-                className="p-3.5 rounded-2xl bg-gradient-to-b from-emerald-400/15 to-black/60 border border-emerald-400/40 hover:border-emerald-300 hover:scale-[1.02] transition-all text-left group cursor-pointer"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-400/20 flex items-center justify-center border border-emerald-400/30">
-                    <Edit3 className="w-4 h-4 text-emerald-400" />
-                  </div>
-                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-400 text-black">
-                    LEVEL 1
-                  </span>
-                </div>
-                <div className="text-xs font-['Cinzel'] font-bold text-white group-hover:text-emerald-300">
-                  Editor
-                </div>
-                <div className="text-[10px] text-gray-400 mt-0.5 font-light">
-                  Services, shop catalog, blog articles, portfolio & ERP.
-                </div>
-              </button>
-            </div>
-
-            {/* Test Credentials helper table */}
-            <div className="mt-4 p-3 rounded-xl bg-white/[0.02] border border-white/5 text-[11px] text-gray-400 space-y-1 font-mono">
-              <div className="text-[10px] font-['Cinzel'] text-amber-400 uppercase font-bold">Standard Credentials:</div>
-              <div className="flex justify-between">
-                <span>CEO: <span className="text-gray-200">ceo@aqutewave.co.zw</span></span>
-                <span className="text-amber-300">aqutewave2026</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Manager: <span className="text-gray-200">manager@aqutewave.co.zw</span></span>
-                <span className="text-amber-300">aqutewave2026</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Editor: <span className="text-gray-200">editor@aqutewave.co.zw</span></span>
-                <span className="text-amber-300">aqutewave2026</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Back to Client Site button */}
