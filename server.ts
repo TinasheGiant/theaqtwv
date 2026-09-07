@@ -407,7 +407,7 @@ async function startServer() {
     }
   });
 
-  // Gemini AI Chatbot API Endpoint
+  // Gemini AI Chatbot API Endpoint with Deep App Phrase Digging & Direction Links
   app.post("/api/gemini/chat", async (req: Request, res: Response) => {
     try {
       const { message, conversationHistory } = req.body;
@@ -418,46 +418,85 @@ async function startServer() {
 
       const client = getAiClient();
 
+      const systemPrompt = `You are Aqutewave AI Copilot, the intelligent digital consultant for Aqutewave Technologies Pvt Ltd, Zimbabwe's premier software engineering and digital solutions agency (headquartered in Harare, Zimbabwe, serving global clients).
+
+Aqutewave Motto: "Innovate · Build · Excel"
+Official Website: https://aqutewave.co.zw
+Harare Hub: Harare CBD / Avondale Tech Hub, Harare, Zimbabwe
+Phone / WhatsApp: +263 78 544 5162 | +263 73 513 4718
+Emails: giantacutewave@gmail.com (General & Projects) | aqutewavesales@gmail.com (Invoicing)
+Sister Brand: Arch Studio (https://archstudio.aqutewave.co.zw)
+
+APP MODULES & VALID IN-APP DIRECTION PAGES:
+Users can navigate anywhere in our web application. The valid app page destinations are:
+- "services": Web Development packages, Graphic Design, Digital Marketing & SEO
+- "software": ERP Software (Basic ERP $500, Premium ERP $1000), Custom Web Apps ($150+)
+- "estimator": Live Interactive Project Cost Estimator & Quote Generator (USD, ZWL, ZAR with ZIMRA VAT)
+- "portfolio": Real-world Client Projects, Live Demos (FullStackPHP, Arch Studio, etc.)
+- "shop": Official Tech Store (Keyboards $55, 4K Monitors $180, Mice $12, Power banks $30, SSDs, Hoodies $35, Tees $15)
+- "booking": Instant Project Booking & Consultation Scheduling
+- "payment": Multi-currency payment gateway (EcoCash USD/ZWL, InnBucks, Stanbic Nostro bank, Visa/Mastercard)
+- "payment-verify": Cryptographic Payment & Receipt Verification portal (e.g. check references like DEMO-2026, ECO-782910)
+- "portal": Client VIP Portal with Staging Pods, milestone progress, and downloadable deliverables
+- "membership": VIP Retainer & Maintenance Plans (Silver $30/mo, Gold $50/mo, Platinum $80/mo)
+- "contact": Harare office location, direct lines, Google map, and contact form
+- "faqs": Answers on project turnaround (3-7 days), hosting inclusions, domains, and payment security
+- "about": Executive team, Zimbabwean software leadership, and company mission
+
+EXACT PRICING & INCLUSIONS TO RECOGNIZE & QUOTE:
+1. Basic Web Development ($60): Up to 6 responsive pages, 1-year FREE .co.zw domain, 3 months hosting, corporate emails, social integration. Delivered in 3-5 days.
+2. Semi Standard Web ($150): 12 pages, 10 corporate emails, 6 months hosting, custom order forms, free .co.zw domain.
+3. Standard Web & E-Commerce ($200): 15 pages, 15 emails, 6 months hosting, shopping cart, custom quotes, Google Maps.
+4. Premium Web ($300): 40 pages, unlimited emails, 6 months hosting, shopping cart, booking engine, live chat, priority launch.
+5. Personal Web Portfolio ($40): Clean personal CV, project gallery, contact form (ideal for developers, consultants, executives).
+6. Custom Web Apps ($150+): Bespoke browser-based software with user authentication, custom database, and dashboards.
+7. Basic ERP ($500): Complete offline-first business suite! Local database (works 100% without internet), inventory tracking, multi-currency invoicing, POS receipt printing. Zero mandatory monthly fees!
+8. Premium ERP ($1,000): Hybrid cloud + local multi-branch synchronization, automated purchase orders, HR/payroll, fraud audit trails.
+9. Graphic Design: Business cards ($5 design / $10 per 100 prints), Flyers & Corporate Logos ($15), Branding suites ($25).
+10. Marketing & SEO: Basic Marketing ($100/mo), Standard ($150/mo), Pro ($250/mo), Full Technical SEO Audit & Google Ranking ($150).
+
+YOUR INSTRUCTIONS FOR DEEP WORD/PHRASE DIGGING & DIRECTION LINKS:
+1. Carefully analyze and "dig into" the specific words or phrases in the user's query (such as pricing, basic erp, free domain, ecocash, innbucks, cost estimator, shop, contact harare, turnaround time).
+2. Provide a clear, authoritative, concise, and structured answer with bullet points and bold highlights.
+3. ALWAYS recommend the relevant next action inside the Aqutewave app. At the end of your response, output directional link tags in the exact format:
+[[NAV:page_id:Button Title:Short Description]]
+Examples:
+[[NAV:services:View Web Packages:Browse packages from $60 with free domain and emails]]
+[[NAV:estimator:Open Cost Estimator:Calculate your custom website or ERP price in real time]]
+[[NAV:software:Explore ERP Software:Inspect offline-first ERP features and modules]]
+[[NAV:shop:Visit Tech Store:Shop mechanical keyboards, 4K monitors, and hoodies]]
+[[NAV:payment-verify:Verify Payment Receipt:Authenticate official receipt or SLA certificate]]
+[[NAV:contact:Contact Harare Team:Call +263 78 544 5162 or schedule meeting]]
+[[NAV:booking:Book a Project:Schedule an onboarding consultation]]
+
+Always be courteous, professional, technologically adept, and encouraging!`;
+
       if (!client) {
-        // Fallback intelligent response if API key is not configured yet
+        // Fallback intelligent response if API key is not yet configured in environment
+        const lower = message.toLowerCase();
+        let fallbackReply = `Welcome to Aqutewave! 👋\n\nI can help you with:\n• **Web Development**: Basic ($60), Semi Standard ($150), Standard ($200), Premium ($300), Portfolio ($40)\n• **Software & ERP**: Custom Web Apps ($150+), Basic ERP ($500), Premium ERP ($1,000)\n• **Graphic Design**: Business cards ($5), Flyers & Logos ($15)\n• **Marketing & SEO**: Basic ($100/mo), Standard ($150/mo), Pro ($250/mo), SEO ($150)\n\nAll web packages include 1 year of free .co.zw domain, business emails, and SSD hosting!`;
+
+        let navTags = `[[NAV:services:View Web Packages:Browse packages from $60]]\n[[NAV:estimator:Open Cost Estimator:Calculate project price in USD, ZWL, or ZAR]]`;
+
+        if (lower.includes("price") || lower.includes("cost") || lower.includes("how much") || lower.includes("quote")) {
+          fallbackReply = `Aqutewave provides transparent pricing with zero hidden fees:\n\n• **Basic Website**: **$60** (6 pages, free 1-yr .co.zw domain, 3 mo hosting, emails)\n• **Standard Web & E-Commerce**: **$200** (15 pages, shopping cart, invoices, Google Maps)\n• **Basic ERP Software**: **$500** (Offline-first, inventory, invoicing, POS, zero monthly fees)\n• **Premium Multi-Branch ERP**: **$1,000** (Cloud + local sync, supply chain, audit logs)\n• **Graphic Design**: **$5** business cards, **$15** logos & flyers\n\nUse our live Cost Estimator to compute exact project figures with ZIMRA VAT.`;
+          navTags = `[[NAV:estimator:Open Cost Estimator:Compute custom website or ERP price]]\n[[NAV:services:View Web Packages:Explore web packages from $60]]`;
+        } else if (lower.includes("erp") || lower.includes("software") || lower.includes("inventory") || lower.includes("pos")) {
+          fallbackReply = `Aqutewave specializes in offline-first ERP software tailored for Zimbabwean enterprises:\n\n• **Basic ERP ($500)**: Operates 100% offline without internet. Includes live inventory tracking, POS receipt printing, multi-currency invoicing (USD, ZWL, ZAR), and ledger reporting.\n• **Premium ERP ($1,000)**: Multi-branch cloud sync, purchase order automation, supplier portals, and cryptographic audit trails.\n\nBest of all: **One-time payment with zero mandatory monthly subscription lock-in!**`;
+          navTags = `[[NAV:software:Explore ERP Software:Review modules, inventory, and POS]]\n[[NAV:estimator:Calculate ERP Quote:Customize software add-ons]]`;
+        } else if (lower.includes("pay") || lower.includes("ecocash") || lower.includes("innbucks") || lower.includes("bank") || lower.includes("receipt") || lower.includes("verify")) {
+          fallbackReply = `Aqutewave provides secure, multi-currency payment options:\n\n• **EcoCash USD & ZWL**: Instant merchant biller / dial code payment with automated SMS reference.\n• **InnBucks**: Convenient deposit code redeemable at any Simbisa / Chicken Inn outlet.\n• **Stanbic Bank Zimbabwe**: Direct Nostro USD FCA bank transfer.\n• **Visa / Mastercard**: Card gateway for regional and diaspora clients.\n\nEvery transaction generates an authentic cryptographic receipt that you can verify anytime.`;
+          navTags = `[[NAV:payment:Go to Payment Gateway:View EcoCash, InnBucks, and Nostro options]]\n[[NAV:payment-verify:Verify Payment Receipt:Check reference and authenticated SLA]]`;
+        } else if (lower.includes("contact") || lower.includes("phone") || lower.includes("whatsapp") || lower.includes("location") || lower.includes("harare")) {
+          fallbackReply = `You can connect with Aqutewave directly:\n\n• **Phone / WhatsApp**: **+263 78 544 5162** (Primary) | **+263 73 513 4718**\n• **Email**: giantacutewave@gmail.com | aqutewavesales@gmail.com\n• **Physical Hub**: Harare CBD / Avondale Tech Hub, Harare, Zimbabwe\n• **Operating Hours**: Mon–Fri 08:00–18:00, Sat 09:00–14:00\n\nFeel free to message us on WhatsApp for rapid project scoping!`;
+          navTags = `[[NAV:contact:Open Contact Page:View Harare map and office details]]\n[[NAV:booking:Book a Consultation:Schedule project discussion]]`;
+        }
+
         return res.json({
-          reply: `Welcome to Aqutewave! 👋\n\nI can help you with:\n• **Web Development**: Basic ($60), Semi Standard ($150), Standard ($200), Premium ($300), Portfolio ($40)\n• **Software & ERP**: Custom Web Apps ($150), Basic ERP ($500), Premium ERP ($1,000)\n• **Graphic Design**: Business cards ($5), Flyers & Logos ($15)\n• **Marketing & SEO**: Basic ($100/mo), Standard ($150/mo), Pro ($250/mo), SEO ($150)\n\nWould you like to book a service, calculate a custom quote, or browse our shop?`,
+          reply: `${fallbackReply}\n\n${navTags}`,
           fallback: true,
         });
       }
-
-      const systemPrompt = `You are the friendly, intelligent, and highly knowledgeable AI Assistant for Aqutewave, a premier digital solutions, software engineering, and web development agency based in Harare, Zimbabwe (serving global and regional clients).
-
-Aqutewave Slogan: "Innovate · Build · Excel"
-Contact Details:
-- Phone / WhatsApp: +263 78 544 5162 | +263 73 513 4718
-- Emails: giantacutewave@gmail.com (Services & General) | aqutewavesales@gmail.com (Sales & Invoicing)
-- Website: https://aqutewave.co.zw
-- Sister Brand: Arch Studio (https://archstudio.aqutewave.co.zw)
-
-Core Services & Pricing:
-- Basic Web Development ($60): Up to 6 pages, 3 months hosting, responsive design, social media links, 1 year free .co.zw domain & email.
-- Semi Standard Web ($150): 12 pages, 10 emails, 6 months hosting, mockups & order forms, 1 year domain.
-- Standard Web ($200): 15 pages, 15 emails, 6 months hosting, shopping cart, quotes, invoices/orders, Google Maps integration.
-- Premium Web ($300): 40 pages, unlimited emails, 6 months hosting, shopping cart, bookings, Google Maps, live chat, 1 year domain.
-- Personal Web Portfolio ($40): High-impact personal branding, project gallery, CV/bio, contact forms.
-- Custom Web Apps ($150+): Browser-based software, interactive dashboards, user auth, database integration.
-- Basic ERP Software ($500): Integrated business suite, local database, accounts, inventory, sales & purchases, reporting.
-- Premium ERP Software ($1,000): Cloud + local hybrid, multi-branch, real-time analytics, POS, supply chain, automated workflows.
-- Business Card Design ($5): Custom design ($5) + Printout options ($10/100 cards).
-- Flyers / Posters / Logo Design ($15): Events, business flyers, branding suites, banners.
-- Digital Marketing Packages: Basic ($100/mo, 3 platforms, 12 posts, 3 ads), Standard ($150/mo, 5 platforms, 20 posts, 5 ads), Pro ($250/mo, 10 platforms, 20 posts, 10 ads).
-- SEO Optimization ($150): Keyword research, technical SEO, on-page optimization, monthly rank tracking.
-
-Store Products:
-- Branded tees ($15), Hoodies ($35), Caps ($10), Wireless mice ($12), Power banks ($30), Mechanical keyboards ($55), 4K monitors ($180), SSDs ($70), cables, office stationery.
-
-Your Persona:
-- Warm, polite, concise, professional, technologically adept, and encouraging.
-- When users ask about prices, provide clear dollar figures with friendly suggestions.
-- When users express interest in getting started, guide them to book through the booking form or click WhatsApp.
-- If asked about location, note we are headquartered in Harare, Zimbabwe and deliver digital solutions worldwide.
-- Keep answers formatted with clean bullet points and bold highlights for great readability.`;
 
       // Build contents for generateContent
       const contents: Array<{ role: string; parts: Array<{ text: string }> }> = [];
@@ -479,7 +518,7 @@ Your Persona:
       });
 
       const response = await client.models.generateContent({
-        model: "gemini-3.7-flash",
+        model: "gemini-3.8-flash",
         contents: contents as any,
         config: {
           systemInstruction: systemPrompt,
@@ -493,7 +532,7 @@ Your Persona:
       console.error("Gemini API Error:", err);
       res.status(500).json({
         error: "Failed to generate AI response",
-        fallbackMessage: "I'm experiencing a brief connectivity glitch with the AI cloud. You can still reach our human team directly at +263 78 544 5162 or browse our services on this page!",
+        fallbackMessage: "I'm experiencing a temporary connectivity glitch with the AI cloud. You can still reach our team directly at +263 78 544 5162 or explore our web services!",
       });
     }
   });

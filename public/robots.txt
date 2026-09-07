@@ -1,4 +1,31 @@
+# robots.txt for Aqutewave Technologies (https://aqutewave.co.zw)
+# Optimized for Googlebot, Bingbot, and modern search crawlers
+
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /portal
 
+# Explicit crawler settings for Googlebot
+User-agent: Googlebot
+Allow: /
+Allow: /*.js$
+Allow: /*.css$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.svg$
+Allow: /*.webp$
+Disallow: /api/
+
+# Explicit crawler settings for Googlebot-Image
+User-agent: Googlebot-Image
+Allow: /
+Allow: /public/
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+
+# XML Sitemap location
 Sitemap: https://aqutewave.co.zw/sitemap.xml

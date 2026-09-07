@@ -27,6 +27,7 @@ import { ServiceDetailModal } from "./components/ServiceDetailModal";
 import { ShareModal } from "./components/ShareModal";
 import { CartDrawer } from "./components/CartDrawer";
 import { AiAssistantDrawer } from "./components/AiAssistantDrawer";
+import { SeoManager } from "./components/SeoManager";
 import { Footer } from "./components/Footer";
 import {
   MessageSquare,
@@ -65,6 +66,7 @@ const MainAppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen text-gray-100 flex flex-col justify-between selection:bg-amber-400 selection:text-black">
+      <SeoManager />
       <BackgroundEffects />
       <Navbar />
 
@@ -93,31 +95,42 @@ const MainAppContent: React.FC = () => {
 
       {/* Floating Action Floaters (WhatsApp & Gemini AI Copilot) */}
       <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3 items-end">
-        {/* Floating AI Copilot Trigger */}
-        <button
-          onClick={() => {
-            playSfx("sparkle");
-            setIsAiDrawerOpen(true);
-          }}
-          className="group relative flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-black font-['Cinzel'] font-bold text-xs shadow-[0_10px_30px_rgba(212,175,55,0.4)] hover:scale-105 transition-all cursor-pointer border border-amber-300"
-          aria-label="Open AI Copilot"
-        >
-          <Bot className="w-4 h-4 text-black animate-pulse" />
-          <span className="hidden sm:inline">AI COPILOT</span>
-          <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 border-2 border-black animate-ping" />
-        </button>
+        {/* Floating AI Copilot Trigger with Search Prompter */}
+        <div className="relative group flex items-center">
+          {/* Subtle hover/ambient helper prompter */}
+          <div className="hidden md:flex items-center gap-1.5 mr-2 px-3 py-1 rounded-full bg-[#0d0e14]/90 border border-amber-400/30 text-[10px] font-['Cinzel'] font-bold text-amber-300 shadow-lg backdrop-blur-md pointer-events-none group-hover:scale-105 transition-all">
+            <Sparkles className="w-3 h-3 text-amber-400 animate-pulse" />
+            <span>Search with AI Copilot</span>
+          </div>
+
+          <button
+            id="btn-floating-ai-copilot"
+            onClick={() => {
+              playSfx("sparkle");
+              setIsAiDrawerOpen(true);
+            }}
+            className="group/btn relative flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-black font-['Cinzel'] font-bold text-xs shadow-[0_10px_35px_rgba(212,175,55,0.45),0_0_15px_rgba(212,175,55,0.3)] hover:scale-105 active:scale-95 transition-all cursor-pointer border border-amber-200"
+            aria-label="Open AI Copilot and Search Assistant"
+          >
+            <Bot className="w-4 h-4 text-black animate-pulse" />
+            <span className="font-bold tracking-wide">AI COPILOT</span>
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-black animate-ping" />
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-black" />
+          </button>
+        </div>
 
         {/* Floating WhatsApp Live Chat Trigger */}
         <a
+          id="btn-floating-whatsapp"
           href="https://wa.me/263785445162?text=Hello%20Aqutewave!%20I%20would%20like%20to%20inquire%20about%20your%20digital%20services."
           target="_blank"
           rel="noreferrer"
           onClick={() => playSfx("pop")}
-          className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-emerald-500 text-black font-['Cinzel'] font-bold text-xs shadow-[0_10px_30px_rgba(34,197,94,0.4)] hover:scale-105 transition-all cursor-pointer border border-emerald-300"
+          className="flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-emerald-500 text-black font-['Cinzel'] font-bold text-[11px] shadow-[0_8px_25px_rgba(34,197,94,0.35)] hover:scale-105 active:scale-95 transition-all cursor-pointer border border-emerald-300"
           aria-label="Direct WhatsApp Chat"
         >
-          <MessageSquare className="w-4 h-4 text-black fill-black" />
-          <span className="hidden sm:inline">WHATSAPP CHAT</span>
+          <MessageSquare className="w-3.5 h-3.5 text-black fill-black" />
+          <span className="hidden sm:inline">WHATSAPP</span>
         </a>
       </div>
 
