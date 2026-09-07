@@ -116,7 +116,7 @@ service cloud.firestore {
 
     // Registered Clients
     match /clients/{clientId} {
-      allow read, write: if isStaff();
+      allow read, write: if isStaff() || (isSignedIn() && request.auth.uid == clientId);
     }
 
     // System Settings: Public can read basic config (forex rates, phone, TIN), only CEO/Staff can write

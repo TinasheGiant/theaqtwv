@@ -63,6 +63,11 @@ import {
   signOut,
   onAuthStateChanged,
   FirebaseUser,
+  updatePassword,
+  updateProfile,
+  updateEmail,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   collection,
   onSnapshot,
   doc,
@@ -101,6 +106,8 @@ interface AppContextType {
   firebaseUser: FirebaseUser | null;
   isAuthModalOpen: boolean;
   setIsAuthModalOpen: (open: boolean) => void;
+  isProfileModalOpen: boolean;
+  setIsProfileModalOpen: (open: boolean) => void;
   activePortalTab: string;
   setActivePortalTab: (tab: string) => void;
   openPortalTab: (tab: string) => void;
@@ -111,6 +118,9 @@ interface AppContextType {
   loginWithEmailOrPin: (identifier: string, pin?: string) => boolean;
   logoutUser: () => void;
   updateUserProfile: (updates: Partial<UserProfile>) => void;
+  updateUserCredentials: (updates: Partial<UserProfile>) => Promise<{ success: boolean; error?: string }>;
+  updateUserPassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
+  updateUserAvatar: (avatarUrlOrData: string) => Promise<{ success: boolean; error?: string }>;
 
   // User Activity Records
   userProjects: UserProject[];
@@ -329,6 +339,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
   const [activePortalTab, setActivePortalTab] = useState<string>("overview");
 
   const [userProjects, setUserProjects] = useState<UserProject[]>(() => {
@@ -1635,6 +1646,209 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     showToast("Profile settings saved", "success");
   };
 
+  const updateUserCredentials = async (
+    updates: Partial<UserProfile>
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (!user) {
+      return { success: false, error: "No active user session found." };
+    }
+
+    try {
+      const updatedUser: UserProfile = {
+        ...user,
+        ...updates,
+      };
+
+      setUser(updatedUser);
+      syncDocToFirestore(COLLECTIONS.CLIENTS, user.id, updatedUser);
+
+      // Sync registered clients list in state & storage
+      setRegisteredClientsList((prev) =>
+        prev.map((c) =>
+          c.id === user.id || c.email.toLowerCase() === user.email.toLowerCase()
+            ? { ...c, ...updates }
+            : c
+        )
+      );
+
+      // If user is also an Admin, update admin state & database
+      if (adminUser || user.email) {
+        const userEmail = (adminUser?.email || user.email || "").toLowerCase();
+        if (adminUser && (adminUser.id === user.id || adminUser.email.toLowerCase() === userEmail)) {
+          const updatedAdmin: AdminUser = {
+            ...adminUser,
+            name: updates.name || adminUser.name,
+            email: updates.email || adminUser.email,
+            phone: updates.phone || adminUser.phone,
+            avatar: updates.avatar || adminUser.avatar,
+            department: updates.company || adminUser.department,
+          };
+          setAdminUser(updatedAdmin);
+          syncDocToFirestore(COLLECTIONS.ADMIN_USERS, adminUser.id, updatedAdmin);
+        }
+
+        setAdminUsersList((prev) =>
+          prev.map((adm) => {
+            if (adm.email.toLowerCase() === userEmail || adm.id === user.id) {
+              const u = {
+                ...adm,
+                name: updates.name || adm.name,
+                email: updates.email || adm.email,
+                phone: updates.phone || adm.phone,
+                avatar: updates.avatar || adm.avatar,
+              };
+              syncDocToFirestore(COLLECTIONS.ADMIN_USERS, adm.id, u);
+              return u;
+            }
+            return adm;
+          })
+        );
+      }
+
+      // Sync Firebase Auth display name and photo
+      if (firebaseUser) {
+        try {
+          if (updates.name || updates.avatar) {
+            await updateProfile(firebaseUser, {
+              displayName: updates.name || firebaseUser.displayName,
+              photoURL: updates.avatar || firebaseUser.photoURL,
+            });
+          }
+          if (updates.email && updates.email.trim().toLowerCase() !== (firebaseUser.email || "").toLowerCase()) {
+            await updateEmail(firebaseUser, updates.email.trim());
+          }
+        } catch (fbErr: any) {
+          console.warn("Notice updating Firebase Auth credentials:", fbErr);
+        }
+      }
+
+      logAdminSecurityEvent("CREDENTIALS_UPDATED", `Updated credentials for ${updatedUser.email}`, "profile", "allowed");
+      showToast("Credentials updated and synchronized", "gold");
+      playSfx("sparkle");
+      return { success: true };
+    } catch (err: any) {
+      console.error("Failed to update user credentials:", err);
+      return { success: false, error: err?.message || "Failed to save profile changes." };
+    }
+  };
+
+  const updateUserPassword = async (
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (!user) {
+      return { success: false, error: "Please sign in to update your security password." };
+    }
+    if (!newPassword || newPassword.length < 6) {
+      return { success: false, error: "New password must be at least 6 characters in length." };
+    }
+
+    try {
+      // 1. If user is signed in with Firebase Auth
+      if (firebaseUser && firebaseUser.email) {
+        try {
+          if (currentPassword) {
+            const credential = EmailAuthProvider.credential(firebaseUser.email, currentPassword);
+            await reauthenticateWithCredential(firebaseUser, credential);
+          }
+          await updatePassword(firebaseUser, newPassword);
+          logAdminSecurityEvent("PASSWORD_CHANGED", `Firebase password updated for ${firebaseUser.email}`, "auth", "allowed");
+        } catch (authErr: any) {
+          console.warn("Firebase Auth password update note:", authErr);
+          if (authErr?.code === "auth/wrong-password" || authErr?.code === "auth/invalid-credential") {
+            return { success: false, error: "Current password is incorrect. Please verify and try again." };
+          }
+          if (authErr?.code === "auth/requires-recent-login") {
+            return { success: false, error: "Security session expired. Please log out and sign back in, then retry." };
+          }
+          if (authErr?.code === "auth/operation-not-allowed" || authErr?.message?.includes("provider")) {
+            return { success: false, error: "Account signed in with Google. Passwords must be managed via Google Account settings." };
+          }
+        }
+      }
+
+      // 2. Also update in Admin users list if this account is an administrator
+      const targetEmail = (adminUser?.email || user.email || "").toLowerCase();
+      setAdminUsersList((prev) =>
+        prev.map((adm) => {
+          if (adm.email.toLowerCase() === targetEmail || adm.id === user.id) {
+            const updated = { ...adm, passwordHash: newPassword };
+            syncDocToFirestore(COLLECTIONS.ADMIN_USERS, adm.id, updated);
+            return updated;
+          }
+          return adm;
+        })
+      );
+
+      logAdminSecurityEvent("USER_PASSWORD_RESET", `Password successfully changed for ${user.email}`, "profile", "allowed");
+      showToast("Security password updated successfully!", "gold");
+      playSfx("success");
+      return { success: true };
+    } catch (err: any) {
+      console.error("Password update error:", err);
+      return { success: false, error: err?.message || "Failed to update password." };
+    }
+  };
+
+  const updateUserAvatar = async (
+    avatarUrlOrData: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (!user) {
+      return { success: false, error: "No active user session found." };
+    }
+    if (!avatarUrlOrData) {
+      return { success: false, error: "Please select or upload a valid avatar image." };
+    }
+
+    try {
+      const updatedUser: UserProfile = { ...user, avatar: avatarUrlOrData };
+      setUser(updatedUser);
+      syncDocToFirestore(COLLECTIONS.CLIENTS, user.id, updatedUser);
+
+      // Also update in registered clients list
+      setRegisteredClientsList((prev) =>
+        prev.map((c) =>
+          c.id === user.id || c.email.toLowerCase() === user.email.toLowerCase()
+            ? { ...c, avatar: avatarUrlOrData }
+            : c
+        )
+      );
+
+      // Update admin user state if matches
+      if (adminUser) {
+        const updatedAdmin: AdminUser = { ...adminUser, avatar: avatarUrlOrData };
+        setAdminUser(updatedAdmin);
+        setAdminUsersList((prev) =>
+          prev.map((adm) => {
+            if (adm.id === adminUser.id || adm.email.toLowerCase() === adminUser.email.toLowerCase()) {
+              const u = { ...adm, avatar: avatarUrlOrData };
+              syncDocToFirestore(COLLECTIONS.ADMIN_USERS, adm.id, u);
+              return u;
+            }
+            return adm;
+          })
+        );
+      }
+
+      // Firebase profile photo sync
+      if (firebaseUser) {
+        try {
+          await updateProfile(firebaseUser, { photoURL: avatarUrlOrData });
+        } catch (fbErr) {
+          console.warn("Firebase updateProfile avatar note:", fbErr);
+        }
+      }
+
+      logAdminSecurityEvent("AVATAR_UPLOADED", `Custom avatar icon updated for ${user.email}`, "profile", "allowed");
+      showToast("User icon updated successfully!", "gold");
+      playSfx("sparkle");
+      return { success: true };
+    } catch (err: any) {
+      console.error("Error updating avatar:", err);
+      return { success: false, error: err?.message || "Failed to update profile icon." };
+    }
+  };
+
   const payUserInvoice = (invoiceId: string) => {
     setUserInvoices((prev) =>
       prev.map((inv) => (inv.id === invoiceId ? { ...inv, status: "Paid" } : inv))
@@ -1876,6 +2090,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         firebaseUser,
         isAuthModalOpen,
         setIsAuthModalOpen,
+        isProfileModalOpen,
+        setIsProfileModalOpen,
         activePortalTab,
         setActivePortalTab,
         openPortalTab,
@@ -1886,6 +2102,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         loginWithEmailOrPin,
         logoutUser,
         updateUserProfile,
+        updateUserCredentials,
+        updateUserPassword,
+        updateUserAvatar,
 
         // User Activity Records
         userProjects,

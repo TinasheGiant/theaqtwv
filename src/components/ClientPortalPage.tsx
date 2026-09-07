@@ -38,6 +38,7 @@ import {
   Globe
 } from "lucide-react";
 import { DEMO_PROFILES } from "../data/userActivityData";
+import { ProfileSettingsView } from "./ProfileSettingsView";
 
 export const ClientPortalPage: React.FC = () => {
   const {
@@ -1086,107 +1087,7 @@ export const ClientPortalPage: React.FC = () => {
         {/* TAB 9: PROFILE & SETTINGS */}
         {activePortalTab === "profile" && (
           <div className="space-y-6 animate-in fade-in duration-200">
-            <div>
-              <h2 className="font-['Cinzel_Decorative'] font-bold text-2xl text-white">
-                Client Profile & Entity Credentials
-              </h2>
-              <p className="text-xs text-gray-400 mt-1">
-                Manage company registration details, Harare headquarters contacts, and active portal security credentials.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Profile Details Form */}
-              <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-amber-500/20 space-y-4">
-                <h3 className="font-['Cinzel'] font-bold text-base text-white">
-                  Corporate Information
-                </h3>
-
-                <div className="space-y-3 text-xs">
-                  <div>
-                    <label className="block text-[10px] font-['Cinzel'] font-bold text-gray-400 mb-1">
-                      DIRECTOR / CONTACT PERSON
-                    </label>
-                    <input
-                      type="text"
-                      value={user.name}
-                      readOnly
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-2 text-white font-mono"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-['Cinzel'] font-bold text-gray-400 mb-1">
-                      COMPANY ENTITY
-                    </label>
-                    <input
-                      type="text"
-                      value={user.company}
-                      readOnly
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-2 text-white font-mono"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-['Cinzel'] font-bold text-gray-400 mb-1">
-                      WORK EMAIL
-                    </label>
-                    <input
-                      type="text"
-                      value={user.email}
-                      readOnly
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-2 text-white font-mono"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-['Cinzel'] font-bold text-gray-400 mb-1">
-                      WHATSAPP / PHONE
-                    </label>
-                    <input
-                      type="text"
-                      value={user.phone}
-                      readOnly
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-2 text-white font-mono"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-['Cinzel'] font-bold text-gray-400 mb-1">
-                      ZIMRA TAX IDENTIFICATION NUMBER (TIN)
-                    </label>
-                    <input
-                      type="text"
-                      value={user.zimraTin || "ZIMRA-TIN-ZW"}
-                      readOnly
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-2 text-amber-300 font-mono"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Account Session Actions */}
-              <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-amber-500/20 space-y-4">
-                <div>
-                  <h3 className="font-['Cinzel'] font-bold text-base text-white">
-                    Account Security & Session
-                  </h3>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Manage active portal session and compliance credentials.
-                  </p>
-                </div>
-
-                <div className="pt-2 flex justify-between items-center text-xs">
-                  <span className="text-gray-400">Authenticated as: <strong className="text-white font-mono">{user.email || user.name}</strong></span>
-                  <button
-                    onClick={logoutUser}
-                    className="px-4 py-2 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 hover:bg-red-500/25 font-['Cinzel'] font-bold cursor-pointer transition-colors"
-                  >
-                    Sign Out
-                  </button>
-                </div>
-              </div>
-            </div>
+            <ProfileSettingsView variant="embedded" />
           </div>
         )}
       </div>

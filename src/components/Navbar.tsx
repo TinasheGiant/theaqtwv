@@ -32,7 +32,8 @@ import {
   LogOut,
   Lock,
   Zap,
-  Globe
+  Globe,
+  Camera
 } from "lucide-react";
 
 export const Navbar: React.FC = () => {
@@ -52,6 +53,8 @@ export const Navbar: React.FC = () => {
     user,
     adminUser,
     setIsAuthModalOpen,
+    isProfileModalOpen,
+    setIsProfileModalOpen,
     openPortalTab,
     userInvoices,
     userMessages,
@@ -431,6 +434,21 @@ export const Navbar: React.FC = () => {
                       aria-label="Sign Out"
                     >
                       <LogOut className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Quick Profile & Password Actions */}
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => {
+                        playSfx("pop");
+                        setIsProfileModalOpen(true);
+                        setUserDropdownOpen(false);
+                      }}
+                      className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-400/20 via-amber-500/20 to-amber-400/20 hover:from-amber-400/30 hover:to-amber-500/30 border border-amber-400/50 text-amber-300 text-[11px] font-['Cinzel'] font-bold flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Edit Credentials, Icon & Password</span>
                     </button>
                   </div>
 

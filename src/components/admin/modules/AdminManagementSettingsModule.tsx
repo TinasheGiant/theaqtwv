@@ -13,11 +13,14 @@ import {
   Lock,
   Globe,
   Sliders,
+  User,
 } from "lucide-react";
 import { BrandAssetsFaviconCrud } from "./BrandAssetsFaviconCrud";
+import { ProfileSettingsView } from "../../ProfileSettingsView";
 
 export const AdminManagementSettingsModule: React.FC = () => {
   const { systemSettings, updateSystemSettings, showToast, playSfx } = useApp();
+  const [activeTab, setActiveTab] = useState<"system" | "profile">("system");
 
   const [siteName, setSiteName] = useState(systemSettings.siteName);
   const [contactEmail, setContactEmail] = useState(systemSettings.contactEmail);
@@ -63,22 +66,58 @@ export const AdminManagementSettingsModule: React.FC = () => {
               CEO Restricted Module
             </span>
             <span className="text-xs text-gray-400 font-mono">
-              System Core Config
+              Settings & Account Studio
             </span>
           </div>
           <h2 className="text-xl font-['Cinzel'] font-bold text-white mt-1">
-            System & Enterprise Configuration
+            Enterprise Settings & Administrator Profile
           </h2>
           <p className="text-xs text-gray-400 font-light">
-            Manage your brand logo, favicon CRUD, multi-currency forex exchange rates, ZIMRA VAT %, and payment gateway merchant credentials.
+            Manage system-wide multi-currency exchange rates, gateway credentials, brand assets, and update your personal credentials, passwords, and custom avatar icon.
           </p>
+        </div>
+
+        {/* Tab Switcher */}
+        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-black/60 border border-white/10 shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              playSfx("toggle");
+              setActiveTab("system");
+            }}
+            className={`px-4 py-2 rounded-xl text-xs font-['Cinzel'] font-bold transition-all cursor-pointer ${
+              activeTab === "system"
+                ? "bg-amber-400 text-black shadow-md"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            System & Gateway Config
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              playSfx("toggle");
+              setActiveTab("profile");
+            }}
+            className={`px-4 py-2 rounded-xl text-xs font-['Cinzel'] font-bold transition-all cursor-pointer ${
+              activeTab === "profile"
+                ? "bg-amber-400 text-black shadow-md"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            My Profile, Icon & Passwords
+          </button>
         </div>
       </div>
 
-      {/* BRAND ASSETS & FAVICON CRUD STUDIO */}
-      <BrandAssetsFaviconCrud />
+      {activeTab === "profile" ? (
+        <ProfileSettingsView variant="embedded" />
+      ) : (
+        <>
+          {/* BRAND ASSETS & FAVICON CRUD STUDIO */}
+          <BrandAssetsFaviconCrud />
 
-      <form onSubmit={handleSave} className="space-y-6">
+          <form onSubmit={handleSave} className="space-y-6">
         {/* Company Identity & Contact */}
         <div className="p-6 rounded-3xl bg-[#0b0c10] border border-amber-500/20 shadow-lg space-y-4">
           <h3 className="text-sm font-['Cinzel'] font-bold text-white flex items-center gap-2 pb-3 border-b border-white/5">
@@ -273,6 +312,8 @@ export const AdminManagementSettingsModule: React.FC = () => {
           </button>
         </div>
       </form>
+      </>
+      )}
     </div>
   );
 };

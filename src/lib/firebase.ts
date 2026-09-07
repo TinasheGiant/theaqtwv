@@ -9,6 +9,11 @@ import {
   GoogleAuthProvider,
   User as FirebaseUser,
   Auth,
+  updatePassword,
+  updateProfile,
+  updateEmail,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
 } from "firebase/auth";
 import {
   getFirestore,
@@ -150,6 +155,11 @@ export {
   signOut,
   onAuthStateChanged,
   type FirebaseUser,
+  updatePassword,
+  updateProfile,
+  updateEmail,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   collection,
   doc,
   getDoc,

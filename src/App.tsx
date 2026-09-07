@@ -23,6 +23,7 @@ import { RefundPage } from "./components/RefundPage";
 import { ClientPortalPage } from "./components/ClientPortalPage";
 import { AdminDashboard } from "./components/admin/AdminDashboard";
 import { AuthModal } from "./components/AuthModal";
+import { ProfileSettingsModal } from "./components/ProfileSettingsModal";
 import { ServiceDetailModal } from "./components/ServiceDetailModal";
 import { ShareModal } from "./components/ShareModal";
 import { CartDrawer } from "./components/CartDrawer";
@@ -140,6 +141,7 @@ const MainAppContent: React.FC = () => {
       <CartDrawer />
       <AiAssistantDrawer />
       <AuthModal />
+      <ProfileSettingsModal />
 
       {/* Toast Notification Alert */}
       {toastMessage && (
