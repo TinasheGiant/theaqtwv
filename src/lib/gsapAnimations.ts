@@ -69,22 +69,28 @@ export const animateHeroEntrance = (
 
 // Fluid Staggered Grid/Cards Entrance
 export const animateCardsEntrance = (
-  elements: HTMLElement[] | NodeListOf<Element> | string,
+  elements: HTMLElement[] | NodeListOf<Element> | HTMLCollection | string,
   options?: {
     stagger?: number;
     yOffset?: number;
+    yDistance?: number;
     duration?: number;
     delay?: number;
   }
 ) => {
-  const target = typeof elements === "string" ? document.querySelectorAll(elements) : elements;
-  if (!target || (target instanceof NodeList && target.length === 0)) return null;
+  const target =
+    typeof elements === "string"
+      ? document.querySelectorAll(elements)
+      : elements instanceof HTMLCollection
+      ? Array.from(elements)
+      : elements;
+  if (!target || (target instanceof NodeList && target.length === 0) || (Array.isArray(target) && target.length === 0)) return null;
 
   return gsap.fromTo(
     target,
     {
       opacity: 0,
-      y: options?.yOffset ?? 35,
+      y: options?.yDistance ?? options?.yOffset ?? 35,
       scale: 0.96,
     },
     {
@@ -99,6 +105,8 @@ export const animateCardsEntrance = (
     }
   );
 };
+
+export const animateStaggerCards = animateCardsEntrance;
 
 // Smooth Counter Tween
 export const animateNumberCounter = (

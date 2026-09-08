@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import { ServiceCategory, ServiceItem } from "../types";
 import {
@@ -14,6 +14,7 @@ import {
   CreditCard,
   ShoppingBag
 } from "lucide-react";
+import { animateStaggerCards } from "../lib/gsapAnimations";
 
 export const ServicesSection: React.FC = () => {
   const {
@@ -29,6 +30,7 @@ export const ServicesSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<ServiceCategory>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<"featured" | "price-asc" | "price-desc">("featured");
+  const gridRef = useRef<HTMLDivElement | null>(null);
 
   const categories: { id: ServiceCategory; label: string }[] = [
     { id: "all", label: "ALL SERVICES" },
@@ -53,6 +55,16 @@ export const ServicesSection: React.FC = () => {
       return (b.highlighted ? 1 : 0) - (a.highlighted ? 1 : 0);
     });
   }, [servicesList, activeCategory, searchQuery, sortBy]);
+
+  useEffect(() => {
+    if (gridRef.current && filteredServices.length > 0) {
+      animateStaggerCards(gridRef.current.children, {
+        stagger: 0.05,
+        yDistance: 24,
+        duration: 0.6,
+      });
+    }
+  }, [activeCategory, sortBy]);
 
   return (
     <section className="py-20 px-4 sm:px-6 diamond-mesh relative" aria-label="Services and Pricelist">
@@ -141,7 +153,7 @@ export const ServicesSection: React.FC = () => {
         </div>
 
         {/* Services Cards Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div ref={gridRef} className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredServices.map((service) => {
             const isHighlighted = service.highlighted;
             return (

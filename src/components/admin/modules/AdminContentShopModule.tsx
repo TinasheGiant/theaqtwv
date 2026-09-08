@@ -241,19 +241,19 @@ export const AdminContentShopModule: React.FC = () => {
                   setCategory(
                     val === "merch"
                       ? "Merchandise"
-                      : val === "tech"
-                      ? "Tech Gear"
-                      : val === "accessories"
+                      : val === "gadget"
+                      ? "Gadgets & Tech"
+                      : val === "accessory"
                       ? "Accessories"
-                      : "Stationery"
+                      : "Office Supplies"
                   );
                 }}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-amber-500/20 text-white text-xs focus:border-amber-400 focus:outline-none"
               >
                 <option value="merch">Merchandise</option>
-                <option value="tech">Tech Gear</option>
-                <option value="accessories">Accessories</option>
-                <option value="stationery">Stationery</option>
+                <option value="gadget">Gadgets & Tech</option>
+                <option value="accessory">Accessories & Cables</option>
+                <option value="office">Office Supplies</option>
               </select>
             </div>
 

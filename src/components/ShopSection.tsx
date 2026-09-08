@@ -34,7 +34,13 @@ export const ShopSection: React.FC = () => {
 
   const filteredProducts = useMemo(() => {
     return (productsList || []).filter((prod) => {
-      const matchesCat = activeCategory === "all" || prod.categoryKey === activeCategory;
+      const catKey = (prod.categoryKey || "").toLowerCase();
+      const matchesCat =
+        activeCategory === "all" ||
+        catKey === activeCategory ||
+        (activeCategory === "gadget" && (catKey === "tech" || catKey === "gadgets" || catKey === "technology")) ||
+        (activeCategory === "accessory" && (catKey === "accessories" || catKey === "cables")) ||
+        (activeCategory === "office" && (catKey === "stationery" || catKey === "supplies"));
       const matchesSearch =
         prod.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         prod.description.toLowerCase().includes(searchQuery.toLowerCase());

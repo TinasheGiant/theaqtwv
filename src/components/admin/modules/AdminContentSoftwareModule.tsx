@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useApp } from "../../../context/AppContext";
+import { SoftwareSolutionItem } from "../../../types";
 import {
   Cpu,
   Plus,
@@ -16,56 +17,8 @@ import {
   Zap,
 } from "lucide-react";
 
-interface SoftwareSolutionItem {
-  id: string;
-  name: string;
-  category: string;
-  badge: string;
-  description: string;
-  pricing: string;
-  features: string[];
-  status: "Active" | "Maintenance" | "Beta";
-}
-
-const DEFAULT_SOFTWARE_SOLUTIONS: SoftwareSolutionItem[] = [
-  {
-    id: "soft-1",
-    name: "AqutePOS & ZIMRA Fiscal Engine",
-    category: "Retail & Hospitality POS",
-    badge: "Enterprise Ready",
-    description: "Cloud and offline-capable Point of Sale with certified ZIMRA fiscal memory device integration and multi-currency registers.",
-    pricing: "From $120/mo",
-    features: ["FDMS API sync", "EcoCash & Swipe terminal bridge", "Stock tracking & low inventory SMS alerts"],
-    status: "Active",
-  },
-  {
-    id: "soft-2",
-    name: "AquteERP Multi-Warehouse Matrix",
-    category: "Enterprise Resource Planning",
-    badge: "Scalable",
-    description: "End-to-end ERP for procurement, bill of materials, distributed logistics hubs, and automated Nostro/ZWL ledger balancing.",
-    pricing: "From $350/mo",
-    features: ["Multi-branch audit trail", "Barcode scan integration", "Custom tax reporting"],
-    status: "Active",
-  },
-  {
-    id: "soft-3",
-    name: "FinPulse Zimbabwe Micro-Lending Portal",
-    category: "Fintech & Loan Management",
-    badge: "Regulated",
-    description: "Automated loan origination system with KYC verification, credit scoring algorithms, and automated interest amortization schedules.",
-    pricing: "Custom quote",
-    features: ["FCB credit bureau query", "Automated direct debit settlement", "Borrower mobile app"],
-    status: "Active",
-  },
-];
-
 export const AdminContentSoftwareModule: React.FC = () => {
-  const { playSfx } = useApp();
-  const [solutions, setSolutions] = useState<SoftwareSolutionItem[]>(() => {
-    const saved = localStorage.getItem("aqutewave_admin_software");
-    return saved ? JSON.parse(saved) : DEFAULT_SOFTWARE_SOLUTIONS;
-  });
+  const { softwareList, addSoftwareItem, updateSoftwareItem, deleteSoftwareItem, playSfx } = useApp();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [editingItem, setEditingItem] = useState<SoftwareSolutionItem | null>(null);
@@ -80,12 +33,7 @@ export const AdminContentSoftwareModule: React.FC = () => {
   const [featuresStr, setFeaturesStr] = useState("");
   const [status, setStatus] = useState<"Active" | "Maintenance" | "Beta">("Active");
 
-  const saveToStorage = (items: SoftwareSolutionItem[]) => {
-    setSolutions(items);
-    localStorage.setItem("aqutewave_admin_software", JSON.stringify(items));
-  };
-
-  const filtered = solutions.filter(
+  const filtered = (softwareList || []).filter(
     (s) =>
       s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -125,8 +73,7 @@ export const AdminContentSoftwareModule: React.FC = () => {
       .filter(Boolean);
 
     if (isCreating) {
-      const newItem: SoftwareSolutionItem = {
-        id: `soft-${Date.now()}`,
+      addSoftwareItem({
         name,
         category,
         badge,
@@ -134,32 +81,25 @@ export const AdminContentSoftwareModule: React.FC = () => {
         pricing,
         features,
         status,
-      };
-      saveToStorage([newItem, ...solutions]);
+      });
       setIsCreating(false);
     } else if (editingItem) {
-      const updated = solutions.map((s) =>
-        s.id === editingItem.id
-          ? {
-              ...s,
-              name,
-              category,
-              badge,
-              description,
-              pricing,
-              features,
-              status,
-            }
-          : s
-      );
-      saveToStorage(updated);
+      updateSoftwareItem(editingItem.id, {
+        name,
+        category,
+        badge,
+        description,
+        pricing,
+        features,
+        status,
+      });
       setEditingItem(null);
     }
   };
 
   const handleDelete = (id: string, name: string) => {
     if (window.confirm(`Delete software solution "${name}"?`)) {
-      saveToStorage(solutions.filter((s) => s.id !== id));
+      deleteSoftwareItem(id);
     }
   };
 
@@ -173,7 +113,7 @@ export const AdminContentSoftwareModule: React.FC = () => {
               Content Module
             </span>
             <span className="text-xs text-gray-400 font-mono">
-              {solutions.length} Enterprise Software Modules
+              {softwareList.length} Enterprise Software Modules
             </span>
           </div>
           <h2 className="text-xl font-['Cinzel'] font-bold text-white mt-1">

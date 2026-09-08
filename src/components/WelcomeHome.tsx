@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import gsap from "gsap";
 import { useApp } from "../context/AppContext";
 import {
   ArrowRight,
@@ -19,9 +20,27 @@ import {
   MessageSquare,
   ChevronRight
 } from "lucide-react";
+import {
+  animateHeroEntrance,
+  animateStaggerCards,
+  attachTiltEffect,
+  attachMagneticEffect,
+  animateFloating,
+} from "../lib/gsapAnimations";
 
 export const WelcomeHome: React.FC = () => {
   const { setActivePage, playSfx, formatPrice } = useApp();
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const heroCardRef = useRef<HTMLDivElement | null>(null);
+  const portalsGridRef = useRef<HTMLDivElement | null>(null);
+  const testimonialsGridRef = useRef<HTMLDivElement | null>(null);
+  const teaserCardRef = useRef<HTMLDivElement | null>(null);
+  const btnServicesRef = useRef<HTMLButtonElement | null>(null);
+  const btnEstimatorRef = useRef<HTMLButtonElement | null>(null);
+  const btnAboutRef = useRef<HTMLButtonElement | null>(null);
+  const spark1Ref = useRef<HTMLDivElement | null>(null);
+  const spark2Ref = useRef<HTMLDivElement | null>(null);
 
   const [counterValues, setCounterValues] = useState({
     projects: 0,
@@ -31,37 +50,65 @@ export const WelcomeHome: React.FC = () => {
   });
 
   useEffect(() => {
-    // Smooth animated counters
-    const duration = 1800;
-    const steps = 40;
-    const intervalTime = duration / steps;
-    let step = 0;
-
-    const timer = setInterval(() => {
-      step++;
-      const progress = step / steps;
-      const easeOutQuad = (t: number) => t * (2 - t);
-      const easedProgress = easeOutQuad(progress);
-
-      setCounterValues({
-        projects: Math.round(easedProgress * 150),
-        satisfaction: Math.round(easedProgress * 95),
-        years: Math.round(easedProgress * 3),
-        uptime: Number((easedProgress * 99.9).toFixed(1)),
+    // 1. Hero entrance timeline
+    if (containerRef.current) {
+      animateHeroEntrance(containerRef.current, {
+        sloganSelector: ".home-slogan",
+        titleSelector: ".home-title",
+        subtitleSelector: ".home-subtitle",
+        rulesSelector: ".home-rule",
+        buttonsSelector: ".home-btn",
+        statsSelector: ".home-stats",
       });
+    }
 
-      if (step >= steps) {
-        clearInterval(timer);
+    // 2. Smooth GSAP stats counter interpolation
+    const counters = { projects: 0, satisfaction: 0, years: 0, uptime: 0 };
+    gsap.to(counters, {
+      projects: 150,
+      satisfaction: 95,
+      years: 3,
+      uptime: 99.9,
+      duration: 2.2,
+      ease: "power2.out",
+      onUpdate: () => {
         setCounterValues({
-          projects: 150,
-          satisfaction: 95,
-          years: 3,
-          uptime: 99.9,
+          projects: Math.round(counters.projects),
+          satisfaction: Math.round(counters.satisfaction),
+          years: Math.round(counters.years),
+          uptime: Number(counters.uptime.toFixed(1)),
         });
-      }
-    }, intervalTime);
+      },
+    });
 
-    return () => clearInterval(timer);
+    // 3. Stagger portals and testimonials
+    if (portalsGridRef.current) {
+      animateStaggerCards(portalsGridRef.current.children, { delay: 0.4, stagger: 0.08 });
+    }
+    if (testimonialsGridRef.current) {
+      animateStaggerCards(testimonialsGridRef.current.children, { delay: 0.6, stagger: 0.1 });
+    }
+
+    // 4. Subtle 3D tilt & magnetic pull
+    const cleanupTilt1 = attachTiltEffect(heroCardRef.current, 5);
+    const cleanupTilt2 = attachTiltEffect(teaserCardRef.current, 4);
+    const cleanMag1 = attachMagneticEffect(btnServicesRef.current, 0.2);
+    const cleanMag2 = attachMagneticEffect(btnEstimatorRef.current, 0.2);
+    const cleanMag3 = attachMagneticEffect(btnAboutRef.current, 0.2);
+
+    // 5. Floating breathing sparkles
+    const float1 = animateFloating(spark1Ref.current, { yDistance: 14, rotation: 10, duration: 4.2 });
+    const float2 = animateFloating(spark2Ref.current, { yDistance: -12, rotation: -12, duration: 4.8, delay: 0.4 });
+
+    return () => {
+      cleanupTilt1();
+      cleanupTilt2();
+      cleanMag1();
+      cleanMag2();
+      cleanMag3();
+      float1?.kill();
+      float2?.kill();
+    };
   }, []);
 
   const portals = [
@@ -140,22 +187,39 @@ export const WelcomeHome: React.FC = () => {
   ];
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-between overflow-hidden diamond-mesh">
+    <div
+      ref={containerRef}
+      className="relative min-h-screen flex flex-col justify-between overflow-hidden diamond-mesh"
+    >
       {/* Decorative Sparkles */}
-      <div className="absolute top-24 left-[10%] text-amber-400/40 text-xl animate-pulse pointer-events-none select-none">✦</div>
-      <div className="absolute top-44 right-[12%] text-amber-300/30 text-2xl animate-pulse pointer-events-none select-none" style={{ animationDelay: "1.2s" }}>✦</div>
-      <div className="absolute bottom-40 left-[8%] text-amber-400/30 text-lg animate-pulse pointer-events-none select-none" style={{ animationDelay: "2.4s" }}>✦</div>
+      <div
+        ref={spark1Ref}
+        className="absolute top-24 left-[10%] text-amber-400/50 text-xl pointer-events-none select-none drop-shadow-[0_0_8px_rgba(255,215,0,0.6)]"
+      >
+        ✦
+      </div>
+      <div
+        ref={spark2Ref}
+        className="absolute top-44 right-[12%] text-amber-300/40 text-2xl pointer-events-none select-none drop-shadow-[0_0_10px_rgba(255,215,0,0.5)]"
+      >
+        ✦
+      </div>
+      <div className="absolute bottom-40 left-[8%] text-amber-400/30 text-lg pointer-events-none select-none">✦</div>
 
       {/* Main Welcome Hero Section */}
       <section className="relative px-4 sm:px-6 pt-24 pb-12 z-10">
         <div className="max-w-6xl mx-auto w-full">
-          {/* Welcome Card */}
-          <div className="glass-panel rounded-3xl p-6 sm:p-10 md:p-14 text-center relative overflow-hidden border border-amber-500/30 shadow-[0_20px_70px_rgba(0,0,0,0.8),0_0_50px_rgba(212,175,55,0.12)]">
+          {/* Welcome Card with 3D Tilt */}
+          <div
+            ref={heroCardRef}
+            className="glass-panel rounded-3xl p-6 sm:p-10 md:p-14 text-center relative overflow-hidden border border-amber-500/30 shadow-[0_20px_70px_rgba(0,0,0,0.8),0_0_50px_rgba(212,175,55,0.12)] transition-shadow hover:shadow-[0_25px_80px_rgba(0,0,0,0.9),0_0_60px_rgba(212,175,55,0.2)]"
+            style={{ transformStyle: "preserve-3d" }}
+          >
             {/* Top Glow Ambient */}
             <div className="absolute -top-24 inset-x-0 h-48 bg-gradient-to-b from-amber-400/15 via-amber-500/5 to-transparent pointer-events-none" />
 
             {/* Slogan Pill */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 mb-6 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
+            <div className="home-slogan inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 mb-6 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
               <span className="font-['Orbitron'] text-xs sm:text-sm font-bold tracking-[0.25em] text-amber-300">
                 INNOVATE · BUILD · EXCEL
@@ -163,63 +227,68 @@ export const WelcomeHome: React.FC = () => {
             </div>
 
             {/* Geometric Diamond Ornament */}
-            <div className="flex items-center justify-center gap-4 my-2 opacity-80">
+            <div className="home-rule flex items-center justify-center gap-4 my-2 opacity-80">
               <div className="h-[1px] w-12 sm:w-24 bg-gradient-to-r from-transparent via-amber-400 to-amber-500" />
               <div className="w-2.5 h-2.5 rotate-45 bg-amber-300 shadow-[0_0_10px_rgba(255,215,0,0.9)]" />
               <div className="h-[1px] w-12 sm:w-24 bg-gradient-to-l from-transparent via-amber-400 to-amber-500" />
             </div>
 
             {/* Main Brand Title */}
-            <h1 className="font-['Cinzel_Decorative'] font-black text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider leading-[1.08] my-3 gold-logo-shine drop-shadow-2xl">
+            <h1 className="home-title font-['Cinzel_Decorative'] font-black text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider leading-[1.08] my-3 gold-logo-shine drop-shadow-2xl">
               AQUTEWAVE
             </h1>
 
             {/* Geometric Diamond Ornament */}
-            <div className="flex items-center justify-center gap-4 my-2 opacity-80">
+            <div className="home-rule flex items-center justify-center gap-4 my-2 opacity-80">
               <div className="h-[1px] w-12 sm:w-24 bg-gradient-to-r from-transparent via-amber-400 to-amber-500" />
               <div className="w-2.5 h-2.5 rotate-45 bg-amber-300 shadow-[0_0_10px_rgba(255,215,0,0.9)]" />
               <div className="h-[1px] w-12 sm:w-24 bg-gradient-to-l from-transparent via-amber-400 to-amber-500" />
             </div>
 
             {/* Subtitle */}
-            <p className="font-['Cormorant_Garamond'] italic text-xl sm:text-2xl md:text-3xl text-amber-200/90 font-medium tracking-wide max-w-3xl mx-auto mt-2 mb-3">
-              Explore the most convenient services
-            </p>
+            <div className="home-subtitle">
+              <p className="font-['Cormorant_Garamond'] italic text-xl sm:text-2xl md:text-3xl text-amber-200/90 font-medium tracking-wide max-w-3xl mx-auto mt-2 mb-3">
+                Explore the most convenient services
+              </p>
 
-            <p className="text-gray-300 text-xs sm:text-sm md:text-base max-w-2xl mx-auto leading-relaxed mb-8">
-              Your one-stop destination for digital excellence in Zimbabwe and beyond. Engineering high-converting websites, custom ERP software, prestigious branding, and growth marketing.
-            </p>
+              <p className="text-gray-300 text-xs sm:text-sm md:text-base max-w-2xl mx-auto leading-relaxed mb-8">
+                Your one-stop destination for digital excellence in Zimbabwe and beyond. Engineering high-converting websites, custom ERP software, prestigious branding, and growth marketing.
+              </p>
+            </div>
 
             {/* Primary Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10">
               <button
+                ref={btnServicesRef}
                 onClick={() => {
                   playSfx("sparkle");
                   setActivePage("services");
                 }}
-                className="w-full sm:w-auto btn-gold-luxury px-8 py-3.5 rounded-full text-xs sm:text-sm tracking-wider flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
+                className="home-btn w-full sm:w-auto btn-gold-luxury px-8 py-3.5 rounded-full text-xs sm:text-sm tracking-wider flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
               >
                 <span>EXPLORE SERVICES & PRICING</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <button
+                ref={btnEstimatorRef}
                 onClick={() => {
                   playSfx("pop");
                   setActivePage("estimator");
                 }}
-                className="w-full sm:w-auto btn-outline-luxury px-7 py-3.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                className="home-btn w-full sm:w-auto btn-outline-luxury px-7 py-3.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Calculator className="w-4 h-4 text-amber-400" />
                 <span>PROJECT COST ESTIMATOR</span>
               </button>
 
               <button
+                ref={btnAboutRef}
                 onClick={() => {
                   playSfx("click");
                   setActivePage("about");
                 }}
-                className="w-full sm:w-auto btn-outline-luxury px-7 py-3.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                className="home-btn w-full sm:w-auto btn-outline-luxury px-7 py-3.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>ABOUT AQUTEWAVE</span>
               </button>
@@ -227,19 +296,19 @@ export const WelcomeHome: React.FC = () => {
 
             {/* Value Guarantees Row */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-amber-500/15 max-w-4xl mx-auto">
-              <div className="flex items-center justify-center gap-2 text-gray-300 text-xs">
+              <div className="flex items-center justify-center gap-2 text-gray-300 text-xs hover:text-amber-300 transition-colors">
                 <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
                 <span>1 Year Free Domain</span>
               </div>
-              <div className="flex items-center justify-center gap-2 text-gray-300 text-xs">
+              <div className="flex items-center justify-center gap-2 text-gray-300 text-xs hover:text-amber-300 transition-colors">
                 <Zap className="w-4 h-4 text-amber-400 shrink-0" />
                 <span>3–5 Day Delivery</span>
               </div>
-              <div className="flex items-center justify-center gap-2 text-gray-300 text-xs">
+              <div className="flex items-center justify-center gap-2 text-gray-300 text-xs hover:text-amber-300 transition-colors">
                 <Globe className="w-4 h-4 text-amber-400 shrink-0" />
                 <span>Free Cloud Hosting</span>
               </div>
-              <div className="flex items-center justify-center gap-2 text-gray-300 text-xs">
+              <div className="flex items-center justify-center gap-2 text-gray-300 text-xs hover:text-amber-300 transition-colors">
                 <Award className="w-4 h-4 text-amber-400 shrink-0" />
                 <span>100% Quality SLA</span>
               </div>
@@ -247,8 +316,8 @@ export const WelcomeHome: React.FC = () => {
           </div>
 
           {/* Animated Statistics Banner */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-6">
-            <div className="glass-card-hover p-4 sm:p-5 rounded-2xl text-center">
+          <div className="home-stats grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-6">
+            <div className="glass-card-hover p-4 sm:p-5 rounded-2xl text-center border border-amber-500/20 hover:border-amber-400/50 transition-all">
               <div className="font-['Orbitron'] text-2xl sm:text-3xl lg:text-4xl font-black text-amber-300">
                 {counterValues.projects}+
               </div>
@@ -257,7 +326,7 @@ export const WelcomeHome: React.FC = () => {
               </div>
             </div>
 
-            <div className="glass-card-hover p-4 sm:p-5 rounded-2xl text-center">
+            <div className="glass-card-hover p-4 sm:p-5 rounded-2xl text-center border border-amber-500/20 hover:border-amber-400/50 transition-all">
               <div className="font-['Orbitron'] text-2xl sm:text-3xl lg:text-4xl font-black text-amber-300">
                 {counterValues.satisfaction}%+
               </div>
@@ -266,7 +335,7 @@ export const WelcomeHome: React.FC = () => {
               </div>
             </div>
 
-            <div className="glass-card-hover p-4 sm:p-5 rounded-2xl text-center">
+            <div className="glass-card-hover p-4 sm:p-5 rounded-2xl text-center border border-amber-500/20 hover:border-amber-400/50 transition-all">
               <div className="font-['Orbitron'] text-2xl sm:text-3xl lg:text-4xl font-black text-amber-300">
                 {counterValues.years}+
               </div>
@@ -275,7 +344,7 @@ export const WelcomeHome: React.FC = () => {
               </div>
             </div>
 
-            <div className="glass-card-hover p-4 sm:p-5 rounded-2xl text-center">
+            <div className="glass-card-hover p-4 sm:p-5 rounded-2xl text-center border border-amber-500/20 hover:border-amber-400/50 transition-all">
               <div className="font-['Orbitron'] text-2xl sm:text-3xl lg:text-4xl font-black text-amber-300">
                 24/7
               </div>
@@ -287,7 +356,7 @@ export const WelcomeHome: React.FC = () => {
         </div>
       </section>
 
-      {/* Curated Gateway Portals Grid (Directing cleanly to individual pages) */}
+      {/* Curated Gateway Portals Grid */}
       <section className="py-10 px-4 sm:px-6 relative z-10" aria-label="Explore Aqutewave Portals">
         <div className="max-w-6xl mx-auto space-y-6">
           <div className="text-center">
@@ -303,7 +372,7 @@ export const WelcomeHome: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div ref={portalsGridRef} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {portals.map((item, idx) => (
               <div
                 key={idx}
@@ -356,7 +425,11 @@ export const WelcomeHome: React.FC = () => {
       {/* Featured Estimator Teaser Card */}
       <section className="py-8 px-4 sm:px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="glass-panel p-8 sm:p-12 rounded-3xl border border-amber-400/40 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_40px_rgba(212,175,55,0.18)] flex flex-col md:flex-row items-center justify-between gap-8">
+          <div
+            ref={teaserCardRef}
+            className="glass-panel p-8 sm:p-12 rounded-3xl border border-amber-400/40 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_40px_rgba(212,175,55,0.18)] flex flex-col md:flex-row items-center justify-between gap-8 transition-shadow hover:shadow-[0_25px_70px_rgba(0,0,0,0.9),0_0_50px_rgba(212,175,55,0.25)]"
+            style={{ transformStyle: "preserve-3d" }}
+          >
             <div className="space-y-3 text-center md:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-['Orbitron'] tracking-widest uppercase">
                 <Calculator className="w-3.5 h-3.5 text-amber-400" />
@@ -387,7 +460,7 @@ export const WelcomeHome: React.FC = () => {
       {/* Client Testimonials Snippet */}
       <section className="py-8 px-4 sm:px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-5">
+          <div ref={testimonialsGridRef} className="grid md:grid-cols-3 gap-5">
             {clientHighlights.map((t, idx) => (
               <div key={idx} className="glass-card-hover p-6 rounded-3xl flex flex-col justify-between space-y-4">
                 <div>

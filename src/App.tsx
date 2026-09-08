@@ -24,6 +24,7 @@ import { ClientPortalPage } from "./components/ClientPortalPage";
 import { AdminDashboard } from "./components/admin/AdminDashboard";
 import { AuthModal } from "./components/AuthModal";
 import { ProfileSettingsModal } from "./components/ProfileSettingsModal";
+import { GsapCursorGlow } from "./components/GsapCursorGlow";
 import { ServiceDetailModal } from "./components/ServiceDetailModal";
 import { ShareModal } from "./components/ShareModal";
 import { CartDrawer } from "./components/CartDrawer";
@@ -69,6 +70,7 @@ const MainAppContent: React.FC = () => {
     <div className="min-h-screen text-gray-100 flex flex-col justify-between selection:bg-amber-400 selection:text-black">
       <SeoManager />
       <BackgroundEffects />
+      <GsapCursorGlow />
       <Navbar />
 
       {/* Main View Router — Each page renders separately without 1-page mega-scroll */}

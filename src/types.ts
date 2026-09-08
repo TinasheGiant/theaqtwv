@@ -308,6 +308,17 @@ export interface ServiceItem {
   highlighted?: boolean;
 }
 
+export interface SoftwareSolutionItem {
+  id: string;
+  name: string;
+  category: string;
+  badge: string;
+  description: string;
+  pricing: string;
+  features: string[];
+  status: "Active" | "Maintenance" | "Beta";
+}
+
 export type ProductCategory = "all" | "merchandise" | "gadgets" | "accessories" | "office" | "tech";
 
 export interface ProductItem {

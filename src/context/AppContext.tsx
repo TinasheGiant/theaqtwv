@@ -27,11 +27,13 @@ import {
   AdminSystemSettings,
   BlogPost,
   PortfolioItem,
+  SoftwareSolutionItem,
 } from "../types";
 import { SERVICES_LIST } from "../data/servicesData";
 import { PRODUCTS_LIST } from "../data/productsData";
 import { BLOG_POSTS } from "../data/blogData";
 import { PORTFOLIO_ITEMS } from "../data/portfolioData";
+import { DEFAULT_SOFTWARE_SOLUTIONS } from "../data/softwareData";
 import {
   DEFAULT_ADMIN_USERS,
   ROLE_MODULE_PERMISSIONS,
@@ -245,6 +247,11 @@ interface AppContextType {
   addPortfolioItem: (item: Omit<PortfolioItem, "id">) => void;
   updatePortfolioItem: (id: string, updates: Partial<PortfolioItem>) => void;
   deletePortfolioItem: (id: string) => void;
+
+  softwareList: SoftwareSolutionItem[];
+  addSoftwareItem: (item: Omit<SoftwareSolutionItem, "id">) => void;
+  updateSoftwareItem: (id: string, updates: Partial<SoftwareSolutionItem>) => void;
+  deleteSoftwareItem: (id: string) => void;
 
   couponsList: AdminCoupon[];
   addCouponItem: (coupon: Omit<AdminCoupon, "id">) => void;
@@ -466,6 +473,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   });
 
+  const [softwareList, setSoftwareList] = useState<SoftwareSolutionItem[]>(() => {
+    try {
+      const saved = localStorage.getItem("aqutewave_software_list") || localStorage.getItem("aqutewave_admin_software");
+      return saved ? JSON.parse(saved) : DEFAULT_SOFTWARE_SOLUTIONS;
+    } catch {
+      return DEFAULT_SOFTWARE_SOLUTIONS;
+    }
+  });
+
   const [couponsList, setCouponsList] = useState<AdminCoupon[]>(() => {
     try {
       const saved = localStorage.getItem("aqutewave_coupons_list");
@@ -572,6 +588,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       localStorage.setItem("aqutewave_products_list", JSON.stringify(productsList));
       localStorage.setItem("aqutewave_blogs_list", JSON.stringify(blogsList));
       localStorage.setItem("aqutewave_portfolio_list", JSON.stringify(portfolioList));
+      localStorage.setItem("aqutewave_software_list", JSON.stringify(softwareList));
+      localStorage.setItem("aqutewave_admin_software", JSON.stringify(softwareList));
       localStorage.setItem("aqutewave_coupons_list", JSON.stringify(couponsList));
       localStorage.setItem("aqutewave_support_tickets", JSON.stringify(supportTickets));
       localStorage.setItem("aqutewave_contact_messages", JSON.stringify(contactMessages));
@@ -590,6 +608,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     productsList,
     blogsList,
     portfolioList,
+    softwareList,
     couponsList,
     supportTickets,
     contactMessages,
@@ -679,7 +698,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           console.warn("Notice subscribing to portfolio:", e);
         }
 
-        // 5. Admin Users & Roles
+        // 5. Software Solutions
+        try {
+          const unsubSoftware = onSnapshot(
+            collection(db, COLLECTIONS.SOFTWARE),
+            (snapshot) => {
+              if (!snapshot.empty) {
+                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as SoftwareSolutionItem));
+                setSoftwareList(items);
+              }
+            },
+            (err) => handleFirestoreError(err, OperationType.LIST, "software")
+          );
+          unsubs.push(unsubSoftware);
+        } catch (e) {
+          console.warn("Notice subscribing to software:", e);
+        }
+
+        // 6. Admin Users & Roles
         try {
           const unsubAdminUsers = onSnapshot(
             collection(db, COLLECTIONS.ADMIN_USERS),
@@ -1250,6 +1286,37 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     deleteDocFromFirestore(COLLECTIONS.PORTFOLIO, id);
     logAdminSecurityEvent("PORTFOLIO_DELETED", `Deleted showcase ${id}`, "portfolio", "warning");
     showToast("Showcase deleted", "info");
+  };
+
+  const addSoftwareItem = (item: Omit<SoftwareSolutionItem, "id">) => {
+    const id = `soft-${Date.now()}`;
+    const newSoftware: SoftwareSolutionItem = { ...item, id };
+    setSoftwareList((prev) => [newSoftware, ...prev]);
+    syncDocToFirestore(COLLECTIONS.SOFTWARE, id, newSoftware);
+    logAdminSecurityEvent("SOFTWARE_ADDED", `Added software solution ${item.name}`, "software-erp", "allowed");
+    showToast(`Software "${item.name}" added`, "success");
+  };
+
+  const updateSoftwareItem = (id: string, updates: Partial<SoftwareSolutionItem>) => {
+    setSoftwareList((prev) =>
+      prev.map((s) => {
+        if (s.id === id) {
+          const updated = { ...s, ...updates };
+          syncDocToFirestore(COLLECTIONS.SOFTWARE, id, updated);
+          return updated;
+        }
+        return s;
+      })
+    );
+    logAdminSecurityEvent("SOFTWARE_UPDATED", `Updated software ${id}`, "software-erp", "allowed");
+    showToast("Software solution updated", "success");
+  };
+
+  const deleteSoftwareItem = (id: string) => {
+    setSoftwareList((prev) => prev.filter((s) => s.id !== id));
+    deleteDocFromFirestore(COLLECTIONS.SOFTWARE, id);
+    logAdminSecurityEvent("SOFTWARE_DELETED", `Deleted software ${id}`, "software-erp", "warning");
+    showToast("Software solution removed", "info");
   };
 
   const addCouponItem = (coupon: Omit<AdminCoupon, "id">) => {
@@ -2207,6 +2274,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addPortfolioItem,
         updatePortfolioItem,
         deletePortfolioItem,
+
+        softwareList,
+        addSoftwareItem,
+        updateSoftwareItem,
+        deleteSoftwareItem,
 
         couponsList,
         addCouponItem,

@@ -18,57 +18,28 @@ import {
 } from "lucide-react";
 
 export const SoftwareSection: React.FC = () => {
-  const { formatPrice, openBookingWithService, playSfx } = useApp();
+  const { softwareList, formatPrice, openBookingWithService, playSfx } = useApp();
   const [activeErpTab, setActiveErpTab] = useState<"inventory" | "invoicing" | "accounts" | "hr" | "sync">("inventory");
 
-  const softwarePillars = [
-    {
-      icon: <Globe className="w-6 h-6 text-amber-400" />,
-      title: "Web Platforms & Portals",
-      desc: "High-performance enterprise portals, e-commerce architectures, and customer self-service suites.",
-      tag: "from $150",
-      serviceId: "custom-web-apps",
-    },
-    {
-      icon: <Cpu className="w-6 h-6 text-amber-400" />,
-      title: "Interactive Web Applications",
-      desc: "Full-stack browser apps with role permissions, real-time WebSockets, and stateful databases.",
-      tag: "from $150",
-      serviceId: "custom-web-apps",
-    },
-    {
-      icon: <Database className="w-6 h-6 text-amber-400" />,
-      title: "Basic & Hybrid ERP Systems",
-      desc: "Unified ledger, stock management, invoice generators, and multi-depot sync without subscription fees.",
-      tag: "from $500",
-      serviceId: "basic-erp",
-    },
-    {
-      icon: <Cloud className="w-6 h-6 text-amber-400" />,
-      title: "Cloud Infrastructure & DevOps",
-      desc: "Containerized deployments, automated CI/CD pipelines, daily automated backups, and 99.99% uptime.",
-      tag: "Enterprise",
-      serviceId: "premium-erp",
-    },
-    {
-      icon: <Bot className="w-6 h-6 text-amber-400" />,
-      title: "AI & Smart Automations",
-      desc: "Gemini-powered chatbot assistants, intelligent document processing, and predictive stock reorders.",
-      tag: "Custom AI",
-      serviceId: "custom-web-apps",
-    },
-    {
-      icon: <ShieldCheck className="w-6 h-6 text-amber-400" />,
-      title: "Quality Assurance & Security",
-      desc: "Comprehensive penetration tests, vulnerability patching, SQL injection defense, and role audits.",
-      tag: "Certified",
-      serviceId: "premium-erp",
-    },
-  ];
-
-  function Globe(props: any) {
-    return <Server {...props} />;
-  }
+  const getIconForCategory = (cat: string) => {
+    const c = cat.toLowerCase();
+    if (c.includes("pos") || c.includes("retail") || c.includes("checkout") || c.includes("pay")) {
+      return <Cpu className="w-6 h-6 text-amber-400" />;
+    }
+    if (c.includes("erp") || c.includes("database") || c.includes("ledger")) {
+      return <Database className="w-6 h-6 text-amber-400" />;
+    }
+    if (c.includes("supply") || c.includes("fleet") || c.includes("gps") || c.includes("logistics")) {
+      return <Server className="w-6 h-6 text-amber-400" />;
+    }
+    if (c.includes("health") || c.includes("clinic") || c.includes("security")) {
+      return <ShieldCheck className="w-6 h-6 text-amber-400" />;
+    }
+    if (c.includes("edu") || c.includes("school") || c.includes("portal")) {
+      return <Layers className="w-6 h-6 text-amber-400" />;
+    }
+    return <Cpu className="w-6 h-6 text-amber-400" />;
+  };
 
   return (
     <section className="py-20 px-4 sm:px-6 diamond-mesh relative" aria-label="Software & ERP Engineering">
@@ -88,34 +59,58 @@ export const SoftwareSection: React.FC = () => {
           <div className="gold-divider max-w-xs mx-auto my-6" />
         </div>
 
-        {/* Pillars Grid */}
+        {/* Dynamic Software Solutions Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {softwarePillars.map((p, idx) => (
-            <div key={idx} className="glass-card-hover p-6 sm:p-7 rounded-3xl flex flex-col justify-between group">
+          {(softwareList || []).map((s) => (
+            <div key={s.id} className="glass-card-hover p-6 sm:p-7 rounded-3xl flex flex-col justify-between group">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    {p.icon}
+                    {getIconForCategory(s.category)}
                   </div>
-                  <span className="text-[11px] font-mono font-bold text-amber-400/90 bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/20">
-                    {p.tag}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-gray-400">{s.category}</span>
+                    <span className="text-[11px] font-mono font-bold text-amber-400/90 bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/20">
+                      {s.badge}
+                    </span>
+                  </div>
                 </div>
+
                 <h3 className="font-['Cinzel'] font-bold text-lg text-white mb-2 group-hover:text-amber-300 transition-colors">
-                  {p.title}
+                  {s.name}
                 </h3>
-                <p className="text-xs text-gray-400 leading-relaxed mb-6">
-                  {p.desc}
+                <p className="text-xs text-gray-400 leading-relaxed mb-4">
+                  {s.description}
                 </p>
+
+                {/* Features List */}
+                {s.features && s.features.length > 0 && (
+                  <ul className="space-y-1.5 mb-5">
+                    {s.features.slice(0, 3).map((feat, fIdx) => (
+                      <li key={fIdx} className="flex items-start gap-2 text-[11px] text-gray-300">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
-              <button
-                onClick={() => openBookingWithService(p.serviceId)}
-                className="text-xs font-['Cinzel'] font-bold text-amber-300 hover:text-amber-200 flex items-center gap-1.5 cursor-pointer pt-3 border-t border-amber-500/15"
-              >
-                <span>Request Specs & Pricing</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              <div className="pt-3 border-t border-amber-500/15 flex items-center justify-between">
+                <span className="text-xs font-mono font-bold text-amber-400">
+                  {s.pricing}
+                </span>
+                <button
+                  onClick={() => {
+                    playSfx("pop");
+                    openBookingWithService(s.name);
+                  }}
+                  className="text-xs font-['Cinzel'] font-bold text-amber-300 hover:text-amber-200 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>Request System</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           ))}
         </div>

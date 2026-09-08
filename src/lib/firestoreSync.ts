@@ -16,6 +16,7 @@ import {
   ProductItem,
   BlogPost,
   PortfolioItem,
+  SoftwareSolutionItem,
   AdminUser,
   AdminCoupon,
   AdminSupportTicket,
@@ -32,6 +33,7 @@ import { SERVICES_LIST } from "../data/servicesData";
 import { PRODUCTS_LIST } from "../data/productsData";
 import { BLOG_POSTS } from "../data/blogData";
 import { PORTFOLIO_ITEMS } from "../data/portfolioData";
+import { DEFAULT_SOFTWARE_SOLUTIONS } from "../data/softwareData";
 import {
   DEFAULT_ADMIN_USERS,
   DEFAULT_ADMIN_COUPONS,
@@ -139,7 +141,24 @@ export async function seedFirestoreDatabase(force: boolean = false): Promise<{ s
       console.warn("Notice during portfolio seed:", e);
     }
 
-    // 5. Seed System Settings
+    // 5. Seed Software Solutions
+    try {
+      for (const sw of DEFAULT_SOFTWARE_SOLUTIONS) {
+        const swRef = doc(db, COLLECTIONS.SOFTWARE, sw.id);
+        if (force) {
+          await setDoc(swRef, sw);
+        } else {
+          const snap = await getDoc(swRef).catch(() => null);
+          if (!snap || !snap.exists()) {
+            await setDoc(swRef, sw).catch(() => {});
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Notice during software seed:", e);
+    }
+
+    // 6. Seed System Settings
     try {
       const settingsRef = doc(db, COLLECTIONS.SYSTEM_SETTINGS, "config");
       const snap = await getDoc(settingsRef).catch(() => null);
@@ -150,7 +169,7 @@ export async function seedFirestoreDatabase(force: boolean = false): Promise<{ s
       console.warn("Notice during system settings seed:", e);
     }
 
-    // 6. Seed Coupons
+    // 7. Seed Coupons
     try {
       for (const c of DEFAULT_ADMIN_COUPONS) {
         const cRef = doc(db, COLLECTIONS.COUPONS, c.id);
