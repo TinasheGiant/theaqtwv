@@ -140,81 +140,110 @@ export const ShopSection: React.FC = () => {
 
         {/* Product Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              onClick={() => {
-                playSfx("pop");
-                setSelectedProduct(product);
-              }}
-              className="glass-card-hover rounded-3xl p-5 flex flex-col justify-between group cursor-pointer relative overflow-hidden border border-amber-500/20 hover:border-amber-400/50"
-            >
-              {/* Optional Badge */}
-              {product.badge && (
-                <div className="absolute top-3 right-3 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-black text-[10px] font-bold font-['Cinzel'] tracking-wider shadow-md">
-                  {product.badge}
-                </div>
-              )}
+          {filteredProducts.map((product) => {
+            const prodImg = product.imageUrl || product.image;
+            return (
+              <div
+                key={product.id}
+                onClick={() => {
+                  playSfx("pop");
+                  setSelectedProduct(product);
+                }}
+                className="glass-card-hover rounded-3xl p-5 flex flex-col justify-between group cursor-pointer relative overflow-hidden border border-amber-500/20 hover:border-amber-400/50"
+              >
+                {/* Optional Badge */}
+                {product.badge && (
+                  <div className="absolute top-4 right-4 z-20 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-black text-[10px] font-bold font-['Cinzel'] tracking-wider shadow-md">
+                    {product.badge}
+                  </div>
+                )}
 
-              <div>
-                {/* Visual Icon / Display */}
-                <div className="h-44 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-center text-6xl group-hover:scale-105 transition-transform relative overflow-hidden mb-4">
-                  <span>{product.icon}</span>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-3">
-                    <span className="text-[11px] font-['Cinzel'] font-bold text-amber-300 bg-black/70 px-3 py-1 rounded-full border border-amber-400/30 flex items-center gap-1">
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Quick View</span>
+                <div>
+                  {/* Visual Product Image / Banner Display */}
+                  <div className="h-48 rounded-2xl bg-black/60 border border-white/10 relative overflow-hidden mb-4 group/img flex items-center justify-center">
+                    {prodImg ? (
+                      <img
+                        src={prodImg}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80";
+                        }}
+                      />
+                    ) : (
+                      <div className="text-6xl group-hover:scale-110 transition-transform">
+                        <span>{product.icon || "📦"}</span>
+                      </div>
+                    )}
+
+                    {/* Gradient Overlay for contrast */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
+
+                    {/* Floating Category Tag */}
+                    <div className="absolute bottom-2.5 left-2.5 z-10">
+                      <span className="text-[10px] font-['Cinzel'] font-bold px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-sm border border-amber-500/30 text-amber-300 flex items-center gap-1">
+                        <span>{product.icon}</span>
+                        <span>{product.category}</span>
+                      </span>
+                    </div>
+
+                    {/* Quick View Hover Button Overlay */}
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none z-10">
+                      <span className="text-xs font-['Cinzel'] font-bold text-black bg-amber-400 px-3.5 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Quick View</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Rating & Stock */}
+                  <div className="flex items-center justify-between text-xs mb-1.5">
+                    <div className="flex items-center gap-1 text-amber-400 font-mono text-[11px]">
+                      <Star className="w-3.5 h-3.5 fill-amber-400" />
+                      <span>{product.rating || 5.0}</span>
+                      <span className="text-gray-500">({product.reviewsCount || 1})</span>
+                    </div>
+                    <span className={`text-[10px] font-mono ${product.inStock !== false ? "text-emerald-400" : "text-red-400"}`}>
+                      {product.inStock !== false ? "✓ In Stock" : "Out of Stock"}
                     </span>
                   </div>
+
+                  {/* Name */}
+                  <h3 className="font-['Cinzel'] font-bold text-sm text-white group-hover:text-amber-300 transition-colors line-clamp-1 mb-1">
+                    {product.name}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-xs text-gray-400 line-clamp-2 mb-4 leading-relaxed">
+                    {product.description}
+                  </p>
                 </div>
 
-                {/* Rating & Stock */}
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <div className="flex items-center gap-1 text-amber-400 font-mono text-[11px]">
-                    <Star className="w-3.5 h-3.5 fill-amber-400" />
-                    <span>{product.rating}</span>
-                    <span className="text-gray-500">({product.reviewsCount})</span>
-                  </div>
-                  <span className="text-[10px] text-emerald-400 font-mono">
-                    ✓ In Stock
-                  </span>
-                </div>
-
-                {/* Name */}
-                <h3 className="font-['Cinzel'] font-bold text-sm text-white group-hover:text-amber-300 transition-colors line-clamp-1 mb-1">
-                  {product.name}
-                </h3>
-
-                {/* Description */}
-                <p className="text-xs text-gray-400 line-clamp-2 mb-4 leading-relaxed">
-                  {product.description}
-                </p>
-              </div>
-
-              {/* Price & Add To Cart */}
-              <div className="pt-3 border-t border-amber-500/15 flex items-center justify-between">
-                <div>
-                  <div className="text-lg font-bold font-['Orbitron'] text-amber-300">
-                    {formatPrice(product.price)}
-                  </div>
-                  {product.originalPrice && (
-                    <div className="text-[10px] text-gray-500 line-through font-mono">
-                      {formatPrice(product.originalPrice)}
+                {/* Price & Add To Cart */}
+                <div className="pt-3 border-t border-amber-500/15 flex items-center justify-between">
+                  <div>
+                    <div className="text-lg font-bold font-['Orbitron'] text-amber-300">
+                      {formatPrice(product.price)}
                     </div>
-                  )}
-                </div>
+                    {product.originalPrice && (
+                      <div className="text-[10px] text-gray-500 line-through font-mono">
+                        {formatPrice(product.originalPrice)}
+                      </div>
+                    )}
+                  </div>
 
-                <button
-                  onClick={(e) => handleAddToCart(product, e)}
-                  className="btn-gold-luxury px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer font-bold"
-                  title="Add to bag"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>ADD</span>
-                </button>
+                  <button
+                    onClick={(e) => handleAddToCart(product, e)}
+                    className="btn-gold-luxury px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer font-bold"
+                    title="Add to bag"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>ADD</span>
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Quick View Modal */}
@@ -242,9 +271,32 @@ export const ShopSection: React.FC = () => {
                 </button>
               </div>
 
-              {/* Product Big Icon & Info */}
-              <div className="flex items-center justify-center p-8 rounded-2xl bg-black/40 border border-white/5 text-7xl mb-5">
-                {selectedProduct.icon}
+              {/* Product Big Image Banner & Info */}
+              <div className="h-60 rounded-2xl bg-black/60 border border-white/10 overflow-hidden relative mb-5 flex items-center justify-center shadow-lg">
+                {selectedProduct.imageUrl || selectedProduct.image ? (
+                  <img
+                    src={selectedProduct.imageUrl || selectedProduct.image}
+                    alt={selectedProduct.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80";
+                    }}
+                  />
+                ) : (
+                  <div className="text-7xl">{selectedProduct.icon}</div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                  <span className="text-xs font-['Cinzel'] font-bold px-2.5 py-1 rounded-full bg-black/85 backdrop-blur-sm border border-amber-500/30 text-amber-300 flex items-center gap-1.5">
+                    <span>{selectedProduct.icon}</span>
+                    <span>{selectedProduct.category}</span>
+                  </span>
+                  {selectedProduct.badge && (
+                    <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-md">
+                      {selectedProduct.badge}
+                    </span>
+                  )}
+                </div>
               </div>
 
               <h3 className="font-['Cinzel'] font-bold text-xl text-white mb-2">

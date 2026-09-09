@@ -333,6 +333,7 @@ export interface ProductItem {
   originalPrice?: number;
   icon?: string;
   image?: string;
+  imageUrl?: string;
   rating?: number;
   reviewsCount?: number;
   inStock?: boolean;

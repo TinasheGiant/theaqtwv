@@ -185,12 +185,31 @@ export const BrandAssetsFaviconCrud: React.FC<BrandAssetsFaviconCrudProps> = ({
     setIsProcessingImage(true);
     playSfx("sparkle");
     try {
-      // Scale down to max 512x512 to preserve crispness without bloating payload
-      const dataUrl = await processImageFile(file, 512, 512);
-      setLogoUrl(dataUrl);
-      updateSystemSettings({ logoUrl: dataUrl });
-      if (onSettingsChange) onSettingsChange({ logoUrl: dataUrl });
-      showToast("Website brand logo updated & saved to Firestore!", "gold");
+      // 1. Attempt backend upload to /api/upload
+      let finalUrl = "";
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await fetch("/api/upload", { method: "POST", body: formData });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.url) {
+            finalUrl = data.url;
+          }
+        }
+      } catch (uploadErr) {
+        console.warn("Backend upload failed, utilizing data URL:", uploadErr);
+      }
+
+      // 2. Fallback to high-res data URL if server upload was unreachable
+      if (!finalUrl) {
+        finalUrl = await processImageFile(file, 512, 512);
+      }
+
+      setLogoUrl(finalUrl);
+      updateSystemSettings({ logoUrl: finalUrl });
+      if (onSettingsChange) onSettingsChange({ logoUrl: finalUrl });
+      showToast("Website brand logo updated & saved!", "gold");
     } catch (e) {
       showToast("Error processing logo image file.", "info");
     } finally {
@@ -230,15 +249,33 @@ export const BrandAssetsFaviconCrud: React.FC<BrandAssetsFaviconCrudProps> = ({
     setIsProcessingImage(true);
     playSfx("sparkle");
     try {
-      // Scale down to optimal 128x128 for retina favicons
-      const dataUrl = await processImageFile(file, 128, 128);
+      // 1. Attempt backend upload
+      let finalUrl = "";
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await fetch("/api/upload", { method: "POST", body: formData });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.url) {
+            finalUrl = data.url;
+          }
+        }
+      } catch (uploadErr) {
+        console.warn("Backend upload failed, utilizing data URL:", uploadErr);
+      }
+
+      if (!finalUrl) {
+        finalUrl = await processImageFile(file, 128, 128);
+      }
+
       if (isFromModal) {
-        setEditModalFaviconUrl(dataUrl);
+        setEditModalFaviconUrl(finalUrl);
       } else {
-        setFaviconUrl(dataUrl);
-        applyFaviconToDocument(dataUrl);
-        updateSystemSettings({ faviconUrl: dataUrl });
-        if (onSettingsChange) onSettingsChange({ faviconUrl: dataUrl });
+        setFaviconUrl(finalUrl);
+        applyFaviconToDocument(finalUrl);
+        updateSystemSettings({ faviconUrl: finalUrl });
+        if (onSettingsChange) onSettingsChange({ faviconUrl: finalUrl });
         showToast("Favicon uploaded and pushed live to browser tab!", "gold");
       }
     } catch (e) {

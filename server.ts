@@ -1,10 +1,47 @@
 import express, { Request, Response } from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
+import multer from "multer";
 
 dotenv.config();
+
+// Ensure public uploads directory exists
+const UPLOAD_DIR = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
+
+// Configure Multer Storage for drag & drop and file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, UPLOAD_DIR);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase() || ".png";
+    const rawBase = path.basename(file.originalname, ext);
+    const sanitizedBase = rawBase.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 35) || "upload";
+    const uniqueSuffix = Date.now() + "-" + Math.floor(Math.random() * 1e6);
+    cb(null, `${sanitizedBase}-${uniqueSuffix}${ext}`);
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 25 * 1024 * 1024, // 25MB limit per file
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept standard images and svgs
+    if (file.mimetype.startsWith("image/") || file.originalname.match(/\.(png|jpe?g|webp|gif|svg|avif)$/i)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only image files (PNG, JPG, JPEG, WEBP, GIF, SVG, AVIF) are accepted."));
+    }
+  },
+});
 
 let aiClient: GoogleGenAI | null = null;
 
@@ -37,7 +74,165 @@ async function startServer() {
     next();
   });
 
-  app.use(express.json());
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
+  // Static serving of uploaded images directly from uploads directory
+  app.use("/uploads", express.static(UPLOAD_DIR));
+
+  // ==========================================
+  // IMAGE UPLOAD SYSTEM (SHOP, PORTFOLIO, ERP, BLOGS)
+  // Supports Multipart Form-Data (Drag & Drop, File Picker) and Base64 JSON
+  // ==========================================
+
+  // 1. Single Image Upload endpoint (Form-Data or Base64 JSON)
+  app.post("/api/upload", (req: Request, res: Response) => {
+    // Wrap upload.single to catch errors and fallback to base64 if needed
+    const uploadSingle = upload.single("file");
+
+    uploadSingle(req, res, (err: any) => {
+      if (err instanceof multer.MulterError) {
+        console.error("Multer Upload Error:", err);
+        return res.status(400).json({ error: `Upload error: ${err.message}` });
+      } else if (err) {
+        console.error("File Filter Error:", err);
+        return res.status(400).json({ error: err.message || "Invalid file uploaded" });
+      }
+
+      // Case A: Multipart File successfully uploaded via Drag & Drop or File Picker
+      if (req.file) {
+        const fileUrl = `/uploads/${req.file.filename}`;
+        return res.json({
+          success: true,
+          url: fileUrl,
+          filename: req.file.filename,
+          originalName: req.file.originalname,
+          size: req.file.size,
+          mimetype: req.file.mimetype,
+          uploadedAt: new Date().toISOString(),
+        });
+      }
+
+      // Case B: Base64 / Data URL uploaded via JSON payload
+      const base64Data = req.body?.image || req.body?.dataUrl || req.body?.base64;
+      if (base64Data && typeof base64Data === "string") {
+        try {
+          const matches = base64Data.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
+          let ext = ".png";
+          let rawBuffer: Buffer;
+
+          if (matches && matches.length === 3) {
+            const rawExt = matches[1].toLowerCase();
+            ext = rawExt === "jpeg" ? ".jpg" : `.${rawExt}`;
+            rawBuffer = Buffer.from(matches[2], "base64");
+          } else {
+            // Raw base64 string without header
+            rawBuffer = Buffer.from(base64Data, "base64");
+          }
+
+          const rawName = (req.body.filename || req.body.name || "upload").replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 35);
+          const filename = `${rawName}-${Date.now()}-${Math.floor(Math.random() * 1e6)}${ext}`;
+          const filePath = path.join(UPLOAD_DIR, filename);
+
+          fs.writeFileSync(filePath, rawBuffer);
+          const fileUrl = `/uploads/${filename}`;
+
+          return res.json({
+            success: true,
+            url: fileUrl,
+            filename,
+            size: rawBuffer.length,
+            mimetype: `image/${ext.replace(".", "")}`,
+            uploadedAt: new Date().toISOString(),
+          });
+        } catch (base64Err: any) {
+          console.error("Base64 processing error:", base64Err);
+          return res.status(500).json({ error: "Failed to process base64 image data" });
+        }
+      }
+
+      return res.status(400).json({
+        error: "No file or image payload was received. Please attach a file or base64 data.",
+      });
+    });
+  });
+
+  // 2. Multiple Images Upload endpoint (e.g. ERP feature gallery or Shop variations)
+  app.post("/api/upload/multiple", upload.array("files", 10), (req: Request, res: Response) => {
+    try {
+      const files = (req.files as Express.Multer.File[]) || [];
+      if (files.length === 0) {
+        return res.status(400).json({ error: "No files uploaded" });
+      }
+
+      const uploaded = files.map((file) => ({
+        url: `/uploads/${file.filename}`,
+        filename: file.filename,
+        originalName: file.originalname,
+        size: file.size,
+        mimetype: file.mimetype,
+      }));
+
+      res.json({
+        success: true,
+        count: uploaded.length,
+        files: uploaded,
+      });
+    } catch (err: any) {
+      console.error("Multiple upload error:", err);
+      res.status(500).json({ error: "Failed to upload multiple files" });
+    }
+  });
+
+  // 3. List recent uploaded media files
+  app.get("/api/uploads", (req: Request, res: Response) => {
+    try {
+      if (!fs.existsSync(UPLOAD_DIR)) {
+        return res.json({ files: [] });
+      }
+
+      const fileNames = fs.readdirSync(UPLOAD_DIR);
+      const files = fileNames
+        .filter((name) => !name.startsWith("."))
+        .map((name) => {
+          try {
+            const stats = fs.statSync(path.join(UPLOAD_DIR, name));
+            return {
+              name,
+              url: `/uploads/${name}`,
+              size: stats.size,
+              createdAt: stats.birthtime || stats.mtime,
+            };
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean)
+        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      res.json({ success: true, count: files.length, files });
+    } catch (err: any) {
+      console.error("Error reading uploads directory:", err);
+      res.status(500).json({ error: "Failed to retrieve uploads catalog" });
+    }
+  });
+
+  // 4. Delete an uploaded image file
+  app.delete("/api/upload/:filename", (req: Request, res: Response) => {
+    try {
+      const filename = path.basename(req.params.filename); // Strip any path traversal
+      const targetPath = path.join(UPLOAD_DIR, filename);
+
+      if (fs.existsSync(targetPath)) {
+        fs.unlinkSync(targetPath);
+        return res.json({ success: true, message: `File ${filename} removed successfully` });
+      }
+      res.status(404).json({ error: "File not found" });
+    } catch (err: any) {
+      console.error("Error deleting upload:", err);
+      res.status(500).json({ error: "Failed to delete file" });
+    }
+  });
 
   // Health check endpoint
   app.get("/api/health", (req: Request, res: Response) => {

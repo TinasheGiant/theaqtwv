@@ -162,13 +162,22 @@ Please provide gateway confirmation and invoice settlement details.`;
                     className="p-3.5 rounded-2xl bg-white/[0.03] border border-amber-500/15 space-y-2.5"
                   >
                     <div className="flex items-start gap-3">
-                      <div className="text-2xl p-2 rounded-xl bg-black/40 border border-white/5 shrink-0 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-xl bg-black/40 border border-white/10 shrink-0 overflow-hidden flex items-center justify-center">
                         {product.itemType === "membership" ? (
                           <Crown className="w-5 h-5 text-amber-400" />
                         ) : product.itemType === "service" ? (
                           <Sparkles className="w-5 h-5 text-amber-400" />
+                        ) : (product.imageUrl || product.image) ? (
+                          <img
+                            src={product.imageUrl || product.image}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = "none";
+                            }}
+                          />
                         ) : (
-                          <span>{product.icon || "📦"}</span>
+                          <span className="text-2xl">{product.icon || "📦"}</span>
                         )}
                       </div>
 

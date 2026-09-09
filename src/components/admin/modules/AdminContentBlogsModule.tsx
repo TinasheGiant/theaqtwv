@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useApp } from "../../../context/AppContext";
 import { BlogPost } from "../../../types";
+import { ImageUploadDropzone } from "../ImageUploadDropzone";
 import {
   BookOpen,
   Plus,
@@ -233,15 +234,19 @@ export const AdminContentBlogsModule: React.FC = () => {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-[11px] font-['Cinzel'] text-amber-300 uppercase font-bold mb-1">
-                Cover Image URL
-              </label>
-              <input
-                type="url"
-                required
+              <ImageUploadDropzone
                 value={image}
-                onChange={(e) => setImage(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-amber-500/20 text-white text-xs font-mono focus:border-amber-400 focus:outline-none"
+                onChange={(url) => setImage(url)}
+                label="Article Cover Image (Drag & Drop or Upload)"
+                helperText="Drag and drop article hero image, click to browse, or pick a preset."
+                aspectRatioClass="aspect-video"
+                placeholderText="https://images.unsplash.com/..."
+                presetImages={[
+                  { label: "Cloud & Dev", url: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80", icon: "💻" },
+                  { label: "Fintech", url: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&auto=format&fit=crop&q=80", icon: "⚡" },
+                  { label: "ERP Systems", url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80", icon: "📊" },
+                  { label: "AI & Automation", url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80", icon: "🤖" },
+                ]}
               />
             </div>
 

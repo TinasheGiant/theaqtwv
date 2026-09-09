@@ -449,7 +449,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [productsList, setProductsList] = useState<ProductItem[]>(() => {
     try {
       const saved = localStorage.getItem("aqutewave_products_list");
-      return saved ? JSON.parse(saved) : PRODUCTS_LIST;
+      if (saved) {
+        const parsed: ProductItem[] = JSON.parse(saved);
+        return parsed.map((p) => {
+          const match = PRODUCTS_LIST.find((item) => String(item.id) === String(p.id));
+          const img = p.imageUrl || p.image || match?.imageUrl || match?.image || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80";
+          return {
+            ...p,
+            imageUrl: img,
+            image: img,
+          };
+        });
+      }
+      return PRODUCTS_LIST;
     } catch {
       return PRODUCTS_LIST;
     }
@@ -676,7 +688,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             collection(db, COLLECTIONS.PRODUCTS),
             (snapshot) => {
               if (!snapshot.empty) {
-                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as unknown as ProductItem));
+                const items = snapshot.docs.map((d) => {
+                  const data = d.data();
+                  const match = PRODUCTS_LIST.find((item) => String(item.id) === String(d.id));
+                  const img = data.imageUrl || data.image || match?.imageUrl || match?.image || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80";
+                  return {
+                    ...data,
+                    id: d.id,
+                    imageUrl: img,
+                    image: img,
+                  } as unknown as ProductItem;
+                });
                 setProductsList(items);
               }
             },

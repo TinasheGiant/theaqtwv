@@ -417,8 +417,21 @@ export const CheckoutPage: React.FC = () => {
                         className="p-3 rounded-2xl bg-black/40 border border-white/5 space-y-1.5 text-xs"
                       >
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-lg shrink-0">{product.icon || "📦"}</span>
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-9 h-9 rounded-lg bg-black/60 border border-white/10 shrink-0 overflow-hidden flex items-center justify-center">
+                              {(product.imageUrl || product.image) ? (
+                                <img
+                                  src={product.imageUrl || product.image}
+                                  alt={product.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLElement).style.display = "none";
+                                  }}
+                                />
+                              ) : (
+                                <span className="text-base">{product.icon || "📦"}</span>
+                              )}
+                            </div>
                             <div className="truncate">
                               <div className="font-['Cinzel'] font-bold text-white truncate">
                                 {product.name}

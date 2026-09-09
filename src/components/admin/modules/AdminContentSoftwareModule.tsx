@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useApp } from "../../../context/AppContext";
 import { SoftwareSolutionItem } from "../../../types";
+import { ImageUploadDropzone } from "../ImageUploadDropzone";
 import {
   Cpu,
   Plus,
@@ -257,70 +258,21 @@ export const AdminContentSoftwareModule: React.FC = () => {
               </select>
             </div>
 
-            <div className="sm:col-span-3 space-y-2">
-              <label className="block text-[11px] font-['Cinzel'] text-amber-300 uppercase font-bold">
-                Cover Image URL & Live Card Thumbnail
-              </label>
-              <div className="flex flex-col sm:flex-row gap-3 items-start">
-                <div className="w-full sm:w-36 h-24 rounded-xl overflow-hidden bg-black/80 border border-amber-500/30 shrink-0 relative flex items-center justify-center">
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt="Thumbnail Preview"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80";
-                      }}
-                    />
-                  ) : (
-                    <Cpu className="w-6 h-6 text-amber-400/50" />
-                  )}
-                  <span className="absolute bottom-1 right-1 bg-black/80 px-1.5 py-0.5 rounded text-[9px] font-mono text-amber-300">
-                    Preview
-                  </span>
-                </div>
-                <div className="flex-1 space-y-1.5 w-full">
-                  <input
-                    type="url"
-                    required
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="https://images.unsplash.com/..."
-                    className="w-full px-3.5 py-2 rounded-xl bg-black/60 border border-amber-500/20 text-white text-xs font-mono focus:border-amber-400 focus:outline-none"
-                  />
-                  <div className="flex flex-wrap gap-1.5 items-center">
-                    <span className="text-[10px] text-gray-400 font-mono">Quick Presets:</span>
-                    <button
-                      type="button"
-                      onClick={() => setImageUrl("https://images.unsplash.com/photo-1556742049-0a67e557224f?w=800&auto=format&fit=crop&q=80")}
-                      className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-amber-400/10 text-amber-300/90 border border-white/10"
-                    >
-                      Retail POS
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setImageUrl("https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80")}
-                      className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-amber-400/10 text-amber-300/90 border border-white/10"
-                    >
-                      OmniERP Dashboard
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setImageUrl("https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=800&auto=format&fit=crop&q=80")}
-                      className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-amber-400/10 text-amber-300/90 border border-white/10"
-                    >
-                      Fleet Logistics
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setImageUrl("https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&auto=format&fit=crop&q=80")}
-                      className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-amber-400/10 text-amber-300/90 border border-white/10"
-                    >
-                      Fintech Gateway
-                    </button>
-                  </div>
-                </div>
-              </div>
+            <div className="sm:col-span-3">
+              <ImageUploadDropzone
+                value={imageUrl}
+                onChange={(url) => setImageUrl(url)}
+                label="Software & ERP Cover Image (Drag & Drop or Upload)"
+                helperText="Drag and drop ERP dashboard preview, system UI screenshot, or pick a preset."
+                aspectRatioClass="aspect-video"
+                placeholderText="https://images.unsplash.com/..."
+                presetImages={[
+                  { label: "Retail POS", url: "https://images.unsplash.com/photo-1556742049-0a67e557224f?w=800&auto=format&fit=crop&q=80", icon: "🛒" },
+                  { label: "OmniERP Dashboard", url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80", icon: "📊" },
+                  { label: "Fleet Logistics", url: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=800&auto=format&fit=crop&q=80", icon: "🚛" },
+                  { label: "Fintech Gateway", url: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&auto=format&fit=crop&q=80", icon: "💳" },
+                ]}
+              />
             </div>
 
             <div className="sm:col-span-3">
