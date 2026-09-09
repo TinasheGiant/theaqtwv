@@ -241,7 +241,7 @@ export const ContactPage: React.FC = () => {
                       <option value="Enterprise ERP Systems" className="bg-neutral-900">Enterprise ERP Systems ($500+)</option>
                       <option value="Graphic Design & Branding" className="bg-neutral-900">Graphic Design & Branding ($5+)</option>
                       <option value="Digital Marketing & SEO" className="bg-neutral-900">Digital Marketing & SEO ($100/mo)</option>
-                      <option value="Arch Studio Architectural Design" className="bg-neutral-900">Arch Studio Architectural Design</option>
+                      <option value="Mobile App & Custom Software" className="bg-neutral-900">Mobile App & Custom Software</option>
                       <option value="Aqutewave Shop Hardware / Merch" className="bg-neutral-900">Aqutewave Shop Hardware / Merch</option>
                       <option value="General Inquiry" className="bg-neutral-900">General Inquiry</option>
                     </select>

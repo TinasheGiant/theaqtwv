@@ -36,7 +36,7 @@ const PAGE_SEO_MAP: Record<string, PageSeoMetadata> = {
   portfolio: {
     title: "Client Portfolio & Real-World Software Showcase | Aqutewave Zimbabwe",
     description: "View our track record of deployed business platforms, web applications, and digital systems built for clients across Zimbabwe.",
-    keywords: "Aqutewave portfolio, website case studies Zimbabwe, FullStackPHP, Arch Studio, software examples Harare",
+    keywords: "Aqutewave portfolio, website case studies Zimbabwe, FullStackPHP, ERP systems Zimbabwe, software examples Harare",
     canonicalPath: "/portfolio",
   },
   shop: {

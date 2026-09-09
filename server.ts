@@ -425,14 +425,14 @@ Official Website: https://aqutewave.co.zw
 Harare Hub: Harare CBD / Avondale Tech Hub, Harare, Zimbabwe
 Phone / WhatsApp: +263 78 544 5162 | +263 73 513 4718
 Emails: giantacutewave@gmail.com (General & Projects) | aqutewavesales@gmail.com (Invoicing)
-Sister Brand: Arch Studio (https://archstudio.aqutewave.co.zw)
+Developer Education Hub: FullStackPHP (https://fullstackphp.aqutewave.co.zw)
 
 APP MODULES & VALID IN-APP DIRECTION PAGES:
 Users can navigate anywhere in our web application. The valid app page destinations are:
 - "services": Web Development packages, Graphic Design, Digital Marketing & SEO
-- "software": ERP Software (Basic ERP $500, Premium ERP $1000), Custom Web Apps ($150+)
+- "software": ERP Software (Basic ERP $500, Premium ERP $1000), Custom Web Apps ($150+), Interactive Template Previews
 - "estimator": Live Interactive Project Cost Estimator & Quote Generator (USD, ZWL, ZAR with ZIMRA VAT)
-- "portfolio": Real-world Client Projects, Live Demos (FullStackPHP, Arch Studio, etc.)
+- "portfolio": Real-world Client Projects, Live Demos (FullStackPHP, ERP Suites, etc.)
 - "shop": Official Tech Store (Keyboards $55, 4K Monitors $180, Mice $12, Power banks $30, SSDs, Hoodies $35, Tees $15)
 - "booking": Instant Project Booking & Consultation Scheduling
 - "payment": Multi-currency payment gateway (EcoCash USD/ZWL, InnBucks, Stanbic Nostro bank, Visa/Mastercard)

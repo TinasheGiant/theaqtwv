@@ -32,6 +32,7 @@ export const AdminContentPortfolioModule: React.FC = () => {
   const [category, setCategory] = useState("Enterprise ERP");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80");
+  const [liveUrl, setLiveUrl] = useState("https://fullstackphp.aqutewave.co.zw");
   const [tagsStr, setTagsStr] = useState("React, Node.js, PostgreSQL");
   const [metrics, setMetrics] = useState("4.8x Efficiency Multiplier");
   const [year, setYear] = useState("2026");
@@ -50,6 +51,8 @@ export const AdminContentPortfolioModule: React.FC = () => {
     setClient(p.client);
     setCategory(p.category);
     setDescription(p.description);
+    setImage(p.imageUrl || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80");
+    setLiveUrl(p.liveUrl || "https://fullstackphp.aqutewave.co.zw");
     setTagsStr(Array.isArray(p.technologies) ? p.technologies.join(", ") : "");
     setMetrics(p.impactMetrics?.[0]?.value || p.results || "High Impact");
     setYear(p.year);
@@ -63,6 +66,8 @@ export const AdminContentPortfolioModule: React.FC = () => {
     setClient("");
     setCategory("ERP & Systems");
     setDescription("");
+    setImage("https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80");
+    setLiveUrl("https://fullstackphp.aqutewave.co.zw");
     setTagsStr("TypeScript, Tailwind, ZIMRA API");
     setMetrics("100% Tax Invoicing Automation");
     setYear("2026");
@@ -96,6 +101,8 @@ export const AdminContentPortfolioModule: React.FC = () => {
         impactMetrics: [{ label: "Key Outcome", value: metrics }],
         technologies,
         year,
+        imageUrl: image,
+        liveUrl: liveUrl || undefined,
         icon: "Briefcase",
         previewType: "dashboard",
         previewAccent: "gold",
@@ -112,6 +119,8 @@ export const AdminContentPortfolioModule: React.FC = () => {
         impactMetrics: [{ label: "Key Outcome", value: metrics }],
         technologies,
         year,
+        imageUrl: image,
+        liveUrl: liveUrl || undefined,
       });
       setEditingItem(null);
     }
@@ -229,15 +238,81 @@ export const AdminContentPortfolioModule: React.FC = () => {
               />
             </div>
 
+            <div className="sm:col-span-2 space-y-2">
+              <label className="block text-[11px] font-['Cinzel'] text-amber-300 uppercase font-bold">
+                Cover Image URL & Live Thumbnail Preview
+              </label>
+              <div className="flex flex-col sm:flex-row gap-3 items-start">
+                <div className="w-full sm:w-36 h-24 rounded-xl overflow-hidden bg-black/80 border border-amber-500/30 shrink-0 relative flex items-center justify-center">
+                  {image ? (
+                    <img
+                      src={image}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80";
+                      }}
+                    />
+                  ) : (
+                    <Briefcase className="w-6 h-6 text-amber-400/50" />
+                  )}
+                  <span className="absolute bottom-1 right-1 bg-black/80 px-1.5 py-0.5 rounded text-[9px] font-mono text-amber-300">
+                    Preview
+                  </span>
+                </div>
+                <div className="flex-1 space-y-1.5 w-full">
+                  <input
+                    type="url"
+                    required
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    placeholder="https://images.unsplash.com/..."
+                    className="w-full px-3.5 py-2 rounded-xl bg-black/60 border border-amber-500/20 text-white text-xs font-mono focus:border-amber-400 focus:outline-none"
+                  />
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    <span className="text-[10px] text-gray-400 font-mono">Quick Presets:</span>
+                    <button
+                      type="button"
+                      onClick={() => setImage("https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80")}
+                      className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-amber-400/10 text-amber-300/90 border border-white/10"
+                    >
+                      E-Commerce
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImage("https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80")}
+                      className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-amber-400/10 text-amber-300/90 border border-white/10"
+                    >
+                      ERP Dashboard
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImage("https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&auto=format&fit=crop&q=80")}
+                      className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-amber-400/10 text-amber-300/90 border border-white/10"
+                    >
+                      Fintech App
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImage("https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=80")}
+                      className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-amber-400/10 text-amber-300/90 border border-white/10"
+                    >
+                      Healthcare
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="sm:col-span-2">
               <label className="block text-[11px] font-['Cinzel'] text-amber-300 uppercase font-bold mb-1">
-                Image URL
+                Live URL / Template Iframe Demo Link
               </label>
               <input
                 type="url"
-                required
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
+                value={liveUrl}
+                onChange={(e) => setLiveUrl(e.target.value)}
+                placeholder="https://example.com or https://preview.domain.com"
                 className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-amber-500/20 text-white text-xs font-mono focus:border-amber-400 focus:outline-none"
               />
             </div>
@@ -312,14 +387,33 @@ export const AdminContentPortfolioModule: React.FC = () => {
             className="p-5 rounded-2xl bg-[#0b0c10] border border-amber-500/20 hover:border-amber-400/40 transition-all flex flex-col justify-between space-y-4 shadow-md"
           >
             <div>
-              <div className="relative h-32 rounded-xl overflow-hidden mb-3 border border-white/5 bg-linear-to-br from-amber-500/10 to-amber-950/40 flex items-center justify-center text-amber-400">
-                <Briefcase className="w-10 h-10 opacity-70" />
+              <div className="relative h-36 rounded-xl overflow-hidden mb-3 border border-white/10 bg-neutral-950 flex items-center justify-center group">
+                {p.imageUrl ? (
+                  <img
+                    src={p.imageUrl}
+                    alt={p.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80";
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-linear-to-br from-amber-500/10 to-amber-950/40 flex items-center justify-center text-amber-400">
+                    <Briefcase className="w-10 h-10 opacity-70" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
                 <span className="absolute top-2 left-2 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-black/80 text-amber-400 border border-amber-400/30">
                   {p.category}
                 </span>
                 <span className="absolute bottom-2 right-2 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-400 text-black">
                   {p.year}
                 </span>
+                {p.liveUrl && (
+                  <span className="absolute top-2 right-2 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/80 text-white border border-emerald-400/40">
+                    Live Demo
+                  </span>
+                )}
               </div>
 
               <div className="text-[10px] text-amber-400/80 font-mono font-bold uppercase tracking-wider">

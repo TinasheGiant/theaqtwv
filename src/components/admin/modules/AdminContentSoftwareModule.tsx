@@ -15,6 +15,9 @@ import {
   Smartphone,
   Server,
   Zap,
+  Eye,
+  ExternalLink,
+  Globe,
 } from "lucide-react";
 
 export const AdminContentSoftwareModule: React.FC = () => {
@@ -30,6 +33,9 @@ export const AdminContentSoftwareModule: React.FC = () => {
   const [badge, setBadge] = useState("Enterprise Ready");
   const [description, setDescription] = useState("");
   const [pricing, setPricing] = useState("From $150/mo");
+  const [imageUrl, setImageUrl] = useState("https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80");
+  const [previewUrl, setPreviewUrl] = useState("https://fullstackphp.aqutewave.co.zw");
+  const [templateType, setTemplateType] = useState<"website" | "webapp" | "erp" | "pos" | "mobile" | "app">("erp");
   const [featuresStr, setFeaturesStr] = useState("");
   const [status, setStatus] = useState<"Active" | "Maintenance" | "Beta">("Active");
 
@@ -47,6 +53,9 @@ export const AdminContentSoftwareModule: React.FC = () => {
     setBadge(item.badge);
     setDescription(item.description);
     setPricing(item.pricing);
+    setImageUrl(item.imageUrl || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80");
+    setPreviewUrl(item.previewUrl || "https://fullstackphp.aqutewave.co.zw");
+    setTemplateType(item.templateType || "erp");
     setFeaturesStr(item.features.join("\n"));
     setStatus(item.status);
     setIsCreating(false);
@@ -57,9 +66,12 @@ export const AdminContentSoftwareModule: React.FC = () => {
     setEditingItem(null);
     setName("");
     setCategory("Bespoke Software");
-    setBadge("New");
+    setBadge("New System");
     setDescription("");
     setPricing("From $200/mo");
+    setImageUrl("https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80");
+    setPreviewUrl("https://fullstackphp.aqutewave.co.zw");
+    setTemplateType("erp");
     setFeaturesStr("Cloud synchronized\nReal-time telemetry\nAutomated daily backups");
     setStatus("Active");
     setIsCreating(true);
@@ -79,6 +91,9 @@ export const AdminContentSoftwareModule: React.FC = () => {
         badge,
         description,
         pricing,
+        imageUrl,
+        previewUrl: previewUrl || undefined,
+        templateType,
         features,
         status,
       });
@@ -90,6 +105,9 @@ export const AdminContentSoftwareModule: React.FC = () => {
         badge,
         description,
         pricing,
+        imageUrl,
+        previewUrl: previewUrl || undefined,
+        templateType,
         features,
         status,
       });
@@ -222,6 +240,107 @@ export const AdminContentSoftwareModule: React.FC = () => {
               />
             </div>
 
+            <div>
+              <label className="block text-[11px] font-['Cinzel'] text-amber-300 uppercase font-bold mb-1">
+                Template / System Type
+              </label>
+              <select
+                value={templateType}
+                onChange={(e) => setTemplateType(e.target.value as any)}
+                className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-amber-500/20 text-white text-xs focus:border-amber-400 focus:outline-none"
+              >
+                <option value="erp">Enterprise ERP System</option>
+                <option value="pos">Point of Sale (POS)</option>
+                <option value="webapp">Custom Web Application</option>
+                <option value="website">Corporate Website Template</option>
+                <option value="mobile">Mobile / PWA App</option>
+              </select>
+            </div>
+
+            <div className="sm:col-span-3 space-y-2">
+              <label className="block text-[11px] font-['Cinzel'] text-amber-300 uppercase font-bold">
+                Cover Image URL & Live Card Thumbnail
+              </label>
+              <div className="flex flex-col sm:flex-row gap-3 items-start">
+                <div className="w-full sm:w-36 h-24 rounded-xl overflow-hidden bg-black/80 border border-amber-500/30 shrink-0 relative flex items-center justify-center">
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt="Thumbnail Preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80";
+                      }}
+                    />
+                  ) : (
+                    <Cpu className="w-6 h-6 text-amber-400/50" />
+                  )}
+                  <span className="absolute bottom-1 right-1 bg-black/80 px-1.5 py-0.5 rounded text-[9px] font-mono text-amber-300">
+                    Preview
+                  </span>
+                </div>
+                <div className="flex-1 space-y-1.5 w-full">
+                  <input
+                    type="url"
+                    required
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    placeholder="https://images.unsplash.com/..."
+                    className="w-full px-3.5 py-2 rounded-xl bg-black/60 border border-amber-500/20 text-white text-xs font-mono focus:border-amber-400 focus:outline-none"
+                  />
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    <span className="text-[10px] text-gray-400 font-mono">Quick Presets:</span>
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl("https://images.unsplash.com/photo-1556742049-0a67e557224f?w=800&auto=format&fit=crop&q=80")}
+                      className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-amber-400/10 text-amber-300/90 border border-white/10"
+                    >
+                      Retail POS
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl("https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80")}
+                      className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-amber-400/10 text-amber-300/90 border border-white/10"
+                    >
+                      OmniERP Dashboard
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl("https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=800&auto=format&fit=crop&q=80")}
+                      className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-amber-400/10 text-amber-300/90 border border-white/10"
+                    >
+                      Fleet Logistics
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl("https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&auto=format&fit=crop&q=80")}
+                      className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-amber-400/10 text-amber-300/90 border border-white/10"
+                    >
+                      Fintech Gateway
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="sm:col-span-3">
+              <label className="block text-[11px] font-['Cinzel'] text-amber-300 uppercase font-bold mb-1">
+                Live Template Iframe / App Interactive Preview URL
+              </label>
+              <div className="relative">
+                <input
+                  type="url"
+                  value={previewUrl}
+                  onChange={(e) => setPreviewUrl(e.target.value)}
+                  placeholder="https://preview.themeforest.net/... or https://your-demo-subdomain.com"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-amber-500/20 text-white text-xs font-mono focus:border-amber-400 focus:outline-none"
+                />
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1">
+                Embedded directly into the client marketplace modal via an HTML &lt;iframe&gt; with live device switching (Desktop, Tablet, Mobile).
+              </p>
+            </div>
+
             <div className="sm:col-span-3">
               <label className="block text-[11px] font-['Cinzel'] text-amber-300 uppercase font-bold mb-1">
                 System Overview
@@ -289,23 +408,48 @@ export const AdminContentSoftwareModule: React.FC = () => {
         {filtered.map((s) => (
           <div
             key={s.id}
-            className="p-5 rounded-2xl bg-[#0b0c10] border border-amber-500/20 hover:border-amber-400/40 transition-all flex flex-col justify-between space-y-4 shadow-md"
+            className="p-5 rounded-2xl bg-[#0b0c10] border border-amber-500/20 hover:border-amber-400/40 transition-all flex flex-col justify-between space-y-4 shadow-md group"
           >
             <div>
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-sky-400">
-                    <Cpu className="w-4 h-4" />
+              {/* Card Image */}
+              <div className="relative h-40 rounded-xl overflow-hidden mb-3 border border-white/10 bg-neutral-950 flex items-center justify-center">
+                {s.imageUrl ? (
+                  <img
+                    src={s.imageUrl}
+                    alt={s.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80";
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-linear-to-br from-amber-500/10 to-amber-950/40 flex items-center justify-center text-amber-400">
+                    <Cpu className="w-10 h-10 opacity-70" />
                   </div>
-                  <div>
-                    <h3 className="font-['Cinzel'] font-bold text-sm text-white">{s.name}</h3>
-                    <span className="text-[10px] font-mono text-gray-400">{s.category}</span>
-                  </div>
-                </div>
+                )}
+                <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
 
-                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-400 text-black shrink-0">
+                <span className="absolute top-2 left-2 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-black/80 text-amber-400 border border-amber-400/30">
+                  {s.templateType ? s.templateType.toUpperCase() : "ERP"}
+                </span>
+
+                <span className="absolute top-2 right-2 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-400 text-black">
                   {s.badge}
                 </span>
+
+                {s.previewUrl && (
+                  <div className="absolute bottom-2 left-2 flex items-center gap-1 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/90 text-white shadow-sm">
+                    <Globe className="w-3 h-3" />
+                    <span>Live Iframe Ready</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div>
+                  <h3 className="font-['Cinzel'] font-bold text-sm text-white">{s.name}</h3>
+                  <span className="text-[10px] font-mono text-gray-400">{s.category}</span>
+                </div>
               </div>
 
               <p className="text-xs text-gray-300 font-light line-clamp-2 mb-3">
@@ -323,6 +467,20 @@ export const AdminContentSoftwareModule: React.FC = () => {
                     {s.status}
                   </span>
                 </div>
+                {s.previewUrl && (
+                  <div className="pt-1.5 border-t border-white/5 flex items-center justify-between text-[11px] text-gray-400">
+                    <span className="text-[10px]">Preview URL:</span>
+                    <a
+                      href={s.previewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-amber-400 hover:text-amber-300 flex items-center gap-1 truncate max-w-[170px]"
+                    >
+                      <span className="truncate">{s.previewUrl.replace(/^https?:\/\//, '')}</span>
+                      <ExternalLink className="w-3 h-3 shrink-0" />
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
 

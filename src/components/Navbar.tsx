@@ -195,17 +195,6 @@ export const Navbar: React.FC = () => {
               <span>Portal</span>
             </button>
 
-            {/* Sister Brand Link */}
-            <a
-              href="https://archstudio.aqutewave.co.zw"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3 py-1.5 rounded-lg text-xs xl:text-sm font-medium text-gray-400 hover:text-amber-300 hover:bg-white/[0.04] transition-all flex items-center gap-1"
-            >
-              Arch Studio
-              <span className="text-[10px] text-amber-400/80 font-mono">↗</span>
-            </a>
-
             {/* "More" Dropdown Menu */}
             <div className="relative">
               <button

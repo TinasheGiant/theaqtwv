@@ -14,38 +14,64 @@ import {
   BarChart3,
   Users,
   FileSpreadsheet,
-  CheckCircle2
+  CheckCircle2,
+  Eye,
+  ExternalLink,
+  Globe,
+  Monitor,
+  Laptop
 } from "lucide-react";
+import { TemplateIframeModal } from "./TemplateIframeModal";
 
 export const SoftwareSection: React.FC = () => {
   const { softwareList, formatPrice, openBookingWithService, playSfx } = useApp();
   const [activeErpTab, setActiveErpTab] = useState<"inventory" | "invoicing" | "accounts" | "hr" | "sync">("inventory");
+  const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [iframeModalData, setIframeModalData] = useState<{
+    isOpen: boolean;
+    title: string;
+    previewUrl: string;
+    category?: string;
+    templateType?: string;
+  }>({
+    isOpen: false,
+    title: "",
+    previewUrl: "",
+  });
 
   const getIconForCategory = (cat: string) => {
     const c = cat.toLowerCase();
     if (c.includes("pos") || c.includes("retail") || c.includes("checkout") || c.includes("pay")) {
-      return <Cpu className="w-6 h-6 text-amber-400" />;
+      return <Cpu className="w-5 h-5 text-amber-400" />;
     }
     if (c.includes("erp") || c.includes("database") || c.includes("ledger")) {
-      return <Database className="w-6 h-6 text-amber-400" />;
+      return <Database className="w-5 h-5 text-amber-400" />;
     }
     if (c.includes("supply") || c.includes("fleet") || c.includes("gps") || c.includes("logistics")) {
-      return <Server className="w-6 h-6 text-amber-400" />;
+      return <Server className="w-5 h-5 text-amber-400" />;
     }
     if (c.includes("health") || c.includes("clinic") || c.includes("security")) {
-      return <ShieldCheck className="w-6 h-6 text-amber-400" />;
+      return <ShieldCheck className="w-5 h-5 text-amber-400" />;
     }
     if (c.includes("edu") || c.includes("school") || c.includes("portal")) {
-      return <Layers className="w-6 h-6 text-amber-400" />;
+      return <Layers className="w-5 h-5 text-amber-400" />;
     }
-    return <Cpu className="w-6 h-6 text-amber-400" />;
+    return <Cpu className="w-5 h-5 text-amber-400" />;
   };
+
+  const filteredSoftware = (softwareList || []).filter((item) => {
+    if (activeFilter === "all") return true;
+    if (activeFilter === "erp") return (item.category.toLowerCase().includes("erp") || item.templateType === "erp");
+    if (activeFilter === "website") return (item.templateType === "website" || item.category.toLowerCase().includes("web"));
+    if (activeFilter === "app") return (item.templateType === "app" || item.category.toLowerCase().includes("app") || item.category.toLowerCase().includes("pos"));
+    return true;
+  });
 
   return (
     <section className="py-20 px-4 sm:px-6 diamond-mesh relative" aria-label="Software & ERP Engineering">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-14">
+        <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-['Orbitron'] tracking-widest uppercase mb-3">
             <Cpu className="w-3.5 h-3.5 text-amber-400" />
             <span>Engineering & Systems</span>
@@ -54,32 +80,122 @@ export const SoftwareSection: React.FC = () => {
             Software & ERP Solutions
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto mt-3 text-sm sm:text-base">
-            From agile custom web applications to robust enterprise ERP software powering nationwide supply chains.
+            Live interactive templates and production-ready enterprise software. Preview websites, ERP dashboards, and mobile web apps before requesting deployment.
           </p>
           <div className="gold-divider max-w-xs mx-auto my-6" />
         </div>
 
-        {/* Dynamic Software Solutions Grid */}
+        {/* Category Filters */}
+        <div className="flex flex-wrap justify-center gap-2 mb-10">
+          {[
+            { id: "all", label: "ALL SOLUTIONS" },
+            { id: "erp", label: "ENTERPRISE ERP & LOGISTICS" },
+            { id: "app", label: "BUSINESS APPS & POS" },
+            { id: "website", label: "WEB PLATFORMS & PORTALS" },
+          ].map((cat) => {
+            const isActive = activeFilter === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => {
+                  playSfx("toggle");
+                  setActiveFilter(cat.id);
+                }}
+                className={`px-4 py-2 rounded-full text-xs font-bold font-['Cinzel'] tracking-wider transition-all cursor-pointer ${
+                  isActive
+                    ? "bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]"
+                    : "bg-white/[0.04] border border-amber-500/20 text-amber-300 hover:bg-amber-400/10"
+                }`}
+              >
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Dynamic Software Solutions Grid with Image Banners and Live Iframe Previews */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {(softwareList || []).map((s) => (
-            <div key={s.id} className="glass-card-hover p-6 sm:p-7 rounded-3xl flex flex-col justify-between group">
+          {filteredSoftware.map((s) => (
+            <div
+              key={s.id}
+              className="glass-card-hover rounded-3xl p-5 sm:p-6 flex flex-col justify-between group border border-amber-500/20 hover:border-amber-400/50 transition-all duration-300 shadow-xl overflow-hidden"
+            >
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    {getIconForCategory(s.category)}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-gray-400">{s.category}</span>
-                    <span className="text-[11px] font-mono font-bold text-amber-400/90 bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/20">
+                {/* Visual Image Banner on Every Card */}
+                <div className="relative h-48 rounded-2xl overflow-hidden mb-5 border border-white/10 bg-neutral-950 group-hover:border-amber-400/30 transition-all">
+                  <img
+                    src={
+                      s.imageUrl ||
+                      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80"
+                    }
+                    alt={s.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent pointer-events-none" />
+
+                  {/* Top Badges */}
+                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-mono font-bold text-amber-300 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-amber-400/30 shadow-md">
+                        {s.category}
+                      </span>
+                      {s.templateType && (
+                        <span className="text-[10px] font-mono text-emerald-300 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-full border border-emerald-500/30 uppercase">
+                          {s.templateType}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] font-mono font-bold text-amber-400 bg-amber-400/10 backdrop-blur-md px-2 py-0.5 rounded-full border border-amber-400/30">
                       {s.badge}
                     </span>
                   </div>
+
+                  {/* Bottom Image Overlay with Live Iframe Button */}
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold text-amber-300">
+                      {s.pricing}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playSfx("pop");
+                        setIframeModalData({
+                          isOpen: true,
+                          title: s.name,
+                          previewUrl:
+                            s.previewUrl ||
+                            "https://stackblitz.com/edit/vitejs-vite-preview?embed=1&file=src%2FApp.tsx",
+                          category: s.category,
+                          templateType: s.templateType || "website",
+                        });
+                      }}
+                      className="px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-black font-['Cinzel'] font-bold text-[11px] flex items-center gap-1.5 shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:brightness-110 transition-all cursor-pointer"
+                      title="Preview live interactive template iframe"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>Live Preview</span>
+                    </button>
+                  </div>
                 </div>
 
-                <h3 className="font-['Cinzel'] font-bold text-lg text-white mb-2 group-hover:text-amber-300 transition-colors">
-                  {s.name}
-                </h3>
-                <p className="text-xs text-gray-400 leading-relaxed mb-4">
+                {/* Name & Category Header */}
+                <div className="flex items-start gap-3 mb-2">
+                  <div className="w-9 h-9 rounded-xl bg-amber-400/10 border border-amber-400/25 flex items-center justify-center shrink-0 mt-0.5">
+                    {getIconForCategory(s.category)}
+                  </div>
+                  <div>
+                    <h3 className="font-['Cinzel'] font-bold text-base sm:text-lg text-white group-hover:text-amber-300 transition-colors leading-snug">
+                      {s.name}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p className="text-xs text-gray-400 leading-relaxed mb-4 line-clamp-2">
                   {s.description}
                 </p>
 
@@ -89,23 +205,40 @@ export const SoftwareSection: React.FC = () => {
                     {s.features.slice(0, 3).map((feat, fIdx) => (
                       <li key={fIdx} className="flex items-start gap-2 text-[11px] text-gray-300">
                         <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-                        <span>{feat}</span>
+                        <span className="line-clamp-1">{feat}</span>
                       </li>
                     ))}
                   </ul>
                 )}
               </div>
 
-              <div className="pt-3 border-t border-amber-500/15 flex items-center justify-between">
-                <span className="text-xs font-mono font-bold text-amber-400">
-                  {s.pricing}
-                </span>
+              {/* Action Buttons: Live Preview & Request System */}
+              <div className="pt-3 border-t border-amber-500/15 flex items-center justify-between gap-2">
+                <button
+                  onClick={() => {
+                    playSfx("pop");
+                    setIframeModalData({
+                      isOpen: true,
+                      title: s.name,
+                      previewUrl:
+                        s.previewUrl ||
+                        "https://stackblitz.com/edit/vitejs-vite-preview?embed=1&file=src%2FApp.tsx",
+                      category: s.category,
+                      templateType: s.templateType || "website",
+                    });
+                  }}
+                  className="px-3 py-1.5 rounded-xl text-xs font-mono font-medium text-amber-300 bg-amber-400/10 border border-amber-400/20 hover:bg-amber-400/20 flex items-center gap-1.5 transition-all cursor-pointer"
+                >
+                  <Globe className="w-3.5 h-3.5" />
+                  <span>Iframe Demo</span>
+                </button>
+
                 <button
                   onClick={() => {
                     playSfx("pop");
                     openBookingWithService(s.name);
                   }}
-                  className="text-xs font-['Cinzel'] font-bold text-amber-300 hover:text-amber-200 flex items-center gap-1.5 cursor-pointer"
+                  className="btn-gold-luxury px-3.5 py-1.5 rounded-xl text-xs font-['Cinzel'] font-bold text-black flex items-center gap-1.5 cursor-pointer shadow-md"
                 >
                   <span>Request System</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -115,7 +248,7 @@ export const SoftwareSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Interactive ERP Software Simulator Demo */}
+        {/* Interactive ERP Software Simulator Demo & Live Template Iframe Launcher */}
         <div className="glass-panel p-6 sm:p-10 rounded-3xl border border-amber-400/40 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_40px_rgba(212,175,55,0.15)] relative overflow-hidden">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-amber-500/20 mb-8">
             <div>
@@ -127,11 +260,28 @@ export const SoftwareSection: React.FC = () => {
                 Aqutewave OmniERP Enterprise Suite
               </h3>
               <p className="text-xs text-gray-400 mt-1">
-                Experience how our ERP unifies all operational departments into one unified dashboard.
+                Experience how our ERP unifies all operational departments into one unified dashboard with live template testing.
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => {
+                  playSfx("pop");
+                  setIframeModalData({
+                    isOpen: true,
+                    title: "Aqutewave OmniERP Enterprise Suite",
+                    previewUrl: "https://demo.odoo.com",
+                    category: "Enterprise ERP",
+                    templateType: "erp",
+                  });
+                }}
+                className="px-4 py-2.5 rounded-xl text-xs font-['Cinzel'] font-bold text-amber-300 bg-amber-400/15 border border-amber-400/40 hover:bg-amber-400/25 flex items-center gap-1.5 shadow-md cursor-pointer transition-all"
+              >
+                <Monitor className="w-4 h-4 text-amber-400" />
+                <span>LAUNCH LIVE ERP IFRAME</span>
+              </button>
+
               <button
                 onClick={() => openBookingWithService("basic-erp")}
                 className="btn-gold-luxury px-5 py-2.5 rounded-xl text-xs tracking-wider font-bold"
@@ -291,6 +441,18 @@ export const SoftwareSection: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Global Live Template Iframe Modal for Software & ERP */}
+        <TemplateIframeModal
+          isOpen={iframeModalData.isOpen}
+          onClose={() => setIframeModalData((prev) => ({ ...prev, isOpen: false }))}
+          title={iframeModalData.title}
+          category={iframeModalData.category}
+          previewUrl={iframeModalData.previewUrl}
+          onPurchaseOrQuote={(title) => {
+            openBookingWithService(title);
+          }}
+        />
       </div>
     </section>
   );

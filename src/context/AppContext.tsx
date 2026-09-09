@@ -467,7 +467,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [portfolioList, setPortfolioList] = useState<PortfolioItem[]>(() => {
     try {
       const saved = localStorage.getItem("aqutewave_portfolio_list");
-      return saved ? JSON.parse(saved) : PORTFOLIO_ITEMS;
+      if (saved) {
+        const parsed: PortfolioItem[] = JSON.parse(saved);
+        return parsed.map((p) => {
+          const match = PORTFOLIO_ITEMS.find((item) => item.id === p.id);
+          return {
+            ...p,
+            imageUrl: p.imageUrl || match?.imageUrl || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
+            liveUrl: p.liveUrl || match?.liveUrl || "https://fullstackphp.aqutewave.co.zw",
+          };
+        });
+      }
+      return PORTFOLIO_ITEMS;
     } catch {
       return PORTFOLIO_ITEMS;
     }
@@ -476,7 +487,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [softwareList, setSoftwareList] = useState<SoftwareSolutionItem[]>(() => {
     try {
       const saved = localStorage.getItem("aqutewave_software_list") || localStorage.getItem("aqutewave_admin_software");
-      return saved ? JSON.parse(saved) : DEFAULT_SOFTWARE_SOLUTIONS;
+      if (saved) {
+        const parsed: SoftwareSolutionItem[] = JSON.parse(saved);
+        return parsed.map((s) => {
+          const match = DEFAULT_SOFTWARE_SOLUTIONS.find((item) => item.id === s.id);
+          return {
+            ...s,
+            imageUrl: s.imageUrl || match?.imageUrl || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
+            previewUrl: s.previewUrl || match?.previewUrl || "https://fullstackphp.aqutewave.co.zw",
+            templateType: s.templateType || match?.templateType || "webapp",
+          };
+        });
+      }
+      return DEFAULT_SOFTWARE_SOLUTIONS;
     } catch {
       return DEFAULT_SOFTWARE_SOLUTIONS;
     }

@@ -399,16 +399,16 @@ export const APP_TOPICS: AppTopic[] = [
     category: "portfolio",
     keywords: [
       "portfolio", "projects", "previous work", "samples", "case studies", "demos", 
-      "fullstackphp", "arch studio", "clients", "track record", "examples"
+      "fullstackphp", "erp demos", "clients", "track record", "examples"
     ],
     targetPage: "portfolio",
     actionLabel: "Browse Client Portfolio & Demos",
-    actionDescription: "Inspect real-world web apps, sister brand Arch Studio, and deployed platforms.",
+    actionDescription: "Inspect real-world web apps, bespoke ERP systems, and deployed platforms.",
     summary: "Explore our proven track record of modern web platforms, software portals, and digital systems built for satisfied businesses across Zimbabwe.",
     pricing: "Transparent client showcases",
     keyFacts: [
       "Live project links, architecture breakdowns, and tech stacks",
-      "Showcases FullStackPHP tutorial platform & Arch Studio design showcase",
+      "Showcases FullStackPHP tutorial platform & enterprise ERP showcases",
       "Enterprise portal mockups and real-world system benchmarks"
     ]
   },

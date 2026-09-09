@@ -20,7 +20,8 @@ import {
   Cpu,
   TrendingUp,
   Building2,
-  HeartHandshake
+  HeartHandshake,
+  Smartphone,
 } from "lucide-react";
 
 export const AboutPage: React.FC = () => {
@@ -52,11 +53,10 @@ export const AboutPage: React.FC = () => {
       badge: "ROI-Focused",
     },
     {
-      title: "Arch Studio (Architectural Design)",
-      icon: <Building2 className="w-6 h-6 text-amber-400" />,
-      desc: "Our specialized architectural division delivering photorealistic 3D rendering, detailed floor plans, and modern residential & commercial blueprints.",
-      badge: "Sister Division",
-      externalUrl: "https://archstudio.aqutewave.co.zw",
+      title: "Mobile Apps & Fintech Integrations",
+      icon: <Smartphone className="w-6 h-6 text-amber-400" />,
+      desc: "Native and cross-platform Android & iOS applications with seamless EcoCash, InnBucks, and payment gateway integration.",
+      badge: "iOS & Android",
     },
     {
       title: "IT Support & Cloud Hosting",
@@ -139,7 +139,7 @@ export const AboutPage: React.FC = () => {
                 Aqutewave was established with a singular vision: to eliminate the friction in digital transformation for businesses of all sizes. We recognized that businesses in Zimbabwe and across Africa required world-class web applications, bespoke ERP software, and high-impact branding without the inflated timelines, hidden costs, or complex barriers of legacy IT firms.
               </p>
               <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
-                Today, Aqutewave functions as a comprehensive digital ecosystem. We handle everything from website architecture and software engineering to executive branding, digital marketing campaigns, and architectural 3D visualizations through our dedicated <strong className="text-amber-300">Arch Studio</strong> division.
+                Today, Aqutewave functions as a comprehensive digital ecosystem. We handle everything from high-performance website architecture and bespoke software engineering to enterprise ERP deployments, executive branding, and high-impact digital marketing campaigns.
               </p>
             </div>
 
@@ -250,28 +250,16 @@ export const AboutPage: React.FC = () => {
                 </div>
 
                 <div className="pt-4 border-t border-amber-500/15 flex items-center justify-between">
-                  {service.externalUrl ? (
-                    <a
-                      href={service.externalUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs font-['Cinzel'] font-bold text-amber-300 flex items-center gap-1.5 hover:underline"
-                    >
-                      <span>Visit Arch Studio</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        playSfx("click");
-                        setActivePage("services");
-                      }}
-                      className="text-xs font-['Cinzel'] font-bold text-amber-300 flex items-center gap-1.5 hover:translate-x-1 transition-transform"
-                    >
-                      <span>View Packages</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  )}
+                  <button
+                    onClick={() => {
+                      playSfx("click");
+                      setActivePage("services");
+                    }}
+                    className="text-xs font-['Cinzel'] font-bold text-amber-300 flex items-center gap-1.5 hover:translate-x-1 transition-transform cursor-pointer"
+                  >
+                    <span>View Packages & Pricing</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
             ))}

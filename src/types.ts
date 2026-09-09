@@ -317,6 +317,9 @@ export interface SoftwareSolutionItem {
   pricing: string;
   features: string[];
   status: "Active" | "Maintenance" | "Beta";
+  imageUrl?: string;
+  previewUrl?: string;
+  templateType?: "website" | "webapp" | "erp" | "pos" | "mobile" | "app";
 }
 
 export type ProductCategory = "all" | "merchandise" | "gadgets" | "accessories" | "office" | "tech";
@@ -368,6 +371,8 @@ export interface PortfolioItem {
   icon: string;
   previewType: "desktop" | "mobile" | "dashboard";
   previewAccent: string;
+  imageUrl?: string;
+  liveUrl?: string;
   testimonial?: {
     quote: string;
     author: string;

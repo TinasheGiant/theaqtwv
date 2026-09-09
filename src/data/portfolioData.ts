@@ -19,6 +19,8 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     icon: "🛒",
     previewType: "desktop",
     previewAccent: "#D4AF37",
+    imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
+    liveUrl: "https://fullstackphp.aqutewave.co.zw",
     testimonial: {
       quote: "Aqutewave transformed our retail operations. Our online sales skyrocketed within 3 weeks of launching our new store.",
       author: "Tinashe R Tinarwo",
@@ -43,6 +45,8 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     icon: "📱",
     previewType: "mobile",
     previewAccent: "#38bdf8",
+    imageUrl: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&auto=format&fit=crop&q=80",
+    liveUrl: "https://fullstackphp.aqutewave.co.zw",
     testimonial: {
       quote: "The security, interface responsiveness, and flawless user experience designed by Aqutewave are unmatched.",
       author: "Tariro Chigumba",
@@ -67,6 +71,8 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     icon: "🗄️",
     previewType: "dashboard",
     previewAccent: "#10b981",
+    imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80",
+    liveUrl: "https://fullstackphp.aqutewave.co.zw",
     testimonial: {
       quote: "Our entire supply chain runs like clockwork thanks to the ERP architecture built by Aqutewave.",
       author: "Blessing Musarurwa",
@@ -91,6 +97,8 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     icon: "🎨",
     previewType: "desktop",
     previewAccent: "#fbbf24",
+    imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop&q=80",
+    liveUrl: "https://fullstackphp.aqutewave.co.zw",
     testimonial: {
       quote: "The elegance and attention to typographic detail completely elevated our lodge's market positioning.",
       author: "Sarah Van Deventer",
@@ -115,6 +123,8 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     icon: "🤖",
     previewType: "mobile",
     previewAccent: "#a855f7",
+    imageUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=80",
+    liveUrl: "https://fullstackphp.aqutewave.co.zw",
   },
   {
     id: "case-marketing",
@@ -134,5 +144,7 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     icon: "📢",
     previewType: "desktop",
     previewAccent: "#f43f5e",
+    imageUrl: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop&q=80",
+    liveUrl: "https://fullstackphp.aqutewave.co.zw",
   },
 ];

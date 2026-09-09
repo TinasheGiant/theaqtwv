@@ -15,6 +15,9 @@ export const DEFAULT_SOFTWARE_SOLUTIONS: SoftwareSolutionItem[] = [
       "Stock shrinkage & theft alert telemetry",
     ],
     status: "Active",
+    imageUrl: "https://images.unsplash.com/photo-1556742049-0a67e557224f?w=800&auto=format&fit=crop&q=80",
+    previewUrl: "https://fullstackphp.aqutewave.co.zw",
+    templateType: "pos",
   },
   {
     id: "soft-2",
@@ -30,6 +33,9 @@ export const DEFAULT_SOFTWARE_SOLUTIONS: SoftwareSolutionItem[] = [
       "RESTful API & webhook integrations",
     ],
     status: "Active",
+    imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
+    previewUrl: "https://fullstackphp.aqutewave.co.zw",
+    templateType: "erp",
   },
   {
     id: "soft-3",
@@ -45,6 +51,9 @@ export const DEFAULT_SOFTWARE_SOLUTIONS: SoftwareSolutionItem[] = [
       "Trip cost & delivery manifest generator",
     ],
     status: "Active",
+    imageUrl: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=800&auto=format&fit=crop&q=80",
+    previewUrl: "https://fullstackphp.aqutewave.co.zw",
+    templateType: "webapp",
   },
   {
     id: "soft-4",
@@ -60,6 +69,9 @@ export const DEFAULT_SOFTWARE_SOLUTIONS: SoftwareSolutionItem[] = [
       "Teacher attendance & lesson timetable scheduler",
     ],
     status: "Active",
+    imageUrl: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&auto=format&fit=crop&q=80",
+    previewUrl: "https://fullstackphp.aqutewave.co.zw",
+    templateType: "website",
   },
   {
     id: "soft-5",
@@ -75,6 +87,9 @@ export const DEFAULT_SOFTWARE_SOLUTIONS: SoftwareSolutionItem[] = [
       "Doctor appointment calendar & patient queue triage",
     ],
     status: "Active",
+    imageUrl: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=800&auto=format&fit=crop&q=80",
+    previewUrl: "https://fullstackphp.aqutewave.co.zw",
+    templateType: "webapp",
   },
   {
     id: "soft-6",
@@ -90,5 +105,8 @@ export const DEFAULT_SOFTWARE_SOLUTIONS: SoftwareSolutionItem[] = [
       "Developer sandbox with CLI & code examples",
     ],
     status: "Active",
+    imageUrl: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&auto=format&fit=crop&q=80",
+    previewUrl: "https://fullstackphp.aqutewave.co.zw",
+    templateType: "pos",
   },
 ];

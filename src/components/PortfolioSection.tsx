@@ -11,14 +11,27 @@ import {
   Quote,
   Sparkles,
   ArrowRight,
-  X
+  X,
+  Globe,
+  Eye,
 } from "lucide-react";
+import { TemplateIframeModal } from "./TemplateIframeModal";
 
 export const PortfolioSection: React.FC = () => {
   const { portfolioList, playSfx, openBookingWithService } = useApp();
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [activeCaseStudy, setActiveCaseStudy] = useState<PortfolioItem | null>(null);
   const [deviceView, setDeviceView] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [iframeModalData, setIframeModalData] = useState<{
+    isOpen: boolean;
+    title: string;
+    previewUrl: string;
+    category?: string;
+  }>({
+    isOpen: false,
+    title: "",
+    previewUrl: "",
+  });
 
   const categories = [
     { id: "all", label: "ALL PROJECTS" },
@@ -83,30 +96,76 @@ export const PortfolioSection: React.FC = () => {
                 playSfx("pop");
                 setActiveCaseStudy(item);
               }}
-              className="glass-card-hover rounded-3xl p-6 sm:p-7 flex flex-col justify-between group cursor-pointer border border-amber-500/20 hover:border-amber-400/50"
+              className="glass-card-hover rounded-3xl p-5 sm:p-6 flex flex-col justify-between group cursor-pointer border border-amber-500/20 hover:border-amber-400/50 transition-all duration-300 shadow-xl overflow-hidden"
             >
               <div>
-                {/* Top Badge & Year */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="text-3xl">{item.icon}</div>
-                  <span className="text-[10px] font-mono text-gray-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/10">
-                    {item.category} · {item.year}
-                  </span>
+                {/* Visual Image Banner on Every Card */}
+                <div className="relative h-48 sm:h-52 rounded-2xl overflow-hidden mb-5 border border-white/10 bg-neutral-950 group-hover:border-amber-400/30 transition-all">
+                  <img
+                    src={
+                      item.imageUrl ||
+                      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80"
+                    }
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
+
+                  {/* Top Badges */}
+                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+                    <span className="text-[10px] font-mono font-bold text-amber-300 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-amber-400/30 shadow-md">
+                      {item.category}
+                    </span>
+                    <span className="text-[10px] font-mono text-gray-300 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10">
+                      {item.year}
+                    </span>
+                  </div>
+
+                  {/* Bottom Image Overlay Badge */}
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                    <span className="text-[11px] font-mono text-amber-300/90 truncate font-semibold">
+                      Client: {item.client}
+                    </span>
+                    {item.liveUrl && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          playSfx("pop");
+                          setIframeModalData({
+                            isOpen: true,
+                            title: item.title,
+                            previewUrl: item.liveUrl!,
+                            category: item.category,
+                          });
+                        }}
+                        className="px-2.5 py-1 rounded-full bg-amber-400 text-black font-['Cinzel'] font-bold text-[10px] flex items-center gap-1 shadow-lg hover:bg-amber-300 transition-all cursor-pointer"
+                        title="Open Live Iframe Preview"
+                      >
+                        <Eye className="w-3 h-3" />
+                        <span>Live Demo</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Title */}
-                <h3 className="font-['Cinzel'] font-bold text-lg text-white group-hover:text-amber-300 transition-colors leading-snug mb-2">
+                <h3 className="font-['Cinzel'] font-bold text-base sm:text-lg text-white group-hover:text-amber-300 transition-colors leading-snug mb-2 line-clamp-1">
                   {item.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-xs text-gray-400 line-clamp-3 mb-6 leading-relaxed">
+                <p className="text-xs text-gray-400 line-clamp-2 mb-4 leading-relaxed font-light">
                   {item.description}
                 </p>
 
                 {/* Key Metrics Pill */}
-                <div className="p-3 rounded-2xl bg-amber-400/10 border border-amber-400/20 mb-5">
-                  <div className="text-[10px] font-['Cinzel'] font-bold text-amber-300 uppercase tracking-wider mb-1">
+                <div className="p-3 rounded-2xl bg-amber-400/10 border border-amber-400/20 mb-4">
+                  <div className="text-[10px] font-['Cinzel'] font-bold text-amber-300 uppercase tracking-wider mb-0.5">
                     KEY OUTCOME:
                   </div>
                   <div className="text-xs font-semibold text-white">
@@ -116,10 +175,13 @@ export const PortfolioSection: React.FC = () => {
               </div>
 
               {/* Technologies & Trigger */}
-              <div className="pt-4 border-t border-amber-500/15 flex items-center justify-between">
+              <div className="pt-3 border-t border-amber-500/15 flex items-center justify-between">
                 <div className="flex flex-wrap gap-1">
                   {item.technologies.slice(0, 2).map((tech, idx) => (
-                    <span key={idx} className="text-[10px] font-mono text-gray-400 bg-black/40 px-2 py-0.5 rounded border border-white/5">
+                    <span
+                      key={idx}
+                      className="text-[10px] font-mono text-gray-400 bg-black/40 px-2 py-0.5 rounded border border-white/5"
+                    >
                       {tech}
                     </span>
                   ))}
@@ -131,7 +193,7 @@ export const PortfolioSection: React.FC = () => {
                 </div>
 
                 <span className="text-xs font-['Cinzel'] font-bold text-amber-300 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                  <span>Case Study</span>
+                  <span>View Case Study</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
@@ -139,7 +201,7 @@ export const PortfolioSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Case Study Modal with Device Simulator */}
+        {/* Case Study Modal with Device Simulator & Live Iframe */}
         {activeCaseStudy && (
           <div
             className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
@@ -172,6 +234,40 @@ export const PortfolioSection: React.FC = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {/* Cover Image Banner */}
+              {activeCaseStudy.imageUrl && (
+                <div className="relative h-60 sm:h-72 rounded-2xl overflow-hidden mb-6 border border-amber-500/30">
+                  <img
+                    src={activeCaseStudy.imageUrl}
+                    alt={activeCaseStudy.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
+                    <div className="flex items-center justify-between w-full">
+                      <span className="text-xs font-mono text-amber-300 font-bold bg-black/60 px-3 py-1 rounded-full border border-amber-400/30">
+                        {activeCaseStudy.client} &bull; {activeCaseStudy.category}
+                      </span>
+                      {activeCaseStudy.liveUrl && (
+                        <button
+                          onClick={() => {
+                            setIframeModalData({
+                              isOpen: true,
+                              title: activeCaseStudy.title,
+                              previewUrl: activeCaseStudy.liveUrl!,
+                              category: activeCaseStudy.category,
+                            });
+                          }}
+                          className="btn-gold-luxury px-4 py-1.5 rounded-xl text-xs font-['Cinzel'] font-bold flex items-center gap-1.5 cursor-pointer shadow-lg"
+                        >
+                          <Globe className="w-3.5 h-3.5" />
+                          <span>Launch Live Iframe Sandbox</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Impact Metrics Row */}
               <div className="grid grid-cols-3 gap-3 mb-6">
@@ -224,31 +320,61 @@ export const PortfolioSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Device Frame */}
-                <div className="p-4 sm:p-6 rounded-2xl bg-neutral-950 border border-amber-500/20 flex items-center justify-center min-h-[220px]">
+                {/* Device Frame with Live Iframe or Screenshot */}
+                <div className="p-4 sm:p-6 rounded-2xl bg-neutral-950 border border-amber-500/20 flex items-center justify-center min-h-[300px]">
                   <div
-                    className={`transition-all duration-300 bg-neutral-900 border border-amber-400/30 rounded-2xl p-4 sm:p-5 shadow-2xl text-center flex flex-col justify-center ${
+                    className={`transition-all duration-300 bg-neutral-900 border border-amber-400/30 rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-center ${
                       deviceView === "desktop"
-                        ? "w-full max-w-xl"
+                        ? "w-full max-w-2xl h-[340px]"
                         : deviceView === "tablet"
-                        ? "w-80"
-                        : "w-56"
+                        ? "w-[480px] max-w-full h-[340px]"
+                        : "w-[280px] h-[340px]"
                     }`}
                   >
                     {/* Simulated Browser Bar */}
-                    <div className="flex items-center gap-1.5 pb-3 mb-3 border-b border-white/10 text-[10px] text-gray-500 font-mono">
-                      <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
-                      <span className="ml-2 text-gray-400 truncate">https://{activeCaseStudy.client.toLowerCase().replace(/\s+/g, "")}.co.zw</span>
+                    <div className="flex items-center justify-between px-3 py-2 bg-black/80 border-b border-white/10 text-[10px] text-gray-400 font-mono shrink-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
+                        <span className="ml-2 text-gray-400 truncate max-w-[200px]">
+                          {activeCaseStudy.liveUrl || `https://${activeCaseStudy.client.toLowerCase().replace(/\s+/g, "")}.co.zw`}
+                        </span>
+                      </div>
+                      {activeCaseStudy.liveUrl && (
+                        <button
+                          onClick={() => {
+                            setIframeModalData({
+                              isOpen: true,
+                              title: activeCaseStudy.title,
+                              previewUrl: activeCaseStudy.liveUrl!,
+                              category: activeCaseStudy.category,
+                            });
+                          }}
+                          className="text-[10px] text-amber-400 hover:text-amber-300 flex items-center gap-1"
+                        >
+                          <span>Expand</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </button>
+                      )}
                     </div>
 
-                    <div className="text-3xl mb-2">{activeCaseStudy.icon}</div>
-                    <div className="font-['Cinzel'] font-bold text-sm text-white mb-1">
-                      {activeCaseStudy.title}
-                    </div>
-                    <div className="text-[11px] text-amber-300 font-mono">
-                      {activeCaseStudy.results}
+                    {/* Content inside device frame */}
+                    <div className="flex-1 relative overflow-hidden bg-black flex items-center justify-center">
+                      {activeCaseStudy.liveUrl ? (
+                        <iframe
+                          src={activeCaseStudy.liveUrl}
+                          title={activeCaseStudy.title}
+                          className="w-full h-full border-0"
+                          sandbox="allow-scripts allow-same-origin allow-forms"
+                        />
+                      ) : (
+                        <img
+                          src={activeCaseStudy.imageUrl || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80"}
+                          alt={activeCaseStudy.title}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -318,6 +444,18 @@ We are looking to build a similar project for our organization.`;
             </div>
           </div>
         )}
+
+        {/* Global Live Template Iframe Modal */}
+        <TemplateIframeModal
+          isOpen={iframeModalData.isOpen}
+          onClose={() => setIframeModalData((prev) => ({ ...prev, isOpen: false }))}
+          title={iframeModalData.title}
+          category={iframeModalData.category}
+          previewUrl={iframeModalData.previewUrl}
+          onPurchaseOrQuote={(title) => {
+            openBookingWithService("custom-web-apps");
+          }}
+        />
       </div>
     </section>
   );

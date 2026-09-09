@@ -158,13 +158,13 @@ export const WelcomeHome: React.FC = () => {
       buttonText: "Visit Store",
     },
     {
-      title: "Arch Studio (3D Design)",
-      priceTag: "Sister Division",
-      desc: "Photorealistic 3D architectural rendering, modern floor plans, and residential & commercial design blueprints.",
-      icon: <Building2 className="w-6 h-6 text-amber-400" />,
-      badge: "Aesthetic Excellence",
-      externalUrl: "https://archstudio.aqutewave.co.zw",
-      buttonText: "Visit Arch Studio ↗",
+      title: "Software & ERP Engineering",
+      priceTag: "Enterprise Systems",
+      desc: "Multi-branch POS, warehouse inventory ERPs, live GPS telematics, and fintech payment checkout suites.",
+      icon: <Cpu className="w-6 h-6 text-amber-400" />,
+      badge: "Mission Critical",
+      page: "software" as const,
+      buttonText: "Explore Systems",
     },
   ];
 
@@ -379,8 +379,9 @@ export const WelcomeHome: React.FC = () => {
                 className="glass-card-hover rounded-3xl p-6 flex flex-col justify-between group border border-amber-500/20 hover:border-amber-400/50 cursor-pointer"
                 onClick={() => {
                   playSfx("click");
-                  if (item.externalUrl) {
-                    window.open(item.externalUrl, "_blank");
+                  const extUrl = (item as { externalUrl?: string }).externalUrl;
+                  if (extUrl) {
+                    window.open(extUrl, "_blank");
                   } else if (item.page) {
                     setActivePage(item.page);
                   }
@@ -499,7 +500,7 @@ export const WelcomeHome: React.FC = () => {
               <span className="text-amber-400">✦</span>
               <span>HIGH-CONVERSION DIGITAL MARKETING</span>
               <span className="text-amber-400">✦</span>
-              <span>ARCH STUDIO 3D RENDERING</span>
+              <span>BESPOKE SOFTWARE & ERP SUITES</span>
               <span className="text-amber-400">✦</span>
               <span>SHOP GADGETS & TECH GEAR</span>
               <span className="text-amber-400">✦</span>
