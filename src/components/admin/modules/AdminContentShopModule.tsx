@@ -126,7 +126,8 @@ export const AdminContentShopModule: React.FC = () => {
       .map((f) => f.trim())
       .filter(Boolean);
 
-    const finalImageUrl = imageUrl.trim() || undefined;
+    const finalImageUrl = imageUrl.trim() || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80";
+    const finalBadge = badge.trim() || "";
 
     if (isCreating) {
       addProductItem({
@@ -142,7 +143,7 @@ export const AdminContentShopModule: React.FC = () => {
         reviewsCount: 1,
         inStock,
         description,
-        badge: badge.trim() ? badge.trim() : undefined,
+        badge: finalBadge,
         features,
       });
       setIsCreating(false);
@@ -158,7 +159,7 @@ export const AdminContentShopModule: React.FC = () => {
         image: finalImageUrl,
         inStock,
         description,
-        badge: badge.trim() ? badge.trim() : undefined,
+        badge: finalBadge,
         features,
       });
       setEditingProduct(null);

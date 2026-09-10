@@ -91,6 +91,9 @@ export const AdminContentPortfolioModule: React.FC = () => {
       return "marketing";
     };
 
+    const finalImage = image.trim() || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80";
+    const finalLiveUrl = liveUrl.trim() || "";
+
     if (isCreating) {
       addPortfolioItem({
         title,
@@ -102,8 +105,8 @@ export const AdminContentPortfolioModule: React.FC = () => {
         impactMetrics: [{ label: "Key Outcome", value: metrics }],
         technologies,
         year,
-        imageUrl: image,
-        liveUrl: liveUrl || undefined,
+        imageUrl: finalImage,
+        liveUrl: finalLiveUrl,
         icon: "Briefcase",
         previewType: "dashboard",
         previewAccent: "gold",
@@ -120,8 +123,8 @@ export const AdminContentPortfolioModule: React.FC = () => {
         impactMetrics: [{ label: "Key Outcome", value: metrics }],
         technologies,
         year,
-        imageUrl: image,
-        liveUrl: liveUrl || undefined,
+        imageUrl: finalImage,
+        liveUrl: finalLiveUrl,
       });
       setEditingItem(null);
     }

@@ -51,33 +51,51 @@ export const BlogSection: React.FC = () => {
                 playSfx("pop");
                 setSelectedPost(post);
               }}
-              className="glass-card-hover rounded-3xl p-6 sm:p-7 flex flex-col justify-between group cursor-pointer border border-amber-500/20 hover:border-amber-400/50"
+              className="glass-card-hover rounded-3xl overflow-hidden flex flex-col justify-between group cursor-pointer border border-amber-500/20 hover:border-amber-400/50"
             >
               <div>
-                {/* Meta Header */}
-                <div className="flex items-center justify-between text-[11px] text-gray-400 mb-4">
-                  <span className="text-[10px] font-['Cinzel'] font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                    {post.category}
-                  </span>
-                  <span className="flex items-center gap-1 font-mono">
-                    <Clock className="w-3 h-3 text-amber-400" />
-                    <span>{post.readTime}</span>
-                  </span>
+                {(post.imageUrl || post.image) && (
+                  <div className="w-full aspect-video overflow-hidden bg-black/60 relative border-b border-amber-500/20">
+                    <img
+                      src={post.imageUrl || post.image}
+                      alt={post.title}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80";
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                  </div>
+                )}
+
+                <div className="p-6 sm:p-7">
+                  {/* Meta Header */}
+                  <div className="flex items-center justify-between text-[11px] text-gray-400 mb-4">
+                    <span className="text-[10px] font-['Cinzel'] font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                      {post.category}
+                    </span>
+                    <span className="flex items-center gap-1 font-mono">
+                      <Clock className="w-3 h-3 text-amber-400" />
+                      <span>{post.readTime}</span>
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="font-['Cinzel'] font-bold text-lg text-white group-hover:text-amber-300 transition-colors leading-snug mb-3">
+                    {post.title}
+                  </h3>
+
+                  {/* Excerpt */}
+                  <p className="text-xs text-gray-400 line-clamp-3 mb-2 leading-relaxed">
+                    {post.excerpt}
+                  </p>
                 </div>
-
-                {/* Title */}
-                <h3 className="font-['Cinzel'] font-bold text-lg text-white group-hover:text-amber-300 transition-colors leading-snug mb-3">
-                  {post.title}
-                </h3>
-
-                {/* Excerpt */}
-                <p className="text-xs text-gray-400 line-clamp-3 mb-6 leading-relaxed">
-                  {post.excerpt}
-                </p>
               </div>
 
               {/* Author & Read Trigger */}
-              <div className="pt-4 border-t border-amber-500/15 flex items-center justify-between">
+              <div className="px-6 pb-6 pt-4 border-t border-amber-500/15 flex items-center justify-between">
                 <div className="text-[11px] text-gray-400 font-mono">
                   {post.date}
                 </div>
@@ -135,6 +153,22 @@ export const BlogSection: React.FC = () => {
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {/* Article Cover Image */}
+              {(selectedPost.imageUrl || selectedPost.image) && (
+                <div className="w-full aspect-video sm:aspect-[21/9] rounded-2xl overflow-hidden mb-6 border border-amber-500/30 bg-black/60 shadow-lg">
+                  <img
+                    src={selectedPost.imageUrl || selectedPost.image}
+                    alt={selectedPost.title}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80";
+                    }}
+                  />
+                </div>
+              )}
 
               {/* Article Content */}
               <div className="prose prose-invert max-w-none text-xs sm:text-sm text-gray-300 leading-relaxed space-y-4 mb-8 font-['Inter']">

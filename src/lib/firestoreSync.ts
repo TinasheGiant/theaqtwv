@@ -64,6 +64,29 @@ export const COLLECTIONS = {
 };
 
 /**
+ * Deeply clean data before sending to Firestore.
+ * Firestore strictly rejects documents containing `undefined`.
+ */
+export function sanitizeFirestoreData<T>(obj: T): T {
+  if (obj === null || obj === undefined) {
+    return null as any;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map((item) => sanitizeFirestoreData(item)) as any;
+  }
+  if (typeof obj === "object" && !(obj instanceof Date)) {
+    const cleaned: Record<string, any> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (value !== undefined) {
+        cleaned[key] = sanitizeFirestoreData(value);
+      }
+    }
+    return cleaned as T;
+  }
+  return obj;
+}
+
+/**
  * Seed all default data into Firestore if not already populated
  */
 export async function seedFirestoreDatabase(force: boolean = false): Promise<{ success: boolean; message: string }> {
@@ -73,16 +96,22 @@ export async function seedFirestoreDatabase(force: boolean = false): Promise<{ s
       return { success: false, message: "Firestore is operating in offline/client mode." };
     }
 
-    // 1. Seed Services (public read/write if staff, or initial bootstrap)
+    // Skip redundant re-seeding on routine page refreshes if already initialized unless forced
+    const seedKey = "aqutewave_db_seeded_v2";
+    if (!force && typeof window !== "undefined" && localStorage.getItem(seedKey) === "true") {
+      return { success: true, message: "Database already synchronized." };
+    }
+
+    // 1. Seed Services
     try {
       for (const s of SERVICES_LIST) {
         const sRef = doc(db, COLLECTIONS.SERVICES, s.id);
         if (force) {
-          await setDoc(sRef, s);
+          await setDoc(sRef, sanitizeFirestoreData(s));
         } else {
           const snap = await getDoc(sRef).catch(() => null);
-          if (!snap || !snap.exists()) {
-            await setDoc(sRef, s).catch(() => {});
+          if (snap && !snap.exists()) {
+            await setDoc(sRef, sanitizeFirestoreData(s)).catch(() => {});
           }
         }
       }
@@ -95,11 +124,11 @@ export async function seedFirestoreDatabase(force: boolean = false): Promise<{ s
       for (const p of PRODUCTS_LIST) {
         const pRef = doc(db, COLLECTIONS.PRODUCTS, String(p.id));
         if (force) {
-          await setDoc(pRef, p);
+          await setDoc(pRef, sanitizeFirestoreData(p));
         } else {
           const snap = await getDoc(pRef).catch(() => null);
-          if (!snap || !snap.exists()) {
-            await setDoc(pRef, p).catch(() => {});
+          if (snap && !snap.exists()) {
+            await setDoc(pRef, sanitizeFirestoreData(p)).catch(() => {});
           }
         }
       }
@@ -112,11 +141,11 @@ export async function seedFirestoreDatabase(force: boolean = false): Promise<{ s
       for (const b of BLOG_POSTS) {
         const bRef = doc(db, COLLECTIONS.BLOGS, b.id);
         if (force) {
-          await setDoc(bRef, b);
+          await setDoc(bRef, sanitizeFirestoreData(b));
         } else {
           const snap = await getDoc(bRef).catch(() => null);
-          if (!snap || !snap.exists()) {
-            await setDoc(bRef, b).catch(() => {});
+          if (snap && !snap.exists()) {
+            await setDoc(bRef, sanitizeFirestoreData(b)).catch(() => {});
           }
         }
       }
@@ -129,11 +158,11 @@ export async function seedFirestoreDatabase(force: boolean = false): Promise<{ s
       for (const p of PORTFOLIO_ITEMS) {
         const pRef = doc(db, COLLECTIONS.PORTFOLIO, p.id);
         if (force) {
-          await setDoc(pRef, p);
+          await setDoc(pRef, sanitizeFirestoreData(p));
         } else {
           const snap = await getDoc(pRef).catch(() => null);
-          if (!snap || !snap.exists()) {
-            await setDoc(pRef, p).catch(() => {});
+          if (snap && !snap.exists()) {
+            await setDoc(pRef, sanitizeFirestoreData(p)).catch(() => {});
           }
         }
       }
@@ -146,11 +175,11 @@ export async function seedFirestoreDatabase(force: boolean = false): Promise<{ s
       for (const sw of DEFAULT_SOFTWARE_SOLUTIONS) {
         const swRef = doc(db, COLLECTIONS.SOFTWARE, sw.id);
         if (force) {
-          await setDoc(swRef, sw);
+          await setDoc(swRef, sanitizeFirestoreData(sw));
         } else {
           const snap = await getDoc(swRef).catch(() => null);
-          if (!snap || !snap.exists()) {
-            await setDoc(swRef, sw).catch(() => {});
+          if (snap && !snap.exists()) {
+            await setDoc(swRef, sanitizeFirestoreData(sw)).catch(() => {});
           }
         }
       }
@@ -162,8 +191,8 @@ export async function seedFirestoreDatabase(force: boolean = false): Promise<{ s
     try {
       const settingsRef = doc(db, COLLECTIONS.SYSTEM_SETTINGS, "config");
       const snap = await getDoc(settingsRef).catch(() => null);
-      if (force || !snap || !snap.exists()) {
-        await setDoc(settingsRef, DEFAULT_SYSTEM_SETTINGS).catch(() => {});
+      if (force || (snap && !snap.exists())) {
+        await setDoc(settingsRef, sanitizeFirestoreData(DEFAULT_SYSTEM_SETTINGS)).catch(() => {});
       }
     } catch (e) {
       console.warn("Notice during system settings seed:", e);
@@ -174,12 +203,16 @@ export async function seedFirestoreDatabase(force: boolean = false): Promise<{ s
       for (const c of DEFAULT_ADMIN_COUPONS) {
         const cRef = doc(db, COLLECTIONS.COUPONS, c.id);
         const snap = await getDoc(cRef).catch(() => null);
-        if (force || !snap || !snap.exists()) {
-          await setDoc(cRef, c).catch(() => {});
+        if (force || (snap && !snap.exists())) {
+          await setDoc(cRef, sanitizeFirestoreData(c)).catch(() => {});
         }
       }
     } catch (e) {
       console.warn("Notice during coupons seed:", e);
+    }
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem(seedKey, "true");
     }
 
     return { success: true, message: "Firestore database catalog successfully synchronized." };
@@ -193,27 +226,32 @@ export async function seedFirestoreDatabase(force: boolean = false): Promise<{ s
 }
 
 /**
- * Generic Firestore CRUD Helpers with safe fallback
+ * Generic Firestore CRUD Helpers with safe sanitization and fallback
  */
 export async function syncDocToFirestore<T extends Record<string, any>>(
   collectionName: string,
   docId: string,
   data: T
-) {
+): Promise<boolean> {
   try {
-    const docRef = doc(db, collectionName, docId);
-    await setDoc(docRef, data, { merge: true });
+    const cleanData = sanitizeFirestoreData(data);
+    const docRef = doc(db, collectionName, String(docId));
+    await setDoc(docRef, cleanData, { merge: true });
+    return true;
   } catch (err) {
     handleFirestoreError(err, OperationType.UPDATE, `${collectionName}/${docId}`);
+    return false;
   }
 }
 
-export async function deleteDocFromFirestore(collectionName: string, docId: string) {
+export async function deleteDocFromFirestore(collectionName: string, docId: string): Promise<boolean> {
   try {
-    const docRef = doc(db, collectionName, docId);
+    const docRef = doc(db, collectionName, String(docId));
     await deleteDoc(docRef);
+    return true;
   } catch (err) {
     handleFirestoreError(err, OperationType.DELETE, `${collectionName}/${docId}`);
+    return false;
   }
 }
 

@@ -318,6 +318,7 @@ export interface SoftwareSolutionItem {
   features: string[];
   status: "Active" | "Maintenance" | "Beta";
   imageUrl?: string;
+  image?: string;
   previewUrl?: string;
   templateType?: "website" | "webapp" | "erp" | "pos" | "mobile" | "app";
 }
@@ -373,6 +374,7 @@ export interface PortfolioItem {
   previewType: "desktop" | "mobile" | "dashboard";
   previewAccent: string;
   imageUrl?: string;
+  image?: string;
   liveUrl?: string;
   testimonial?: {
     quote: string;
@@ -393,6 +395,8 @@ export interface BlogPost {
   tags: string[];
   icon: string;
   author?: string;
+  imageUrl?: string;
+  image?: string;
 }
 
 export interface FaqItem {

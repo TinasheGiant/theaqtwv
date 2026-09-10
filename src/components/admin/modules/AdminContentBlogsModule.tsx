@@ -44,6 +44,7 @@ export const AdminContentBlogsModule: React.FC = () => {
     setEditingBlog(b);
     setTitle(b.title);
     setCategory(b.category);
+    setImage(b.imageUrl || (b as any).image || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80");
     setReadTime(b.readTime);
     setExcerpt(b.excerpt);
     setAuthorName(typeof b.author === "string" ? b.author : "Aqutewave Team");
@@ -57,6 +58,7 @@ export const AdminContentBlogsModule: React.FC = () => {
     setEditingBlog(null);
     setTitle("");
     setCategory("Engineering & Cloud");
+    setImage("https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80");
     setReadTime("4 min read");
     setExcerpt("");
     setAuthorName("Aqutewave Lead Architect");
@@ -79,6 +81,7 @@ export const AdminContentBlogsModule: React.FC = () => {
       .filter(Boolean);
 
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    const finalImage = image.trim() || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80";
 
     if (isCreating) {
       addBlogPost({
@@ -92,6 +95,8 @@ export const AdminContentBlogsModule: React.FC = () => {
         tags,
         icon: "BookOpen",
         content: paragraphs,
+        imageUrl: finalImage,
+        image: finalImage,
       });
       setIsCreating(false);
     } else if (editingBlog) {
@@ -104,6 +109,8 @@ export const AdminContentBlogsModule: React.FC = () => {
         author: authorName,
         tags,
         content: paragraphs,
+        imageUrl: finalImage,
+        image: finalImage,
       });
       setEditingBlog(null);
     }

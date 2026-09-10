@@ -715,7 +715,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             collection(db, COLLECTIONS.BLOGS),
             (snapshot) => {
               if (!snapshot.empty) {
-                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as BlogPost));
+                const items = snapshot.docs.map((d) => {
+                  const data = d.data();
+                  const img = data.imageUrl || data.image || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80";
+                  return { ...data, id: d.id, imageUrl: img, image: img } as BlogPost;
+                });
                 setBlogsList(items);
               }
             },
@@ -732,7 +736,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             collection(db, COLLECTIONS.PORTFOLIO),
             (snapshot) => {
               if (!snapshot.empty) {
-                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as PortfolioItem));
+                const items = snapshot.docs.map((d) => {
+                  const data = d.data();
+                  const img = data.imageUrl || data.image || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80";
+                  return { ...data, id: d.id, imageUrl: img, image: img } as unknown as PortfolioItem;
+                });
                 setPortfolioList(items);
               }
             },
@@ -749,7 +757,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             collection(db, COLLECTIONS.SOFTWARE),
             (snapshot) => {
               if (!snapshot.empty) {
-                const items = snapshot.docs.map((d) => ({ ...d.data(), id: d.id } as SoftwareSolutionItem));
+                const items = snapshot.docs.map((d) => {
+                  const data = d.data();
+                  const img = data.imageUrl || data.image || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80";
+                  return { ...data, id: d.id, imageUrl: img, image: img } as unknown as SoftwareSolutionItem;
+                });
                 setSoftwareList(items);
               }
             },
@@ -1242,7 +1254,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addProductItem = (product: Omit<ProductItem, "id">) => {
     const id = Date.now();
-    const newProduct: ProductItem = { ...product, id };
+    const img = product.imageUrl || product.image || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80";
+    const newProduct: ProductItem = {
+      ...product,
+      id,
+      imageUrl: img,
+      image: img,
+    };
     setProductsList((prev) => [newProduct, ...prev]);
     syncDocToFirestore(COLLECTIONS.PRODUCTS, String(id), newProduct);
     logAdminSecurityEvent("PRODUCT_ADDED", `Added shop product ${product.name}`, "shop", "allowed");
@@ -1253,7 +1271,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setProductsList((prev) =>
       prev.map((p) => {
         if (String(p.id) === String(id)) {
-          const updated = { ...p, ...updates };
+          const img = updates.imageUrl || updates.image || p.imageUrl || p.image;
+          const updated: ProductItem = {
+            ...p,
+            ...updates,
+            ...(img ? { imageUrl: img, image: img } : {}),
+          };
           syncDocToFirestore(COLLECTIONS.PRODUCTS, String(id), updated);
           return updated;
         }
@@ -1273,7 +1296,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addBlogPost = (blog: Omit<BlogPost, "id">) => {
     const id = `blog-${Date.now()}`;
-    const newBlog: BlogPost = { ...blog, id };
+    const img = blog.imageUrl || blog.image || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80";
+    const newBlog: BlogPost = {
+      ...blog,
+      id,
+      imageUrl: img,
+      image: img,
+    };
     setBlogsList((prev) => [newBlog, ...prev]);
     syncDocToFirestore(COLLECTIONS.BLOGS, id, newBlog);
     logAdminSecurityEvent("BLOG_POSTED", `Published article ${blog.title}`, "blogs", "allowed");
@@ -1284,7 +1313,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setBlogsList((prev) =>
       prev.map((b) => {
         if (b.id === id) {
-          const updated = { ...b, ...updates };
+          const img = updates.imageUrl || updates.image || b.imageUrl || b.image;
+          const updated: BlogPost = {
+            ...b,
+            ...updates,
+            ...(img ? { imageUrl: img, image: img } : {}),
+          };
           syncDocToFirestore(COLLECTIONS.BLOGS, id, updated);
           return updated;
         }
@@ -1304,7 +1338,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addPortfolioItem = (item: Omit<PortfolioItem, "id">) => {
     const id = `portfolio-${Date.now()}`;
-    const newPortfolio: PortfolioItem = { ...item, id };
+    const img = item.imageUrl || (item as any).image || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80";
+    const newPortfolio: PortfolioItem = {
+      ...item,
+      id,
+      imageUrl: img,
+      image: img,
+    };
     setPortfolioList((prev) => [newPortfolio, ...prev]);
     syncDocToFirestore(COLLECTIONS.PORTFOLIO, id, newPortfolio);
     logAdminSecurityEvent("PORTFOLIO_ADDED", `Added showcase ${item.title}`, "portfolio", "allowed");
@@ -1315,7 +1355,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setPortfolioList((prev) =>
       prev.map((p) => {
         if (p.id === id) {
-          const updated = { ...p, ...updates };
+          const img = updates.imageUrl || (updates as any).image || p.imageUrl || p.image;
+          const updated: PortfolioItem = {
+            ...p,
+            ...updates,
+            ...(img ? { imageUrl: img, image: img } : {}),
+          };
           syncDocToFirestore(COLLECTIONS.PORTFOLIO, id, updated);
           return updated;
         }
@@ -1335,7 +1380,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const addSoftwareItem = (item: Omit<SoftwareSolutionItem, "id">) => {
     const id = `soft-${Date.now()}`;
-    const newSoftware: SoftwareSolutionItem = { ...item, id };
+    const img = item.imageUrl || (item as any).image || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80";
+    const newSoftware: SoftwareSolutionItem = {
+      ...item,
+      id,
+      imageUrl: img,
+      image: img,
+    };
     setSoftwareList((prev) => [newSoftware, ...prev]);
     syncDocToFirestore(COLLECTIONS.SOFTWARE, id, newSoftware);
     logAdminSecurityEvent("SOFTWARE_ADDED", `Added software solution ${item.name}`, "software-erp", "allowed");
@@ -1346,7 +1397,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setSoftwareList((prev) =>
       prev.map((s) => {
         if (s.id === id) {
-          const updated = { ...s, ...updates };
+          const img = updates.imageUrl || (updates as any).image || s.imageUrl || (s as any).image;
+          const updated: SoftwareSolutionItem = {
+            ...s,
+            ...updates,
+            ...(img ? { imageUrl: img, image: img } : {}),
+          };
           syncDocToFirestore(COLLECTIONS.SOFTWARE, id, updated);
           return updated;
         }

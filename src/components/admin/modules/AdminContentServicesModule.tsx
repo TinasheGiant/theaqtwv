@@ -78,6 +78,8 @@ export const AdminContentServicesModule: React.FC = () => {
       .map((f) => f.trim())
       .filter(Boolean);
 
+    const finalBadge = badge.trim() || "";
+
     if (isCreating) {
       addServiceItem({
         title,
@@ -87,7 +89,7 @@ export const AdminContentServicesModule: React.FC = () => {
         description,
         features,
         turnaroundTime,
-        badge: badge.trim() ? badge.trim() : undefined,
+        badge: finalBadge,
       });
       setIsCreating(false);
     } else if (editingService) {
@@ -99,7 +101,7 @@ export const AdminContentServicesModule: React.FC = () => {
         description,
         features,
         turnaroundTime,
-        badge: badge.trim() ? badge.trim() : undefined,
+        badge: finalBadge,
       });
       setEditingService(null);
     }

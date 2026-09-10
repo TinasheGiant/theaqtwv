@@ -85,15 +85,20 @@ export const AdminContentSoftwareModule: React.FC = () => {
       .map((f) => f.trim())
       .filter(Boolean);
 
+    const finalImageUrl = imageUrl.trim() || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80";
+    const finalPreviewUrl = previewUrl.trim() || "";
+    const finalBadge = badge.trim() || "";
+
     if (isCreating) {
       addSoftwareItem({
         name,
         category,
-        badge,
+        badge: finalBadge,
         description,
         pricing,
-        imageUrl,
-        previewUrl: previewUrl || undefined,
+        imageUrl: finalImageUrl,
+        image: finalImageUrl,
+        previewUrl: finalPreviewUrl,
         templateType,
         features,
         status,
@@ -103,11 +108,12 @@ export const AdminContentSoftwareModule: React.FC = () => {
       updateSoftwareItem(editingItem.id, {
         name,
         category,
-        badge,
+        badge: finalBadge,
         description,
         pricing,
-        imageUrl,
-        previewUrl: previewUrl || undefined,
+        imageUrl: finalImageUrl,
+        image: finalImageUrl,
+        previewUrl: finalPreviewUrl,
         templateType,
         features,
         status,
