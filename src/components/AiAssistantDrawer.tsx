@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useApp } from "../context/AppContext";
 import { NavPage } from "../types";
 import {
@@ -6,6 +6,12 @@ import {
   DirectionLink,
   APP_TOPICS,
 } from "../data/appKnowledgeBase";
+import {
+  executeRelationalSearch,
+  generateAppContextDigest,
+  RelationalMatrixFeedback,
+} from "../data/relationalSearchEngine";
+import { AiRelationalMatrixView } from "./AiRelationalMatrixView";
 import {
   Bot,
   Send,
@@ -33,6 +39,7 @@ interface ChatMessage {
   timestamp: string;
   directionLinks: DirectionLink[];
   detectedPhrases?: string[];
+  matrixFeedback?: RelationalMatrixFeedback;
 }
 
 export const AiAssistantDrawer: React.FC = () => {
@@ -43,15 +50,44 @@ export const AiAssistantDrawer: React.FC = () => {
     setActivePage,
     openBookingWithService,
     showToast,
+    servicesList,
+    softwareList,
+    productsList,
+    portfolioList,
+    blogsList,
+    systemSettings,
+    formatPrice,
+    addToCart,
   } = useApp();
+
+  // Search context memoized
+  const searchContext = useMemo(
+    () => ({
+      services: servicesList,
+      software: softwareList,
+      products: productsList,
+      portfolio: portfolioList,
+      blogs: blogsList,
+      systemSettings,
+      formatPrice,
+    }),
+    [servicesList, softwareList, productsList, portfolioList, blogsList, systemSettings, formatPrice]
+  );
+
+  const initialFeedback = useMemo(
+    () => executeRelationalSearch("web erp estimator", searchContext),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "initial-msg",
       sender: "bot",
-      text: "Greetings! I am Aqutewave AI Copilot. Ask me anything about our web packages ($60–$300), offline-first ERP systems ($500–$1,000), graphic design ($5–$15), payment channels (EcoCash, InnBucks, Nostro), or our live cost estimator!",
-      cleanText: "Greetings! I am Aqutewave AI Copilot. Ask me anything about our web packages ($60–$300), offline-first ERP systems ($500–$1,000), graphic design ($5–$15), payment channels (EcoCash, InnBucks, Nostro), or our live cost estimator!",
+      text: "Greetings! I am Aqutewave AI Copilot. Ask me anything about our web packages ($60–$300), offline-first ERP systems ($500–$1,000), graphic design ($5–$15), tech store hardware, or payment channels (EcoCash, InnBucks, Nostro). All answers are strictly grounded in our live application data!",
+      cleanText: "Greetings! I am Aqutewave AI Copilot. Ask me anything about our web packages ($60–$300), offline-first ERP systems ($500–$1,000), graphic design ($5–$15), tech store hardware, or payment channels (EcoCash, InnBucks, Nostro). All answers are strictly grounded in our live application data!",
       timestamp: "Just now",
+      matrixFeedback: initialFeedback,
       directionLinks: [
         {
           id: "init-services",
@@ -83,16 +119,16 @@ export const AiAssistantDrawer: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Suggested high-intent words and phrases for quick digging
+  // Suggested queries (both keywords and natural language sentences)
   const suggestedQueries = [
-    { label: "Web Packages ($60–$300)", query: "What are your website development packages and prices?" },
-    { label: "Offline ERP Software ($500)", query: "Tell me about the offline-first ERP system features and pricing" },
-    { label: "Free Domain & Emails", query: "Do your web packages include a free .co.zw domain and emails?" },
-    { label: "EcoCash & InnBucks Payments", query: "How do I pay with EcoCash or InnBucks in Zimbabwe?" },
-    { label: "Calculate Custom Quote", query: "Can I calculate a custom quote with your project estimator?" },
-    { label: "Tech Store & Hardware", query: "What hardware and accessories do you sell in your shop?" },
-    { label: "Verify Payment Receipt", query: "How do I verify a payment receipt or reference code?" },
-    { label: "Harare Office & WhatsApp", query: "Where is your Harare office and what is your WhatsApp number?" },
+    { label: "erp", query: "erp" },
+    { label: "website $60", query: "website $60" },
+    { label: "Offline Inventory POS", query: "I need an offline inventory system with pos receipt printing in Harare" },
+    { label: "EcoCash & InnBucks", query: "How do I pay with EcoCash or InnBucks in Zimbabwe?" },
+    { label: "Calculate Quote", query: "Can I calculate a custom quote with your project estimator?" },
+    { label: "Mechanical Keyboards & 4K Monitors", query: "What hardware and accessories do you sell in your shop?" },
+    { label: "Verify Receipt", query: "How do I verify a payment receipt or reference code like DEMO-2026?" },
+    { label: "Harare Hub Office", query: "Where is your Harare office and what is your WhatsApp number?" },
   ];
 
   const scrollToBottom = () => {
@@ -172,6 +208,9 @@ export const AiAssistantDrawer: React.FC = () => {
     const message = (textToSend || inputText).trim();
     if (!message || isLoading) return;
 
+    // 1. Run local relational search engine immediately with live app context
+    const matrixFeedback = executeRelationalSearch(message, searchContext);
+
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
       sender: "user",
@@ -186,12 +225,16 @@ export const AiAssistantDrawer: React.FC = () => {
     setIsLoading(true);
     playSfx("click");
 
+    // 2. Prepare compact live app digest for Gemini
+    const appContextDigest = generateAppContextDigest(servicesList, softwareList, productsList);
+
     try {
       const response = await fetch("/api/gemini/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message,
+          appContextDigest,
           conversationHistory: messages.slice(-6).map((m) => ({
             role: m.sender === "user" ? "user" : "model",
             text: m.text,
@@ -204,9 +247,7 @@ export const AiAssistantDrawer: React.FC = () => {
       }
 
       const data = await response.json();
-      const rawBotReply =
-        data.reply ||
-        "Aqutewave specializes in web development ($60–$300), offline ERP systems ($500–$1,000), graphic design ($5–$15), and digital marketing ($100–$250).";
+      const rawBotReply = data.reply || matrixFeedback.summaryAnswer;
 
       const parsed = parseResponseContent(rawBotReply, message);
 
@@ -216,32 +257,31 @@ export const AiAssistantDrawer: React.FC = () => {
           id: `bot-${Date.now()}`,
           sender: "bot",
           text: rawBotReply,
-          cleanText: parsed.cleanText,
+          cleanText: parsed.cleanText || matrixFeedback.summaryAnswer,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           directionLinks: parsed.directionLinks,
           detectedPhrases: parsed.detectedPhrases,
+          matrixFeedback,
         },
       ]);
       playSfx("sparkle");
     } catch (err) {
       console.error("AI Assistant request error:", err);
 
-      // Offline intelligent phrase fallback
-      const parsed = parseResponseContent(
-        `Aqutewave is Zimbabwe's premier digital solutions agency:\n\n• **Web Development**: Basic ($60), Semi Standard ($150), Standard ($200), Premium ($300)\n• **ERP Software**: Basic Offline ERP ($500), Premium Multi-Branch ERP ($1,000)\n• **Graphic Design**: Business cards ($5), Logos & Flyers ($15)\n• **Payment Channels**: EcoCash USD/ZWL, InnBucks, Stanbic Nostro bank, Visa/Mastercard\n\nAll website packages include a free 1-year .co.zw domain, business email, and cloud hosting!`,
-        message
-      );
+      // Offline intelligent relational search fallback
+      const parsed = parseResponseContent(matrixFeedback.summaryAnswer, message);
 
       setMessages((prev) => [
         ...prev,
         {
           id: `bot-fallback-${Date.now()}`,
           sender: "bot",
-          text: parsed.cleanText,
-          cleanText: parsed.cleanText,
+          text: matrixFeedback.summaryAnswer,
+          cleanText: matrixFeedback.summaryAnswer,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           directionLinks: parsed.directionLinks,
-          detectedPhrases: parsed.detectedPhrases,
+          detectedPhrases: [matrixFeedback.intentBadge],
+          matrixFeedback,
         },
       ]);
       playSfx("sparkle");
@@ -326,6 +366,7 @@ export const AiAssistantDrawer: React.FC = () => {
                     text: "Conversation refreshed. Search any word or phrase (e.g. web packages, basic erp, domain, ecocash, estimator, shop) to receive instant answers and direct in-app links!",
                     cleanText: "Conversation refreshed. Search any word or phrase (e.g. web packages, basic erp, domain, ecocash, estimator, shop) to receive instant answers and direct in-app links!",
                     timestamp: "Just now",
+                    matrixFeedback: initialFeedback,
                     directionLinks: [
                       {
                         id: "rst-services",
@@ -418,6 +459,27 @@ export const AiAssistantDrawer: React.FC = () => {
                       );
                     })}
                   </div>
+
+                  {/* Relational Matrix Feedback within App Circle */}
+                  {!isUser && msg.matrixFeedback && (
+                    <AiRelationalMatrixView
+                      feedback={msg.matrixFeedback}
+                      onNavigate={(page) => {
+                        setActivePage(page);
+                        setIsAiDrawerOpen(false);
+                        showToast(`Navigating to ${page}`);
+                      }}
+                      onBookService={(serviceName) => {
+                        openBookingWithService(serviceName);
+                        setIsAiDrawerOpen(false);
+                        showToast(`Opening consultation booking for ${serviceName}`);
+                      }}
+                      onAddToCart={(prod) => {
+                        addToCart(prod);
+                        showToast(`Added ${prod.name} to cart`);
+                      }}
+                    />
+                  )}
 
                   {/* Interactive Direction Links within the App */}
                   {!isUser && msg.directionLinks && msg.directionLinks.length > 0 && (

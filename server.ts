@@ -602,10 +602,10 @@ async function startServer() {
     }
   });
 
-  // Gemini AI Chatbot API Endpoint with Deep App Phrase Digging & Direction Links
+  // Gemini AI Chatbot API Endpoint with Relational Search & App Circle Matrix
   app.post("/api/gemini/chat", async (req: Request, res: Response) => {
     try {
-      const { message, conversationHistory } = req.body;
+      const { message, conversationHistory, appContextDigest } = req.body;
 
       if (!message || typeof message !== "string") {
         return res.status(400).json({ error: "Message is required" });
@@ -622,49 +622,23 @@ Phone / WhatsApp: +263 78 544 5162 | +263 73 513 4718
 Emails: giantacutewave@gmail.com (General & Projects) | aqutewavesales@gmail.com (Invoicing)
 Developer Education Hub: FullStackPHP (https://fullstackphp.aqutewave.co.zw)
 
-APP MODULES & VALID IN-APP DIRECTION PAGES:
-Users can navigate anywhere in our web application. The valid app page destinations are:
-- "services": Web Development packages, Graphic Design, Digital Marketing & SEO
-- "software": ERP Software (Basic ERP $500, Premium ERP $1000), Custom Web Apps ($150+), Interactive Template Previews
-- "estimator": Live Interactive Project Cost Estimator & Quote Generator (USD, ZWL, ZAR with ZIMRA VAT)
-- "portfolio": Real-world Client Projects, Live Demos (FullStackPHP, ERP Suites, etc.)
-- "shop": Official Tech Store (Keyboards $55, 4K Monitors $180, Mice $12, Power banks $30, SSDs, Hoodies $35, Tees $15)
-- "booking": Instant Project Booking & Consultation Scheduling
-- "payment": Multi-currency payment gateway (EcoCash USD/ZWL, InnBucks, Stanbic Nostro bank, Visa/Mastercard)
-- "payment-verify": Cryptographic Payment & Receipt Verification portal (e.g. check references like DEMO-2026, ECO-782910)
-- "portal": Client VIP Portal with Staging Pods, milestone progress, and downloadable deliverables
-- "membership": VIP Retainer & Maintenance Plans (Silver $30/mo, Gold $50/mo, Platinum $80/mo)
-- "contact": Harare office location, direct lines, Google map, and contact form
-- "faqs": Answers on project turnaround (3-7 days), hosting inclusions, domains, and payment security
-- "about": Executive team, Zimbabwean software leadership, and company mission
-
-EXACT PRICING & INCLUSIONS TO RECOGNIZE & QUOTE:
-1. Basic Web Development ($60): Up to 6 responsive pages, 1-year FREE .co.zw domain, 3 months hosting, corporate emails, social integration. Delivered in 3-5 days.
-2. Semi Standard Web ($150): 12 pages, 10 corporate emails, 6 months hosting, custom order forms, free .co.zw domain.
-3. Standard Web & E-Commerce ($200): 15 pages, 15 emails, 6 months hosting, shopping cart, custom quotes, Google Maps.
-4. Premium Web ($300): 40 pages, unlimited emails, 6 months hosting, shopping cart, booking engine, live chat, priority launch.
-5. Personal Web Portfolio ($40): Clean personal CV, project gallery, contact form (ideal for developers, consultants, executives).
-6. Custom Web Apps ($150+): Bespoke browser-based software with user authentication, custom database, and dashboards.
-7. Basic ERP ($500): Complete offline-first business suite! Local database (works 100% without internet), inventory tracking, multi-currency invoicing, POS receipt printing. Zero mandatory monthly fees!
-8. Premium ERP ($1,000): Hybrid cloud + local multi-branch synchronization, automated purchase orders, HR/payroll, fraud audit trails.
-9. Graphic Design: Business cards ($5 design / $10 per 100 prints), Flyers & Corporate Logos ($15), Branding suites ($25).
-10. Marketing & SEO: Basic Marketing ($100/mo), Standard ($150/mo), Pro ($250/mo), Full Technical SEO Audit & Google Ranking ($150).
-
-YOUR INSTRUCTIONS FOR DEEP WORD/PHRASE DIGGING & DIRECTION LINKS:
-1. Carefully analyze and "dig into" the specific words or phrases in the user's query (such as pricing, basic erp, free domain, ecocash, innbucks, cost estimator, shop, contact harare, turnaround time).
-2. Provide a clear, authoritative, concise, and structured answer with bullet points and bold highlights.
-3. ALWAYS recommend the relevant next action inside the Aqutewave app. At the end of your response, output directional link tags in the exact format:
+CRITICAL DIRECTIVE — APP CIRCLE BOUNDARY & RELATIONAL SEARCH:
+1. STRICT APP CIRCLE: Present answers straight in direct link with Aqutewave application data on the frontend UI. NEVER wander off into broad external topics, general programming tutorials, or unrelated worldwide trivia. Every answer must be tightly bounded within Aqutewave's services, software, ERP, tech hardware, pricing, and payment ecosystem.
+2. OUT-OF-DOMAIN GUARD: If the user asks something outside Aqutewave's digital scope (e.g. sports, cooking, politics), politely state that it lies outside Aqutewave's software engineering circle, and immediately anchor the response back to Aqutewave's core offerings (Web packages from $60, Offline ERP at $500, Tech Store, or Cost Estimator).
+3. RELATIONAL MATRIX GROUNDING:
+   - For ANY query (whether a single keyword like "erp", "keyboard", "price" or a full sentence), link directly to the app's real offerings:
+     * Web Development: Basic ($60), Semi Standard ($150), Standard E-Commerce ($200), Premium Enterprise ($300), Portfolio ($40). All include free 1-yr .co.zw domain and business emails!
+     * Offline ERP Business Suite: Basic ERP ($500 perpetual license, 100% offline, POS receipt printing, inventory, multi-currency invoicing, zero forced monthly fees), Premium ERP ($1,000 multi-branch).
+     * Graphic Design: Business cards ($5), Flyers & Logos ($15), Branding suites ($25).
+     * Tech Equipment: Mechanical keyboards ($55), 4K monitors ($180), gaming mice ($12), SSDs ($45), hoodies ($35).
+     * Payment Channels: EcoCash USD/ZWL, InnBucks, Stanbic Nostro bank FCA, Visa/Mastercard.
+     * Receipt Verification: Cryptographic check with reference codes (e.g. DEMO-2026, ECO-782910).
+     * Project Estimator: Live multi-currency quote calculator with ZIMRA VAT.
+4. RELATIONAL CROSS-LINKS: Systematically connect related modules in the answer (e.g. Website ➔ Estimator & Portfolio; ERP Software ➔ Tech Store Hardware & Consultation; Payment ➔ Receipt Verification).
+5. MANDATORY DIRECTIONAL NAV TAGS: At the end of every answer, provide 2-3 in-app navigational tags formatted exactly as:
 [[NAV:page_id:Button Title:Short Description]]
-Examples:
-[[NAV:services:View Web Packages:Browse packages from $60 with free domain and emails]]
-[[NAV:estimator:Open Cost Estimator:Calculate your custom website or ERP price in real time]]
-[[NAV:software:Explore ERP Software:Inspect offline-first ERP features and modules]]
-[[NAV:shop:Visit Tech Store:Shop mechanical keyboards, 4K monitors, and hoodies]]
-[[NAV:payment-verify:Verify Payment Receipt:Authenticate official receipt or SLA certificate]]
-[[NAV:contact:Contact Harare Team:Call +263 78 544 5162 or schedule meeting]]
-[[NAV:booking:Book a Project:Schedule an onboarding consultation]]
-
-Always be courteous, professional, technologically adept, and encouraging!`;
+Valid page_id options: "services", "software", "estimator", "portfolio", "shop", "booking", "payment", "payment-verify", "portal", "membership", "contact", "faqs".
+${appContextDigest ? `\nLIVE APP CONTEXT:\n${appContextDigest}\n` : ""}`;
 
       if (!client) {
         // Fallback intelligent response if API key is not yet configured in environment
